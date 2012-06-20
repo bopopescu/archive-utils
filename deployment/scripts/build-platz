@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e 
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+
+if test $# -lt 1; then
+    fatal "One argument, the version number, is required"
+fi
+
+
+VERSION=$1
+RELEASE_TAG="release-$VERSION"
+echo "Building platz version $1"
+GIT_TAG="${VERSION}"
+
+cd $PLATZ_BUILD_HOME
+git fetch origin
+git reset --hard origin/master
+
+git tag -a ${GIT_TAG} -m "Release version ${VERSION}"
+git push origin ${GIT_TAG}
+
+echo $VERSION > ./.version
+
+ant clean;
+ant dist;

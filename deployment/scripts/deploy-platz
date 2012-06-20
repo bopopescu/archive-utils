@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+if test $# -lt 2 ; then
+  fatal "At least two arguments are required"
+fi
+
+VERSION=$1
+HOST=$2
+echo "VERSION: ${VERSION}"
+echo "HOST: ${HOST}"
+deployArchive=${PLATZ_BUILD_HOME}/target/dist-${VERSION}.tar.gz
+
+info "Copying platz to $HOST"
+scp $deployArchive ubuntu@${HOST}:/tmp/dist-${VERSION}.tar.gz
+    
+echo "Deploying platz on $h"
+ssh -t ubuntu@${HOST} <<EOF
+source ~/.profile
+
+cd ~/opt/lockerz/dist;
+bin/lockerz-kill-uber;
+    
+rm -rf artifact
+rm -rf bin
+rm -rf common-lib
+
+tar -zxf /tmp/dist-${VERSION}.tar.gz
+rm /tmp/dist-${VERSION}.tar.gz
+chmod +x bin/*
+
+bin/lockerz-start-uber -T
+echo "Waiting for platz to start up"
+sleep 1
+
+tail -n0 -F /home/ubuntu/opt/lockerz/prod/log/uber.log | sed "/Jetty listening/q"
+EOF

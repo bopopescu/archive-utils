@@ -1,0 +1,32 @@
+#!/bin/bash
+
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+if test $# -lt 3 ; then
+  fatal "At least two arguments are required"
+fi
+
+TEST=$1
+VALUE=$2
+HOST=$3
+
+SEEN=0
+DESIRED=2
+
+LOG_FILE=`date +"/var/log/platz/jetty-%Y_%m_%d.access.log"`
+
+while [ $SEEN -lt $DESIRED ]; do
+    SAMPLE=`(ssh ubuntu@${HOST} tail -n0 -f ${LOG_FILE} & P=$! ; sleep 2; kill -9 $P) | wc -l`
+    echo "Saw $SAMPLE accesses in the past 2 seconds";
+    if [ $SAMPLE $TEST $VALUE ]; then
+	let SEEN=$SEEN+1
+	echo "Looking good...";
+    else
+	SEEN=0
+	echo "Reseting...";
+    fi
+    echo "${SEEN} / ${DESIRED}"
+done
+
+    

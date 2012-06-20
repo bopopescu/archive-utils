@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+
+if test $# -lt 2 ; then
+  fatal "two arguments are required"
+fi
+
+VERSION=$1
+DEPLOYER=$2
+PLATZ_REV=`cd ${PLATZ_BUILD_HOME}; git rev-parse --short HEAD;`
+PEGASUS_REV=`cd ${PEGASUS_BUILD_HOME}; git rev-parse --short HEAD;`
+
+
+
+curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PLATZ] Aggregated" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${PLATZ_REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml
+
+curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PEGASUS] Aggregated" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${PEGASUS_REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml

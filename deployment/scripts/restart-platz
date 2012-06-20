@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+if test $# -lt 1 ; then
+  fatal "One argument is required"
+fi
+
+HOST=$1
+
+ssh -t ubuntu@${HOST} <<EOF
+source ~/.profile
+
+cd ~/opt/lockerz/dist;
+
+bin/lockerz-kill-uber
+bin/lockerz-start-uber -T
+echo "Waiting for platz to start up"
+sleep 1
+tail -n0 -F /home/ubuntu/opt/lockerz/prod/log/uber.log | sed "/Jetty listening/q"
+EOF

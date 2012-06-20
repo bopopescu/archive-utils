@@ -1,0 +1,10 @@
+#!/bin/bash
+PLATZ_BUILD_HOME=/home/ubuntu/build/repos/platz
+PEGASUS_BUILD_HOME=/home/ubuntu/opt/pegasus
+
+cd $(dirname $0)/..
+BASEDIR=$PWD
+cd - >/dev/null
+
+
+source $BASEDIR/scripts/functions.sh
