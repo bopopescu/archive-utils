@@ -36,3 +36,6 @@ git remote add -f pegasus ${LOCKERZ_GIT_HOME}/pegasus
 git merge -s ours --no-commit pegasus/develop
 git read-tree --prefix=pegasus/ -u pegasus/develop
 git commit -m "merging pegasus into lockerz"
+
+git remote add origin git@github-lockerz:andrew-lockerz/lockerz.git
+git remote add upstream git@github-lockerz:Lockerz/lockerz.git

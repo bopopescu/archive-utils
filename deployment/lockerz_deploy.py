@@ -43,6 +43,20 @@ def notify_newrelic(version, email):
     else:
         return True
 
+def checkout(version):
+    code = subprocess.call(["scripts/checkout", version])
+    if code != 0:
+        return False
+    else: 
+        return True
+
+def tag(version):
+    code = subprocess.call(["scripts/tag", version])
+    if code != 0:
+        return False
+    else:
+        return True
+
 def build_platz(version):
     code = subprocess.call(["scripts/build-platz", version])
     if code != 0:
@@ -150,6 +164,12 @@ if __name__ == '__main__':
     print "Will deploy to hosts:\n\t%s" % ("\n\t".join(host_info["hosts"]))       
     raw_input ("Hit <Enter> to continue")
 
+    print "Updating source"
+    checkout_ok = checkout(version)
+    if checkout_ok == False:
+        print "Checkout failed. Stopping deployment."
+        exit(1)
+
     print "Building Pegasus"
     pegasus_ok = build_pegasus(version)
     if pegasus_ok  == False:
@@ -161,7 +181,13 @@ if __name__ == '__main__':
     if platz_ok == False:
         print "Platz build failed. Stopping deployment."
         exit(1)
-    
+
+    print "Tagging Build"
+    tag_ok = tag(version)
+    if tag_ok == False:
+        print "Tag failed. stopping deployment."
+        exit(1)
+
     show_prompt = True
 
     for host in admin_hosts():

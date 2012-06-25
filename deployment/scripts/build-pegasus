@@ -22,31 +22,13 @@ VERSION=$1
 GIT_TAG="${VERSION}"
 
 info "Building pegasus version $1"
-info "PEGASUS_BUILD_HOME is ${PEGASUS_BUILD_HOME}"
 cd ${PEGASUS_BUILD_HOME};
 
-echo "Updating git and reseting develop"
-git checkout ${PEGASUS_BASE_BRANCH};
-git fetch ${PEGASUS_REMOTE}
-git reset --hard ${PEGASUS_REMOTE}/${PEGASUS_BASE_BRANCH}
-
-
-if test ! -z `git tag | grep ${VERSION}`; then
-    fatal "There is already a tag named ${VERSION}"
-fi
-
-#info "Creating release branch: ${RELEASE_BRANCH}"
-#git checkout -b ${RELEASE_BRANCH}
-
-echo $PATH
 info "Setting asset version in config_prod.yml"
 cat config/config_prod.yml | set-pegasus-asset-version $VERSION > config/config_prod.yml.tmp
 mv config/config_prod.yml.tmp config/config_prod.yml
 git commit -am "Setting asset version"
-git push ${PEGASUS_REMOTE} develop
-#git push ${PEGASUS_REMOTE} ${RELEASE_BRANCH}
-git tag -a ${GIT_TAG} -m "Release of version ${VERSION}"
-git push ${PEGASUS_REMOTE} ${GIT_TAG}
+git push ${LOCKERZ_REMOTE} master
 
 echo "Updating vendors"
 php bin/vendors.php install
@@ -56,8 +38,6 @@ sudo rm -rf cache/*
 sudo rm -rf logs/*
 sudo rm -rf web/bundles
 
-#echo "Running cache:clear"
-#php bin/console -e=prod --no-debug cache:clear
 echo "Running assets:install"
 php bin/console -e=prod --no-debug assets:install web
 echo "Running assetic:dump"

@@ -9,10 +9,8 @@ if test $# -lt 1; then
     fatal "One argument, the version number, is required"
 fi
 
-
 VERSION=$1
+GIT_TAG="${VERSION}"
 
-cd $PLATZ_BUILD_HOME
-echo $VERSION > ./.version
-ant clean;
-ant dist;
+git tag -a ${GIT_TAG} -m "Release of version ${VERSION}"
+git push ${LOCKERZ_REMOTE} ${GIT_TAG}

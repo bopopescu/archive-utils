@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e 
+
+source $(dirname $0)/include
+
+LOCKERZ_REMOTE=origin
+LOCKERZ_BASE_BRANCH=master
+
+shift $(($OPTIND - 1))
+
+if test $# -lt 1; then
+    fatal "One argument, the version number, is required"
+fi
+
+VERSION=$1
+GIT_TAG="${VERSION}"
+
+echo "Updating git and resetting master"
+cd ${LOCKERZ_BUILD_HOME}
+git checkout ${LOCKERZ_BASE_BRANCH}
+git fetch ${LOCKERZ_REMOTE}
+git reset --hard ${LOCKERZ_REMOTE}/${LOCKERZ_BASE_BRANCH}
+
+if test ! -z `git tag | grep ${VERSION}`; then
+    fatal "There is already a tag named ${VERSION}"
+fi

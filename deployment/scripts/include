@@ -1,6 +1,11 @@
 #!/bin/bash
-PLATZ_BUILD_HOME=/home/ubuntu/build/repos/platz
-PEGASUS_BUILD_HOME=/home/ubuntu/opt/pegasus
+
+LOCKERZ_BUILD_HOME=/home/ubuntu/build/repos/lockerz
+PLATZ_BUILD_HOME=${LOCKERZ_BUILD_HOME}/platz
+PEGASUS_BUILD_HOME=${LOCKERZ_BUILD_HOME}/pegasus
+
+LOCKERZ_REMOTE=origin
+LOCKERZ_BASE_BRANCH=master
 
 cd $(dirname $0)/..
 BASEDIR=$PWD
