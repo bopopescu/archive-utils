@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e 
+set -x 
 source $(dirname $0)/include
 
 shift $(($OPTIND - 1))
@@ -11,6 +11,6 @@ fi
 
 VERSION=$1
 GIT_TAG="${VERSION}"
-
+cd ${LOCKERZ_BUILD_HOME};
 git tag -a ${GIT_TAG} -m "Release of version ${VERSION}"
 git push ${LOCKERZ_REMOTE} ${GIT_TAG}
