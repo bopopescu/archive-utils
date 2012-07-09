@@ -1,0 +1,38 @@
+<dataConfig>
+  <dataSource name="decalz" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://<%= @dbHostname %>:3306/decalz" user="<%= @dbUsername %>" password="<%= @dbPassword %>"/>
+
+  <document>
+    <entity name="decal" dataSource="decalz" query="
+        SELECT
+          decal.id AS id,
+          decal_entity.id AS entity_id,
+          decal_entity.title AS title,
+          decal_entity.repost_count AS grabs,
+          decal_entity.curated_date AS timestamp
+        FROM decal
+        JOIN decal_entity ON decal.decal_entity_id = decal_entity.id
+        WHERE decal_entity.decal_entity_status_id IN (1, 3)
+          AND decal.status_id = 1
+          AND ('${dataimporter.request.clean}' != 'false' OR decal_entity.curated_date > '${dataimporter.last_index_time}')
+        GROUP BY decal_entity.id
+        ORDER BY decal.created_date ASC"
+      transformer="RegexTransformer" pk="id">
+      <field column="id" />
+      <field column="title" />
+      <field column="grabs" />
+      <field column="timestamp" />
+      <entity name="keyword" dataSource="decalz" query="
+          SELECT
+            decal_entity.id AS id,
+            keyword.keyword AS keyword
+          FROM decal_entity
+          JOIN decal_entity_keyword_mapping AS mapping ON decal_entity.id = mapping.decal_entity_id
+          JOIN keyword ON mapping.keyword_id = keyword.id
+          WHERE decal_entity.decal_entity_status_id IN (1, 3)
+            AND ('${dataimporter.request.clean}' != 'false' OR decal_entity.curated_date > '${dataimporter.last_index_time}')"
+        processor="CachedSqlEntityProcessor"  where="id=decal.entity_id">
+        <field column="keyword" />
+      </entity>
+    </entity>
+  </document>
+</dataConfig>

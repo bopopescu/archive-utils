@@ -1,0 +1,105 @@
+#! /bin/bash
+# -----------------------------------
+# Initscript for Phoenix services
+# -----------------------------------
+#
+# This controls the Lockerz Ice Service
+#
+set -e
+
+#PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+DESC="Lockerz Ice Service"
+
+HOME="/mnt/local/lockerz.com/phoenix"
+
+LOG_PATH="${HOME}/logs/"
+LOG_DATE=`date +%Y%m%d_%H%M%S`
+PID_DIR="${HOME}/run/"
+
+SERVICE_NAME=$2
+SERVICE_PIDFILE="${PID_DIR}/${SERVICE_NAME}.pid"
+
+function start(){
+	SERVICE_CFG="${HOME}/etc/${SERVICE_NAME}/options"
+	if [ -r "${SERVICE_CFG}" ]; then
+		. $SERVICE_CFG
+	fi
+
+	CLASSPATH="${HOME}/etc"
+	for jar in `find ${HOME}/lib -type f | grep -i jar$ | grep -iv commons-codec-1.2.jar | grep -iv logback` ; do
+		CLASSPATH=$CLASSPATH:$jar
+	done
+
+	ARGS="-Duser.timezone=UTC -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.Log4JLogger -Dfile.encoding=utf-8 -Dcom.mchange.v2.c3p0.cfg.xml=${HOME}/etc/c3p0-config.xml -Dlog.dir=${HOME}/logs/ -Dconfig.dir=${HOME}/etc/ -javaagent:${HOME}/lib/aspectjweaver.jar"
+
+	ulimit -n 8192; 
+
+	DAEMON="/usr/bin/java -server ${SERVICE_JAVA_OPTS} -cp ${CLASSPATH} -Djava.awt.headless=true ${ARGS} ${SERVICE_MAIN}"
+	#echo $DAEMON
+
+	$DAEMON >> $HOME/logs/${SERVICE_NAME}/stdout.log 2>&1 & echo $! > ${SERVICE_PIDFILE}
+
+	#ln -sf /usr/phoenix/logs/${SERVICE_NAME}-gc_${LOG_DATE}.log /usr/phoenix/logs/${SERVICE_NAME}-gc.log
+}
+
+function stop(){
+	kill `cat ${SERVICE_PIDFILE}`
+}
+
+case "$1" in
+start)
+	if [ "${SERVICE_NAME}" = "all" ]
+		echo "Starting all services"
+		for service in `cat ${HOME}/etc/phoenix.conf`
+		do
+			SERVICE_NAME=$service
+			start
+		done
+
+	else
+		echo -n "Starting $DESC: $2"
+		start
+
+	fi 
+	echo "."
+	;;
+
+stop)
+	echo -n "Stopping $DESC: $2"
+	stop
+	echo "."
+	;;
+
+status)
+	echo "Status..."
+	for service in `cat $HOME/etc/phoenix.conf`
+	do
+		echo -e "\t${service}"
+	done
+	;;
+
+restart)
+	echo -n "Restarting $DESC: $2"
+	stop
+	sleep 1
+	start
+	echo "."
+	;;
+
+force-reload)
+	echo "."
+	;;
+
+*)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload} SERVICE_NAME" >&2
+	echo "Services: "
+	for service in `cat $HOME/etc/phoenix.conf`
+	do
+		echo -e "\t${service}"
+	done
+	exit 1
+	;;
+	esac
+
+exit 0

@@ -1,0 +1,65 @@
+#!/bin/sh
+##source ~/set_alais.sh
+
+TMPFILE=$(mktemp /tmp/$0.XXXXXXXXXX)
+
+echo `date` > $TMPFILE
+echo
+
+CMD="$1"
+
+echo ------------ $0 ---------->> $TMPFILE
+echo  $CMD  
+
+HLIST="
+MasRepo
+Pod1Master  
+Pod1Slave  
+SavPod1  
+Pod2Master  
+Pod2Slave  
+SavPod2  
+Pod3Master  
+Pod3Slave  
+SavPod3  
+Pod4Master  
+Pod4Slave  
+SavPod4  
+Pod5Master  
+Pod5Slave  
+SavPod5  
+Pod6Master 
+Pod6Slave  
+SavPod6 
+LocaMaster 
+LocaSlave 
+SavLoca 
+MasComm
+SlaComm
+SavComm
+"
+
+for MYHOST in $HLIST ; 
+do
+	MYCNT=`grep $MYHOST ~/set_alais.sh | grep -v '#' | wc -l`
+	echo $MYCNT  ------------ $MYHOST 
+done
+
+	echo "CONTINUE ??  yes/no";  read CHOICE;
+
+for MYHOST in $HLIST ; 
+do
+	MYKEY=`grep $MYHOST  ~/set_alais.sh  | grep -v '#'  | awk '{print $5}' | cut -d/ -f3`
+	MYUIP=`grep $MYHOST  ~/set_alais.sh  | grep -v '#'  | awk '{print $6}'`
+	echo; 
+	echo  $MYHOST 
+	ALS=`grep $MYHOST ~/set_alais.sh | grep -v '#'`
+	echo $ALS
+        ssh -i ~/.ssh/$MYKEY -o StrictHostKeyChecking=no   $MYUIP 'hostname'
+	ssh -i ~/.ssh/$MYKEY -o StrictHostKeyChecking=no   $MYUIP  "ifconfig | head -2 | tail -1 | cut -d: -f2 | cut -dB -f1; curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone; echo; curl -s http://169.254.169.254/latest/meta-data/instance-id "
+done
+
+cat $TMPFILE
+rm $TMPFILE
+
+exit

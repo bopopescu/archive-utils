@@ -1,0 +1,143 @@
+<c3p0-config>
+        <default-config>
+                <property name="acquireIncrement">1</property>
+                <property name="acquireRetryAttempts">0</property> <!-- 0 means retry indefinitely -->
+                <property name="acquireRetryDelay">1000</property>
+                <property name="breakAfterAcquireFailure">false</property>
+                <property name="checkoutTimeout">4500</property>
+                <property name="driverClass">com.mysql.jdbc.Driver</property>
+                <property name="idleConnectionTestPeriod">30</property>
+                <property name="initialPoolSize">10</property>
+                <property name="maxIdleTime">300</property>
+                <property name="maxPoolSize">50</property>
+                <property name="minPoolSize">1</property>
+                <property name="maxStatements">200</property>
+                <property name="preferredTestQuery">select 1</property>
+                <property name="testConnectionOnCheckout">true</property>
+        </default-config>  <!-- This app is massive! -->
+
+        <named-config name="master">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/locator</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="slave">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/locator</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="bitsMaster">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/bits</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="bitsSlave">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/bits</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="podMaster">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/pod1</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+                <property name="maxPoolSize">200</property>
+        </named-config>
+
+        <named-config name="podSlave">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/pod1</property>
+                <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+                <property name="maxPoolSize">200</property>
+        </named-config>
+
+
+	<named-config name="forumMaster">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/forum</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="forumSlave">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/forum</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="socialGraphMaster">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/socialgraph</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="socialGraphSlave">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/socialgraph</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="socialMaster">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/social</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="socialSlave">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/social</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="mediaMaster">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/media</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="mediaSlave">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/media</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="auctionProxyMaster">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/auction_proxy</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+	<named-config name="auctionProxySlave">
+		<property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/auction_proxy</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+	</named-config>
+
+        <named-config name="paymentMaster">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/payments</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="paymentSlave">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/payments</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="videoMaster">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/video</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+        <named-config name="videoSlave">
+                <property name="jdbcUrl">jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int/video</property>
+               <property name="user"><%= @dbUsername %></property>
+                <property name="password"><%= @dbPassword %></property>
+        </named-config>
+
+
+</c3p0-config>

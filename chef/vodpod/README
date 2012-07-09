@@ -1,0 +1,7 @@
+vodpod hosts aren't currently (2012-01-03) under chef management, but
+we need to keep track of some info about them and this is as good a place
+as any.
+
+this directory and its contents should be deleted once these systems come
+under the chef fold.
+

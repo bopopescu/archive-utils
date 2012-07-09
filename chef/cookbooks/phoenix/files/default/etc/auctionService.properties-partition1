@@ -1,0 +1,49 @@
+AuctionServiceAdapter.Endpoints=tcp -p 12000 -t 5000
+AuctionServiceAdapter.ThreadPool.Size=15
+AuctionServiceAdapter.ThreadPool.SizeMax=50
+
+AuctionServiceAdminAdapter.Endpoints=tcp -p 12050 -t 2000
+AuctionServiceAdminAdapter.ThreadPool.Size=5  # Give the AuctionServiceAdmin adapter its own thread pool to avoid deadlocks
+AuctionServiceAdminAdapter.ThreadPool.SizeMax=25
+
+LocatorServiceProxy=LocatorService: tcp -h 10.248.31.223 -p 10000 -t 5000 : tcp -h 10.210.38.207 -p 10000 -t 5000
+EmailServiceProxy=EmailService: tcp -h 10.249.106.48 -p 10400 -t 5000 : tcp -h 10.254.41.220 -p 10400 -t 5000
+DecalServiceProxy=DecalService: tcp -h  10.122.251.227 -p 11800 -t 5000 : tcp -h 10.68.74.172 -p 11800 -t 5000
+UserServiceProxy=UserService: tcp -h 10.211.146.111 -p 10100 -t 5000 : tcp -h 10.248.55.191 -p 10100 -t 5000 : tcp -h 10.242.198.176 -p 10100 -t 5000 : tcp -h 10.211.50.159 -p 10100 -t 5000
+PaymentServiceProxy=PaymentService: tcp -h 10.83.122.203 -p 12800 -t 5000 : tcp -h 10.203.29.78 -p 12800 -t 5000
+
+
+Ice.Override.ConnectTimeout=2000
+Ice.RetryIntervals=0 1000 2000
+
+# Trace connection establishment and closure
+#Ice.Trace.Network=1
+
+# Trace Ice protocol messages
+#Ice.Trace.Protocol=1
+
+# Print warnings for unexpected exceptions
+Ice.Warn.Dispatch=2
+
+proxyBiddingBidManager.asynchronousPersistence=false
+proxyBiddingBidManager.persistenceThreadPoolSize=20
+
+# Email configuration
+Auction.email.EmailThreadPool=10
+Auction.email.OutbidNotification=false
+Auction.email.TimeLeftNotification=false
+Auction.email.LossNotification=true
+Auction.email.WinNotification=true
+Auction.email.TimeTillNotificationsCease=0
+
+Network=production
+TopicManager=LockerzIceStorm/TopicManager -t:tcp -h 10.114.171.93 -p 9600:tcp -h 10.110.30.68 -p 9600:tcp -h 10.96.222.153 -p 9600
+JoinGroupTopic=true
+
+Auction.clusterID=1
+
+# bid rules
+Auction.rule.0.FrequencyLimitRule=1 in 24h
+Auction.rule.1.FrequencyLimitRule=4 in 30d
+
+

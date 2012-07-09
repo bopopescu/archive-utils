@@ -1,0 +1,245 @@
+#!/bin/bash
+#
+# Startup script for Tomcat Servlet Engine
+#
+
+# Tomcat init script for a non-vendor (debian/redhat) tomcat 6.0
+
+[ -f "/etc/default/tomcat6" ] && export ENV_SCRIPT="/etc/default/tomcat6"
+
+# Attempt to auto detect the ENV_SCRIPT based on the assumption that the name of the start
+# script matches the userid that is running the script, and that the script is in /home/$USER/bin/setenv.sh
+
+if [ ! -f "/etc/default/tomcat6" ]; then 
+	echo $0 | grep -iq "^/etc/init.d/"
+	RETURN=$?
+	if [ $RETURN -eq 0 ]; then
+		export NAME=`echo $0 | sed s'/.*init.d\///'g`
+		[ -f "/home/${NAME}/bin/setenv.sh" ] && export ENV_SCRIPT="/home/${NAME}/bin/setenv.sh"
+	fi
+fi
+
+function error_on_missing_req_variable {
+	echo "Unable to contiune you are missing the $1 variable. (using $ENV_SCRIPT for enviornment)"
+	exit -1
+}
+
+[ -f "$ENV_SCRIPT" ]  && . $ENV_SCRIPT
+[ -f "$ENV_SCRIPT" ]  || echo "$ENV_SCRIPT not found, required for operation!"
+[ -f "$ENV_SCRIPT" ]  || exit 1
+
+##
+# Check to see if all values are defined (should be in the $ENV_SCRIPT above
+# (most of them are not used right now, but will be once we move away from
+# /usr/local/tomcat as the tomcat home directory
+##
+
+# APP_USER example: export APP_USER=tomcat
+[ -z "$APP_USER" ] && error_on_missing_req_variable APP_USER
+# APP_UID  example: export APP_UID=`id -u $APP_USER`
+[ -z "$APP_UID" ] && error_on_missing_req_variable APP_UID
+# APP_NAME  example: export APP_UID=`id -u $APP_NAME`
+[ -z "$APP_NAME" ] && error_on_missing_req_variable APP_NAME
+# CATALINA_DATE example: export CATALINA_DATE=`date +%Y%m%d_%H%M%S`
+[ -z "$CATALINA_DATE" ] && error_on_missing_req_variable CATALINA_DATE
+# TOMCAT_DIR example: export TOMCAT_DIR=/usr/local/tomcat
+[ -z "$TOMCAT_DIR" ] && error_on_missing_req_variable TOMCAT_DIR
+# CATALINA_BASE example: export CATALINA_BASE="$TOMCAT_DIR"
+[ -z "$CATALINA_BASE" ] && error_on_missing_req_variable CATALINA_BASE
+# CATALINA_HOME example: export CATALINA_HOME=/usr/local/tomcat
+[ -z "$CATALINA_HOME" ] && error_on_missing_req_variable CATALINA_HOME
+# CATALINA_SCRIPT example: export CATALINA_SCRIPT="/usr/local/tomcat/bin/catalina.sh"
+[ -z "$CATALINA_SCRIPT" ] && error_on_missing_req_variable CATALINA_SCRIPT
+# BASEDIR example: export BASEDIR="$TOMCAT_DIR"
+[ -z "$BASEDIR" ] && error_on_missing_req_variable BASEDIR
+# CATALINA_PID example: export CATALINA_PID="$CATALINA_HOME/temp/catalina.pid"
+[ -z "$CATALINA_PID" ] && error_on_missing_req_variable CATALINA_PID
+# CATALINA_CLASSPATH example: export CATALINA_CLASSPATH="${TOMCAT_DIR}/bin/setclasspath.sh"
+[ -z "$CATALINA_CLASSPATH" ] && error_on_missing_req_variable CATALINA_CLASSPATH
+# CATALINA_TMPDIR example: export CATALINA_TMPDIR="/var/rsi/tomcat/tmp/ads"
+[ -z "$CATALINA_TMPDIR" ] && error_on_missing_req_variable CATALINA_TMPDIR
+# CATALINA_WORK_DIR example: export CATALINA_TMPDIR="/var/rsi/tomcat/work/bgas"
+[ -z "$CATALINA_WORK_DIR" ] && error_on_missing_req_variable CATALINA_WORK_DIR
+# CATALINA_OUT_DIR example: export CATALINA_OUT_DIR="/var/rsi/logs"
+[ -z "$CATALINA_OUT_DIR" ] && error_on_missing_req_variable CATALINA_OUT_DIR
+# CATALINA_OUT example: export CATALINA_OUT="${CATALINA_OUT_DIR}/tomcat_ads_stdout.${CATALINA_DATE}.log"
+[ -z "$CATALINA_OUT" ] && error_on_missing_req_variable CATALINA_OUT
+# CATALINA_ADMIN_PORT example: export CATALINA_OPTS="8005"
+[ -z "$CATALINA_ADMIN_PORT" ] && error_on_missing_req_variable CATALINA_ADMIN_PORT
+# LTM_STATUS_SCRIPT example: export LTM_STATUS_SCRIPT="/usr/local/f5_ltm/switchNodeStatus2.pl"
+[ -z "$LTM_STATUS_SCRIPT" ] && error_on_missing_req_variable LTM_STATUS_SCRIPT
+# USE_LTM_STATUS_SCRIPT example: export USE_LTM_STATUS_SCRIPT="YES"
+[ -z "$USE_LTM_STATUS_SCRIPT" ] && error_on_missing_req_variable USE_LTM_STATUS_SCRIPT
+# USE_LTM_STATUS_SCRIPT_READ_ONLY example: export USE_LTM_STATUS_SCRIPT_READ_ONLY="YES"
+[ -z "$USE_LTM_STATUS_SCRIPT_READ_ONLY" ] && error_on_missing_req_variable USE_LTM_STATUS_SCRIPT_READ_ONLY
+# DELETE_WORKDIR_ON_SHUTDOWN example: export DELETE_WORKDIR_ON_SHUTDOWN="NO"
+[ -z "$DELETE_WORKDIR_ON_SHUTDOWN" ] && error_on_missing_req_variable DELETE_WORKDIR_ON_SHUTDOWN
+# INIT_SCRIPT: example: export INIT_SCRIPT="/etc/init.d/tomcat"
+[ -z "$INIT_SCRIPT" ] && error_on_missing_req_variable INIT_SCRIPT
+# CATALINA_OPS example: export CATALINA_OPTS="-Xms512m -Xmx1536m -server -Xloggc:/var/rsi/logs/gc.log"
+[ -z "$CATALINA_OPTS" ] && error_on_missing_req_variable CATALINA_OPTS
+
+# Preserve this..
+export COMMAND=$1
+
+
+ltm_status_check() {
+	# Check to see if LTM status script exists, but only if we specified to use it
+	echo $USE_LTM_STATUS_SCRIPT | grep -iq yes
+	RETURN=$?
+	if [ "$RETURN" == "0" ]; then
+		export USE_LTM_STATUS_SCRIPT="YES"
+		echo -n "You've decided to use the LTM status script(${LTM_STATUS_SCRIPT}) in READ-WRITE mode, doing a couple of sanity checks..."
+		[ ! -f "$LTM_STATUS_SCRIPT" ] && echo "Cannot find LTM status script(${LTM_STATUS_SCRIPT}) and you specified to ue it, exiting!" 
+		[ ! -f "$LTM_STATUS_SCRIPT" ] && exit 1
+		export LTM_STATUS=`$LTM_STATUS_SCRIPT`
+		echo $LTM_STATUS | egrep -iq "^F5_LTM Said: Node.*current state.*STATE.*"  || echo "LTM Script(${LTM_STATUS_SCRIPT}) doesn't appear functional, exiting!"
+		echo $LTM_STATUS | egrep -iq "^F5_LTM Said: Node.*current state.*STATE.*"  || exit 1
+		echo ".Done!"
+
+	fi
+
+	echo $USE_LTM_STATUS_SCRIPT_READ_ONLY | grep -iq yes
+	RETURN=$?
+	if [ "$RETURN" == "0" ]; then
+		export USE_LTM_STATUS_SCRIPT_READ_ONLY="YES"
+		[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && echo "You have already specified to use the status script in read-write mode, so I will disable the read-only checks, you can make this message go away by setting USE_LTM_STATUS_SCRIPT_READ_ONLY to NO in your enviornment script."
+		[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && export USE_LTM_STATUS_SCRIPT_READ_ONLY="NO"
+		[ ! -f "$LTM_STATUS_SCRIPT" ] && echo -n "You've decided to use the LTM status script(${LTM_STATUS_SCRIPT}) in READ-ONLY mode, doing a couple of sanity checks..."
+		[ ! -f "$LTM_STATUS_SCRIPT" ] && echo "Cannot find LTM status script(${LTM_STATUS_SCRIPT}) and you specified to ue it, this is not critical so I'll continue" 
+		export LTM_STATUS=`$LTM_STATUS_SCRIPT`
+		echo $LTM_STATUS | egrep -iq "^F5_LTM Said: Node.*current state.*STATE.*"  || echo "LTM Script(${LTM_STATUS_SCRIPT}) doesn't appear functional, this is not critical so I'll continue"
+		[ ! -f "$LTM_STATUS_SCRIPT" ] && echo ".Done!"
+
+	fi
+
+
+}
+
+am_i_running() 
+{
+# abort if I am already running
+if [ "$COMMAND" == "start" ]; then
+	if [ -f "$CATALINA_PID" ]; then
+		grep -c java /proc/`cat $CATALINA_PID`/cmdline 1>/dev/null 2>&1 && echo "Tomcat already RUNNING! I won't start again" && exit 0
+	fi
+		netstat -lnt | egrep -q "^tcp.*:${CATALINA_ADMIN_PORT}.*LISTEN" 1>/dev/null  2>&1 && echo "Tomcat already RUNNING! I won't start again" && exit 0
+fi
+}
+
+start() 
+{
+	if [ "$UID" == "$APP_UID" ]; then
+		am_i_running;
+		ltm_status_check;
+		echo -n "Starting Tomcat..."
+		$CATALINA_SCRIPT start 1>/dev/null 2>&1
+		# Wait for it to start
+		while true; do netstat -lnt | egrep -q "^tcp.*:${CATALINA_ADMIN_PORT}.*LISTEN" 2>/dev/null && break; echo -n "."; sleep 1;done
+		sudo -u root /bin/touch /var/lock/subsys/tomcat
+		[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && $LTM_STATUS_SCRIPT enable
+		export PID=`cat $CATALINA_PID`
+		echo "done! [PID:${PID}]"
+		[ "$USE_LTM_STATUS_SCRIPT_READ_ONLY" == "YES" ] && $LTM_STATUS_SCRIPT
+	elif [ "$UID" == "0" ]; then
+		su - $APP_USER -c "$INIT_SCRIPT start"
+	else
+		echo "Not supported under [${USER}] (${UID}) right now, I will try to run anyways with sudo, if you get a password prompt then sudo isn't setup for your account"
+		sudo -H -u $APP_USER sh -c "$INIT_SCRIPT start"
+	fi
+
+}
+
+stop() {
+
+	if [ "$UID" == "$APP_UID" ]; then
+
+		if [ ! -f $CATALINA_PID ]; then
+			echo "Tomcat already stopped"
+		else
+			ltm_status_check;
+			echo -n "Stopping Tomcat..."
+			[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && echo -n "..[Disabling node in LTM].."
+			[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && $LTM_STATUS_SCRIPT disable && sleep 5
+			$CATALINA_SCRIPT stop 1>/dev/null 2>&1
+			# Wait for it to stop
+			while true; do grep -q java /proc/`cat $CATALINA_PID 2>/dev/null`/cmdline  1>/dev/null 2>&1 || break ;echo -n ".";sleep 1;done
+			echo "done!"
+			[ "$USE_LTM_STATUS_SCRIPT_READ_ONLY" == "YES" ] && echo -n "LTM Status script: " && $LTM_STATUS_SCRIPT
+			grep -q java /proc/`cat $CATALINA_PID 2>/dev/null`/cmdline 1>/dev/null 2>&1 || sudo -u root /bin/rm -f /var/lock/subsys/tomcat
+			grep -q java /proc/`cat $CATALINA_PID 2>/dev/null`/cmdline 1>/dev/null 2>&1 || rm -f $CATALINA_PID
+			[ ! -f "$CATALINA_PID" ] && [ "$DELETE_WORKDIR_ON_SHUTDOWN" == "YES" ] && rm -rf ${CATALINA_WORK_DIR}/*
+		fi
+	elif [ "$UID" == "0" ]; then
+		su - $APP_USER -c "$INIT_SCRIPT stop"
+	else
+		echo "Not supported under [${USER}] (${UID}) right now, I will try to run anyways with sudo, if you get a password prompt then sudo isn't setup for your account"
+		sudo -H -u $APP_USER sh -c "$INIT_SCRIPT stop"
+	fi
+}
+
+status() {
+	ltm_status_check;
+        echo -n "Status of Tomcat Server..."
+        if [ ! -f "$CATALINA_PID" ]; then
+                echo -n "No PID files detected, scanning process tree.."
+                export JAVA_PROCS=`ps auxw | grep -v grep | grep -ic java`
+                if [ "$JAVA_PROCS" -gt "0" ]; then
+                        echo "There appears to be some java stuff running but I don't know what it is:"
+                        ps auxww | grep -v grep | grep -i java
+                        echo -e "\n\nI don't know what to do now so I'll exit.."
+                        exit 1
+                else
+                        echo "There doesn't appear to be anything running.."
+                        exit 0
+                fi
+	else
+		export PID=`echo $CATALINA_PID`
+		echo -n "..[ Checking $PID "
+		grep -c java /proc/`cat $PID`/cmdline 1>/dev/null 2>&1
+		RETURN=$?
+		if [ "$RETURN" -eq "0" ]; then
+			export PID=`cat $CATALINA_PID`
+			echo -n " RUNNING! (PID:${PID})]";
+		else
+			echo -n " NOT RUNNING(removing stale PID)]";
+			netstat -lnt | egrep -q "^tcp.*:${CATALINA_ADMIN_PORT}.*LISTEN" 1>/dev/null  2>&1 && echo "Something is listening on port ${CATALINA_ADMIN_PORT}, tomcat might be running still!" && exit 1
+			rm -f $CATALINA_PID
+		fi
+	fi
+
+	echo ""
+	[ "$USE_LTM_STATUS_SCRIPT" == "YES" ] && echo -ne "\nLTM Status script: " && $LTM_STATUS_SCRIPT
+	[ "$USE_LTM_STATUS_SCRIPT_READ_ONLY" == "YES" ] && echo -ne "\nLTM Status script: " && $LTM_STATUS_SCRIPT
+	echo ""
+
+}
+
+tail() {
+	$CATALINA_SCRIPT tail
+}
+
+
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        start
+        ;;
+  status)
+        status
+        ;;
+  tail)
+	tail
+	;;
+  *)
+        echo "Usage: $0 {start|stop|restart|status|tail}"
+        exit 1
+esac
+

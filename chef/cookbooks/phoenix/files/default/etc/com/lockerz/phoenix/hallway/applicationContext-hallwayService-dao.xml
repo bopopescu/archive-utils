@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="masterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="bitsMaster"/>
+	</bean>
+	
+	<bean id="slaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="bitsSlave"/>
+	</bean>
+	
+	<bean id="hallwayDAO" class="com.lockerz.phoenix.hallway.dao.impl.HallwayDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="slaveDataSource" />
+		<property name="masterDataSource" ref="masterDataSource"/>
+	</bean>
+	
+	<!-- mongo / master and slave newsfeed dao configurations -->
+
+	<bean id="slaveNewsFeedDAO" class="com.lockerz.phoenix.hallway.dao.impl.HallwayNewsFeedDAOMongo">
+    	<constructor-arg ref="mongoSlaveServer"/>
+    	<constructor-arg value="${mongodb.newsfeed.dbname}"/>
+    	<property name="maxNewsFeedRowsLimit" value="${mongodb.newsfeed.maxNewsFeedRowsLimit}" />
+    </bean> 
+
+	<bean id="masterNewsFeedDAO" class="com.lockerz.phoenix.hallway.dao.impl.HallwayNewsFeedDAOMongo">
+    	<constructor-arg ref="mongoMasterServer"/>
+    	<constructor-arg value="${mongodb.newsfeed.dbname}"/>
+    	<property name="maxNewsFeedRowsLimit" value="${mongodb.newsfeed.maxNewsFeedRowsLimit}" />
+    </bean> 
+    
+</beans>

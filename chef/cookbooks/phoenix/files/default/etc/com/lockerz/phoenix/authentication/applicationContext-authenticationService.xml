@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+	<!-- 
+ 	<import resource="classpath:com/lockerz/phoenix/authentication/applicationContext-authenticationService-dao.xml"/> 
+ 	-->
+
+	<bean id="authenticationService" class="com.lockerz.phoenix.authentication.AuthenticationService">
+		<property name="authenticationServiceServant" ref="authenticationServiceServant"/>
+	</bean>
+	
+	<bean id="authenticationServiceServant" class="com.lockerz.phoenix.authentication.AuthenticationServiceI">
+	</bean>
+	
+</beans>

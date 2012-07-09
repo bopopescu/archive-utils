@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import resource="classpath:com/lockerz/phoenix/auctionProxy/applicationContext-auctionProxyService-dao.xml" />
+
+	<bean id="auctionProxyService" class="com.lockerz.phoenix.auctionProxy.AuctionProxyService">
+		<property name="auctionProxyServiceServant" ref="auctionProxyServiceServant" />
+		<property name="auctionProxyServiceAdminServant" ref="auctionProxyServiceAdminServant" />
+		<property name="auctionProxyServiceGroupAdminServant" ref="auctionProxyServiceGroupAdminServant" />
+	</bean>
+
+	<bean id="auctionProxyServiceServant" class="com.lockerz.phoenix.auctionProxy.AuctionProxyServiceI">
+		<property name="auctionProxyDAO" ref="auctionProxyDAO" />
+	</bean>
+
+	<bean id="auctionProxyServiceAdminServant" class="com.lockerz.phoenix.auctionProxy.AuctionProxyServiceAdminI">
+		<property name="auctionProxyService" ref="auctionProxyServiceServant"/>
+	</bean>
+
+	<bean id="auctionProxyServiceGroupAdminServant" class="com.lockerz.phoenix.auctionProxy.AuctionProxyServiceGroupAdminI">
+		<property name="auctionProxyService" ref="auctionProxyServiceServant"/>
+	</bean>
+</beans>
+
+

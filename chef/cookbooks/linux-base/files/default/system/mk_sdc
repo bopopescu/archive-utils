@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sfdisk /dev/sdc < /root/bin/sdc.partition
+
+sleep 1
+
+mkfs.xfs /dev/sdc1
+

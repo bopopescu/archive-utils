@@ -1,0 +1,10 @@
+[
+  "dba",
+  "operations",
+  "opz",
+  "pegasus",
+  "phoenix",
+  "ptzplace",
+  "site",
+  "upegasus"
+]

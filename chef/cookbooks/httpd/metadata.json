@@ -1,0 +1,29 @@
+{
+  "attributes": {
+  },
+  "maintainer_email": "ops@lockerz.com",
+  "groupings": {
+  },
+  "license": "All rights reserved",
+  "recipes": {
+  },
+  "recommendations": {
+  },
+  "dependencies": {
+  },
+  "suggestions": {
+  },
+  "description": "Installs/Configures httpd",
+  "conflicting": {
+  },
+  "platforms": {
+  },
+  "version": "0.0.1",
+  "providing": {
+  },
+  "name": "httpd",
+  "maintainer": "Bryan Kroger ( bryan@lockerz.com )",
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES:\n\n= USAGE:\n\n",
+  "replacing": {
+  }
+}

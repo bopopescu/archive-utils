@@ -1,0 +1,9 @@
+extension=newrelic.so
+newrelic.appname = "<%= @app_name %> Aggregated;<%= node[:fqdn] %>"
+newrelic.enabled = 1
+newrelic.logfile = /var/log/newrelic/php_agent.log
+newrelic.loglevel = info
+newrelic.browser_monitoring.auto_instrument = 1
+newrelic.capture_params = true
+newrelic.framework = "<%= @framework %>" 
+

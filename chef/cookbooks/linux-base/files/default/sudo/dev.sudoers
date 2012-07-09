@@ -1,0 +1,10 @@
+# keep it simple for now
+%admin	ALL	= (root) NOPASSWD: ALL
+%lockerz	ALL	= (root) NOPASSWD: ALL
+
+Host_Alias TOMCAT_SERVERS = *-rest-*
+
+Cmnd_Alias SUBSYS_LOCK = /bin/touch /var/lock/subsys/*, /bin/rm -f /var/lock/subsys/*
+
+tomcat                  TOMCAT_SERVERS=(root)   NOPASSWD:SUBSYS_LOCK
+

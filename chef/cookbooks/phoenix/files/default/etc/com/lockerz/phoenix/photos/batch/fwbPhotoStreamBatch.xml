@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+<!--  First define mongodb and MapReduce Task details -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <value>classpath:mongodb.properties</value>
+		</property>
+    </bean>
+
+    <bean id="mongoMaster" class="com.mongodb.Mongo">
+        <constructor-arg type="java.lang.String" value="${mongodb.hostname}"/>
+    	<constructor-arg type="int" value="${mongodb.port}"/>
+    </bean>
+    
+    <bean id="mongoSlave" class="com.mongodb.Mongo">
+        <constructor-arg type="java.lang.String" value="${mongodb.slave.hostname}"/>
+    	<constructor-arg type="int" value="${mongodb.slave.port}"/>
+    </bean>
+    
+    <bean id="fwbPhotoStreamMRTask" class="com.lockerz.phoenix.photos.batch.FwbPhotoStreamMRTask">
+        <constructor-arg ref="mongoMaster"/>
+    	<constructor-arg value="${mongodb.photostream.dbname}"/>
+    </bean>
+
+<!--  Define the map reduce jon and pass in the job detail and any  -->
+    
+    <bean name="fwbPhotoStreamJob" class="org.springframework.scheduling.quartz.JobDetailBean"> 
+		
+		<property name="jobClass" value="com.lockerz.phoenix.photos.batch.FwbPhotoStreamJobBean" />
+	 
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="fwbPhotoStreamMRTask" value-ref="fwbPhotoStreamMRTask" />
+				<!--  lookBackDays - any value greater than 0 will tell the fwbPhotoStreamMRTask to run it for data for past n days
+				      If set to 0 or lesser then the task will be run for the entire data set in photo notifications  -->
+				<entry key="lookBackDays" value="7" />
+			</map>
+		</property>
+
+	</bean>
+	
+<!--  schedule the job with the simple trigger -->
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="fwbPhotoStreamJob" />
+		<!--  To change the interval change the foll. property. Setting it initially to 1200000 (20 mins) -->
+		<property name="repeatInterval" value="1800000" />
+	</bean>
+
+<!--  start the scheduler using SchedulerFactoryBean -->	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="jobDetails">
+			<list>
+			<ref bean="fwbPhotoStreamJob" />
+			</list>
+		</property>
+ 
+		<property name="triggers">
+			<list>
+			<ref bean="simpleTrigger" />
+			</list>
+		</property>
+	</bean>
+       
+</beans>

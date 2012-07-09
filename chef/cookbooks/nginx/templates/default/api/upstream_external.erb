@@ -1,0 +1,9 @@
+##
+# API upstream
+##
+upstream api_prod_upstream {
+	<% @nodes.each do |host| %>
+		server <%= host %>:8080; 
+	<% end %>
+}
+

@@ -1,0 +1,1 @@
+{"resources":{"prod":{"comments":["10.100.213.32","10.194.99.144"],"argo":["10.68.59.221","10.76.230.32"]}},"id":"service","defaults":{"instanceType":"m1.large","ami":"ami-086d9661"},"roles":{"comments":{"max":4,"ports":["prod","prod-service","prod-service-comments"],"min":2},"argo":{"max":4,"ports":["prod","prod-service","prod-service-argo"],"min":2}}}

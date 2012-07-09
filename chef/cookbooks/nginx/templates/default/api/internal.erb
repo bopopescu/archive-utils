@@ -1,0 +1,50 @@
+##
+# Internal api.lockerz.com
+##
+server {
+	listen	8080;
+	server_name api.<%= @envName %>.lockerz.int;
+	server_name api.lockerz.int;
+
+	#ssl on;
+	#ssl_certificate     /etc/nginx/ssl/server.crt;
+	#ssl_certificate_key /etc/nginx/ssl/server.key;
+
+	error_log <%= @fsLogRoot %>/api_internal.error.log;
+	access_log <%= @fsLogRoot %>/api_internal.access.log;
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+
+	# Proxy options
+	proxy_intercept_errors off;
+	proxy_buffering on;
+	proxy_set_header   Host             $host;
+	proxy_set_header   X-Real-IP        $remote_addr;
+	proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+	# Error pages
+	error_page   500 = /500.html;
+	error_page   404 = /400.html;
+
+	location /500.html { root /var/www/outage/errors; }
+	location /400.html { root /var/www/outage/errors; }
+
+	<% ["argo","ArgoService"].each do |serviceName| %>
+	location /<%= serviceName %> { proxy_pass http://api_<%= serviceName %>_<%= @envName %>_upstream; }
+	<% end %>
+
+	<% ["TargoService","AuthenticationService","DecalzService","FollowService",
+		"SearchService","ClickThroughService","DirectMessagingService"].each do |serviceName| %>
+		<% if(@node[serviceName] != nil && 
+			@node[serviceName]["routing"] != nil && 
+			@node[serviceName]["routing"]["enabled"] == true) %>
+			location <%= @node[serviceName]["routing"]["endpoint"] %> { proxy_pass http://api_<%= serviceName %>_<%= @envName %>_upstream; }
+		<% end %>
+	<% end %>
+}
+

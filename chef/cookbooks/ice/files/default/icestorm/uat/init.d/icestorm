@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# source bashrc  just incase
+[ -f "/etc/bashrc" ] && . /etc/bashrc
+
+# change to the / directory just incase
+cd /
+
+export APPUSER="ice"
+export APPNAME="icestorm"
+export APP_UID=`id -u $APPUSER`
+export APPHOME="/var/lib/icebox/db"
+export DATE=`date +%Y%M%d_%H%M%S`
+export CURRENT_SCRIPT="/etc/init.d/icestorm"
+
+# Specific to this app
+export LOG_DIRECTORY="/mnt/logs/${APPNAME}"
+export PID_DIR="/var/run/icestorm"
+export PID_FILE="${PID_DIR}/${APPNAME}.pid"
+export APP_CONF="/etc/icestorm/icebox.config"
+
+[ ! -f "$APP_CONF" ] && echo "Cannot find ${APP_CONF}, unable to continue!"
+[ ! -f "$APP_CONF" ] && exit 1
+
+start()
+{
+        if [ "$UID" == "0" ]; then
+                echo -n "Starting $APPNAME ..."
+                /bin/su -l $APPUSER -c "/usr/bin/icebox --daemon --Ice.Config=$APP_CONF --pidfile $PID_FILE"
+		echo "done"
+        fi
+
+}
+
+stop()
+{
+
+        echo -n "Stopping $APPNAME ..."
+        sleep 5;
+
+        [ ! -f "$PID_FILE" ] && echo "PID FILE $PID_FILE not found so it should not be running.."
+        [ ! -f "$PID_FILE" ] && exit 0
+
+        ps `cat $PID_FILE` > /dev/null
+        procRunning=$?
+
+        if [ $procRunning -ne 0 ]; then
+                echo "Already stopped" && rm -f $PID_FILE
+                exit 0
+        else
+                echo "Stopping `cat $PID_FILE`..."
+                kill -15 `cat $PID_FILE`
+  
+                while [ $procRunning -eq 0 ]; do
+                        sleep 1
+                        echo -n "."
+                        ps `cat $PID_FILE` > /dev/null
+                        procRunning=$?
+                done
+
+                RETVAL=$?
+                [ $RETVAL=0 ] && rm -f $PID_FILE
+        fi
+	echo "done"
+}
+
+status()
+{
+        if [ "$UID" == "$APP_UID" ]; then
+                echo -n "Getting status for $APPNAME on port ${PORT}..."
+                # this is where I'd get status
+        fi
+
+        if [ "$UID" == "0" ]; then
+                su - $APPUSER -c "$CURRENT_SCRIPT status"
+        fi
+
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+                start
+                ;;
+        status)
+                status
+                ;;
+        *)
+                echo $"Usage: $0 {start|stop|restart|status}"
+                RETVAL=1
+esac
+
+
+

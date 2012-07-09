@@ -1,0 +1,89 @@
+$TTL    86400
+@               IN SOA  @       root (
+                                        43              ; serial (d. adams)
+                                        3H              ; refresh
+                                        15M             ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+
+                IN NS           @
+                IN A            127.0.0.1
+                IN AAAA         ::1
+
+auth0.opz	IN A	10.85.150.24
+auth1.opz	IN A	10.98.71.150
+paul0.opz	IN A	10.86.183.188
+
+splunk0.opz	IN A 	10.32.253.81
+
+nagios0.opz	IN A	10.245.39.191
+nagios1.opz	IN A	10.32.83.155
+
+dwmaster.dba	IN A	10.104.59.214
+
+memb.dba	IN A 	10.214.217.171
+
+locattmaster.dba	IN A	10.102.35.223
+
+uat01-rest-01.phoenix	IN A 	10.198.51.208
+prod-rest-01.phoenix	IN A 	10.77.101.161
+prod-rest-02.phoenix	IN A 	10.110.243.151
+
+uat-services-1	IN A	10.122.123.182
+uat-services-2	IN A	10.122.78.152
+
+utilz1.opz	IN A	10.46.161.31
+utilz2.opz	IN A	10.70.17.171
+builder.opz	IN A	10.70.17.171
+
+; Site
+webfe0.site	IN A	10.203.30.167
+webfe9.site	IN A	10.245.131.0
+webfe6.site	IN A	10.82.241.82
+webfe8.site	IN A	10.83.118.203
+webfe5.site	IN A	10.32.51.226
+webfe1.site	IN A	10.32.34.88
+webfe2.site	IN A	10.99.17.170
+webfe4.site	IN A	10.118.249.70
+webfe7.site	IN A	10.32.62.186
+webfe3.site	IN A	10.114.150.245
+
+memc0.site	IN A	10.83.106.27
+memc2.site	IN A	10.83.105.238
+memc1.site	IN A	10.78.189.248
+
+reverseproxy1.site	IN A	10.32.51.23
+reverseproxy3.site	IN A	10.204.55.79
+reverseproxy0.site	IN A	10.82.227.227
+reverseproxy2.site	IN A	10.32.77.77
+
+
+rh6repo.opz	IN A	10.122.225.63
+
+
+; Argo
+argo1.phoenix	IN A	10.32.57.117
+argo0.phoenix	IN A	10.204.111.77
+
+
+; DBA stuff
+search.masters.dba	IN A	10.207.74.146
+
+;srijith
+srijith0.opz	IN A	10.46.154.115
+srijith1.opz	IN A	10.46.165.121
+
+uat-services-1.opz	IN A	10.122.123.182
+uat-services-2.opz	IN A	10.122.78.152
+
+services-hallway-2.opz	IN A	10.210.49.172 
+
+webfe0.pegasus	IN A	10.77.67.229
+
+mongo0.opz	IN A	10.102.45.189 
+mongo1.opz	IN A	10.102.7.182
+mongo2.opz	IN A	10.218.41.53
+
+; ptzplace
+rp0.ptzplace	IN A 	10.116.215.130
+

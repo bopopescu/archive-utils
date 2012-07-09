@@ -1,0 +1,116 @@
+##
+# Vhost for shop.lockerz.com
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+server {
+	listen 80;
+
+	server_name shop.<%= @serverName %>;
+
+	error_log <%= @fsLogRoot %>shop.lockerz.error.log	info;
+	access_log <%= @fsLogRoot %>shop.lockerz.access.log;
+
+#	limit_req   zone=LockerzCom	burst=20	nodelay;
+#	limit_conn	LockerzComLimitConn	5;
+
+	<% if(@staticFailover == true) ## Gone fishing page %>
+	location ~ \.png$ { root /var/www/lockerz.com/outage/; }
+	location = /index.html { root /var/www/lockerz.com/outage/; }
+	location ~ ^/ { rewrite ^/(.*)$ /index.html last; }
+
+	<% else ## "normal" site operation %>
+
+	<% if(@shop15routing == true) ## redirect traffic to site/shop/ %>
+	location / {
+		rewrite ^/(.*)$		http://<%= @serverName %>/shop/$1	permanent;
+	}
+
+	<% else ## route traffic directly to the commerce webfes %>
+        # Proxy options
+        proxy_set_header        Host                    $host;
+        proxy_set_header        X-Real-IP               $remote_addr;
+        proxy_set_header        X-Forwarded-Proto	"http";
+        proxy_set_header        X-Forwarded-For		$proxy_add_x_forwarded_for;
+        proxy_buffering         off;
+        proxy_intercept_errors  off;
+
+        # Error pages
+        error_page   500 = /500.html;
+        error_page   404 = /400.html;
+
+        location /500.html { root /var/www/lockerz.com/errors/; }
+        location /400.html { root /var/www/lockerz.com/errors/; }
+
+		location / {
+        	proxy_pass http://commerce_<%= @envName %>_upstream;
+		}
+
+		<% if(@envName == "prod") %>
+		<% ["/admin","/index.php/admin","/staging"].each do |endPoint| %>
+        location <%= endPoint %> { deny    all; }
+		<% end %>
+		<% end ## disable admin entry points in production %>
+
+	<% end # shop15routing %>
+	<% end ## staticFailover %>
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+}
+
+# https://shop.lockerz.com/* is passed through to the backend servers without further molestation
+server {
+	listen 443;
+
+	ssl on;
+	ssl_certificate     /etc/nginx/ssl/lockerz.crt;
+	ssl_certificate_key /etc/nginx/ssl/lockerz.key;
+
+	server_name shop.<%= @serverName %>;
+
+	error_log <%= @fsLogRoot %>shop.lockerz-ssl.error.log	info;
+	access_log <%= @fsLogRoot %>shop.lockerz-ssl.access.log;
+
+	#limit_req   zone=LockerzCom	burst=20	nodelay;
+	#limit_conn	LockerzComLimitConn	5;
+
+	# Proxy options
+	proxy_set_header        Host				$host;
+	proxy_set_header        X-Real-IP			$remote_addr;
+	proxy_set_header        X-Forwarded-Proto	"https";
+	proxy_set_header        X-Forwarded-For		$proxy_add_x_forwarded_for;
+	proxy_buffering         off;
+	proxy_intercept_errors  off;
+
+	# Error pages
+	error_page   500 = /500.html;
+	error_page   404 = /400.html;
+
+	location /500.html { root /var/www/lockerz.com/errors/; }
+	location /400.html { root /var/www/lockerz.com/errors/; }
+
+	<% if(@staticFailover == true) ## Gone fishing page %>
+		location ~ \.gif$ { root /var/www/lockerz.com/outage/; }
+		location = /index.html { root /var/www/lockerz.com/outage/; }
+		location ~ ^/ { rewrite ^/(.*)$ /index.html last; }
+
+	<% else %>
+
+		location / {
+			proxy_pass http://commerce_<%= @envName %>_upstream;
+		}
+
+	<% end %>
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+}

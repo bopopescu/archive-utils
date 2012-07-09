@@ -1,0 +1,4 @@
+#!/bin/bash
+exec 2>&1
+exec /usr/bin/env chef-client -i 1800 -s 20 -L /var/log/chef/client.log
+

@@ -1,0 +1,4 @@
+        locator    pod1       pod2       pod3       pod4       pod5       pod6         bits
+MASTER  us-east-1a us-east-1d us-east-1d us-east-1a us-east-1a us-east-1d us-east-1d   us-east-1d
+SLAVE   us-east-1d us-east-1d us-east-1d us-east-1a us-east-1d us-east-1a us-east-1d   us-east-1d
+SAVOR   us-east-1a us-east-1d us-east-1a us-east-1a us-east-1a us-east-1a us-east-1a   down

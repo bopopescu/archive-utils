@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="locatorDAO" class="com.lockerz.phoenix.locator.dao.impl.LocatorDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="slaveDataSource" />
+		<property name="masterDataSource" ref="masterDataSource"/>
+	</bean>
+
+	<bean id="tokenDAO" class="com.lockerz.phoenix.locator.dao.impl.TokenDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="slaveDataSource" />
+		<property name="masterDataSource" ref="masterDataSource"/>
+	</bean>
+	
+	<bean id="masterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="master"/>
+	</bean>
+	
+	<bean id="slaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="slave"/>
+	</bean>
+	
+</beans>

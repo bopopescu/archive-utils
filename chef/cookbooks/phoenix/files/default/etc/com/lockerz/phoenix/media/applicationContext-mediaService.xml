@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">       
+           
+        <import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+        <import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml"/>
+        <import resource="classpath:com/lockerz/phoenix/media/applicationContext-mediaService-dao.xml"/>
+        
+        <bean id="mediaService" class="com.lockerz.phoenix.media.MediaService">
+            <property name="mediaServiceServant" ref="mediaServiceServant"/>
+        </bean>
+        
+        <bean id="mediaServiceServant" class="com.lockerz.phoenix.media.MediaServiceI">
+            <property name="mediaDAO" ref="mediaDAO"/>
+            <property name="mediaStorage" ref="s3MediaStorage"/>
+        </bean>
+        
+        <bean id="s3MediaStorage" class="com.lockerz.phoenix.media.S3MediaStorage">
+            <constructor-arg index="0" value="AKIAIO6ZJBIIOKEYEGVQ"/>  <!-- S3 access key -->
+            <constructor-arg index="1" value="bbVJ0Cu4MCajNsuTY65ehxLRLJ3AV4XjHHBcV4BP"/>  <!-- S3 secret key -->
+            <constructor-arg index="2" value="lockerz-media-prod"/>  <!-- S3 bucket -->
+        </bean>
+</beans>

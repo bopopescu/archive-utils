@@ -1,0 +1,13 @@
+<% @nodes.each do |node| %>
+Spread_Segment <%= node.ipaddress %>:4803 {
+  N<%= node.ipaddress.to_s.gsub( /\./,'' ) %>    <%= node.ipaddress %> {
+	<%= node.ipaddress %>
+    127.0.0.1
+  }
+}
+<% end %>
+EventLogFile = /dev/null
+EventTimeStamp = "[%a %d %b %Y %H:%M:%S]"
+DaemonUser = spread
+DaemonGroup = verticadba
+DebugFlags = { EXIT }

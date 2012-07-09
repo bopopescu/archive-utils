@@ -1,0 +1,3 @@
+
+# 03/11 for pod6 hydra
+CHANGE MASTER to MASTER_HOST='10.218.25.235',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000007',MASTER_LOG_POS=462226;

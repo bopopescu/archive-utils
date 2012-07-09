@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+    <import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+    <import resource="classpath:com/lockerz/phoenix/giftcard/applicationContext-giftcardService-dao.xml" />
+    
+    <bean id="ptzHandler" class="com.lockerz.phoenix.giftcard.PtzHandlerImpl"/>
+    
+	<bean id="giftcardServiceBean" class="com.lockerz.phoenix.giftcard.GiftCardServiceBean">
+		<constructor-arg ref="giftcardDAO" />
+		<property name="ptzHandler" ref="ptzHandler" />
+	</bean>
+	
+    <bean id="giftcardServiceServant" class="com.lockerz.phoenix.giftcard.GiftCardServiceI">
+        <property name="giftCardServiceBean" ref="giftcardServiceBean" />
+    </bean>
+	
+    <bean id="giftcardService" class="com.lockerz.phoenix.giftcard.GiftCardService">
+        <property name="giftCardServiceServant" ref="giftcardServiceServant" />
+    </bean>
+</beans>

@@ -1,0 +1,4 @@
+search <%= @domain %>
+<% @nameservers.each do |fqdn,ns| %>
+nameserver <%= ns[:ipaddress] %> ## <%= fqdn %>
+<% end %>

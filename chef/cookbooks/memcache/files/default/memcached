@@ -1,0 +1,70 @@
+#! /bin/sh
+#
+# chkconfig: - 55 45
+# description:	The memcached daemon is a network memory cache service.
+# processname: memcached
+# config: /etc/sysconfig/memcached
+# pidfile: /var/run/memcached/memcached.pid
+
+# Standard LSB functions
+#. /lib/lsb/init-functions
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check that networking is up.
+. /etc/sysconfig/network
+
+if [ "$NETWORKING" = "no" ]
+then
+	exit 0
+fi
+
+RETVAL=0
+prog="memcached"
+
+start () {
+	for script in `cd /etc/init.d/ ; ls memcached_*`
+	do
+		echo "Starting: ${script}"
+		service $script start
+	done
+}
+
+stop () {
+	for script in `cd /etc/init.d/ ; ls memcached_*`
+	do
+		echo "Stopping: ${script}"
+		service $script stop 
+	done
+}
+
+restart () {
+        stop
+        start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status memcached
+	;;
+  restart|reload|force-reload)
+	restart
+	;;
+  condrestart)
+	[ -f /var/lock/subsys/memcached ] && restart || :
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+	exit 1
+esac
+
+exit $?

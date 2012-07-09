@@ -1,0 +1,13 @@
+INSERT INTO `network` (`id`) VALUES ('<%= @envName %>');
+
+<% @adminServices.each do |serviceName,nodes| %><% nodeId
+INSERT INTO `service_class` 
+	(`name`, `network_id`, `ice_identity`, `scalr_farm`) 
+VALUES 
+	('<%= serviceName %>','<%= @envName %>','<%= "%s%sServiceAdmin" % [serviceName[0].upcase,serviceName[1,serviceName.size]] %>','<%= serviceName %>-java');
+
+INSERT INTO `node` (`ip`, `hostname`, `service_class_id`) values ('','<%= serviceName %>0.phoenix.<%= @envName %>.lockerz.int',1);
+INSERT INTO `node` (`ip`, `hostname`, `service_class_id`) values ('','<%= serviceName %>1.phoenix.<%= @envName %>.lockerz.int',1);
+
+<% end %>
+

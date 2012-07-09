@@ -1,0 +1,9 @@
+##
+# API-internal upstream
+##
+upstream api_prod_internal_upstream {
+	<% @nodes.each do |host| %>
+		server <%= host %>:8080; 
+	<% end %>
+}
+

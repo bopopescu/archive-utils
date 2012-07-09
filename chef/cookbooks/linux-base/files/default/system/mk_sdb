@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sfdisk /dev/sdb < /root/bin/sdb.partition
+
+sleep 1
+
+mkfs.xfs /dev/sdb1
+

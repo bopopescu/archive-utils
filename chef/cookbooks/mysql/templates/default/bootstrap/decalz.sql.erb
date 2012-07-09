@@ -1,0 +1,282 @@
+	drop database if exists decalz;
+	create database decalz;
+	
+	use decalz;
+	
+	create table decal_entity_type (
+		id smallint(3) unsigned NOT NULL AUTO_INCREMENT,
+		type_name  varchar(30) NOT NULL,
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table decal_entity_status (
+		id tinyint(2) NOT NULL,
+		description varchar(20) NOT NULL,
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table decalz_user_profile (
+		uid bigint unsigned NOT NULL,
+		firstname varchar(50) NOT NULL,
+		lastname varchar(50) NOT NULL,
+		profile_image_url varchar(255),
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (uid)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table category (
+		id tinyint(2) unsigned NOT NULL AUTO_INCREMENT,
+		name varchar(50) NOT NULL,
+		description varchar(100),
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table decal_entity (
+		id bigint unsigned NOT NULL AUTO_INCREMENT,
+		decal_entity_type_id  smallint(3) unsigned NOT NULL,
+		title  varchar(110) NOT NULL,
+		decal_image_url  varchar(2083) NOT NULL,
+
+		curated_date timestamp NOT NULL DEFAULT 0,
+		curator_uid bigint unsigned,
+		curator_full_name varchar(101) NOT NULL, 
+		curated_from_domain varchar(2083) NOT NULL,
+		curated_from_page_url varchar(2083) NOT NULL,
+		curated_from_pagetitle varchar(255),
+		curated_from_pagedescription varchar(1000),
+		curated_from_image_url varchar(2083) NOT NULL,
+		original_decal_image_height smallint(5) NOT NULL,
+		original_decal_image_width smallint(5) NOT NULL,
+		is_reported boolean NOT NULL default 0,
+		repost_count int unsigned NOT NULL default 0,	
+		view_count int unsigned NOT NULL default 0,
+		decal_entity_status_id tinyint(2) NOT NULL default 1,
+		category_id tinyint(2) unsigned,
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		last_comment_id bigint unsigned,
+		client_metadata varchar(300),
+		CONSTRAINT FK_decal_entity_status_id FOREIGN KEY (decal_entity_status_id) REFERENCES decal_entity_status (id),
+		CONSTRAINT FK_decal_entity_type_id FOREIGN KEY (decal_entity_type_id) REFERENCES decal_entity_type (id),
+		CONSTRAINT FK_decal_entity_category_id FOREIGN KEY (category_id) REFERENCES category (id),
+		CONSTRAINT FK_decal_entity_curator_uid FOREIGN KEY (curator_uid) REFERENCES decalz_user_profile (uid),
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table status (
+		id tinyint(2) NOT NULL,
+		description varchar(20) NOT NULL,
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table keyword (
+		id bigint unsigned NOT NULL AUTO_INCREMENT,
+		keyword varchar(100) NOT NULL,
+		created_date datetime NOT NULL,
+		updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		CONSTRAINT UNIQUE INDEX UQ_keyword (keyword),
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+	
+	create table decal_entity_keyword_mapping (
+		id bigint unsigned NOT NULL AUTO_INCREMENT,
+		decal_entity_id bigint unsigned 	NOT NULL,
+		keyword_id bigint unsigned NOT NULL,
+		status_id tinyint(2) NOT NULL DEFAULT 1,
+		CONSTRAINT FK_dekm_keyword_id FOREIGN KEY (keyword_id) REFERENCES keyword (id),
+		CONSTRAINT FK_dekm_decal_entity_id FOREIGN KEY (decal_entity_id) REFERENCES decal_entity (id),
+		CONSTRAINT FK_dekm_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+		PRIMARY KEY (id)
+	) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table le_decal_entity_options (
+
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	decal_entity_id bigint unsigned NOT NULL,
+	limit_type tinyint(2) unsigned NOT NULL,
+	grab_ptz smallint(6) NOT NULL,
+	count_remaining smallint(8),
+	sell_by_date timestamp DEFAULT 0,
+	brand_name varchar(100) NOT NULL,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_le_options_decal_entity_id FOREIGN KEY (decal_entity_id) REFERENCES decal_entity (id),		
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table collection (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	owner_uid bigint unsigned NOT NULL,
+	title  varchar(110) NOT NULL,
+	description  varchar(500),
+	status_id tinyint(2)  NOT NULL default 1,
+	last_comment_id bigint unsigned ,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_collection_status_id FOREIGN KEY (status_id) REFERENCES status (id),	
+	CONSTRAINT FK_collection_owner_uid FOREIGN KEY (owner_uid) REFERENCES decalz_user_profile (uid),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table decal (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	decal_entity_id bigint unsigned NOT NULL,
+	collection_id bigint unsigned  NOT NULL,
+	owner_uid bigint unsigned NOT NULL,
+	parent_decal_id bigint unsigned,
+	reposted_date timestamp NOT NULL DEFAULT 0,
+	status_id tinyint(2) NOT NULL default 1,
+	repost_count int unsigned NOT NULL default 0,
+	view_count int unsigned NOT NULL default 0,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	last_comment_id bigint unsigned,
+	ptz_earned bigint unsigned default 0,
+	CONSTRAINT FK_decal_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+	CONSTRAINT FK_decal_decal_entity_id FOREIGN KEY (decal_entity_id) REFERENCES decal_entity (id),	
+	CONSTRAINT FK_decal_owner_uid FOREIGN KEY (owner_uid) REFERENCES decalz_user_profile (uid),
+	CONSTRAINT FK_decal_collection_id FOREIGN KEY (collection_id) REFERENCES collection (id),
+	CONSTRAINT FK_decal_parent_decal_id FOREIGN KEY (parent_decal_id) REFERENCES decal (id),	
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table decal_comment (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	decal_id bigint unsigned NOT NULL,
+	commenter_uid bigint unsigned NOT NULL,
+	status_id tinyint(2) NOT NULL DEFAULT 1,
+	comment_text varchar(500) NOT NULL,
+	comment_ts timestamp NOT NULL DEFAULT 0,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_decal_comment_commenter_uid FOREIGN KEY (commenter_uid) REFERENCES decalz_user_profile (uid),		
+	CONSTRAINT FK_decal_comment_decal_id	FOREIGN KEY (decal_id) REFERENCES decal(id),
+	CONSTRAINT FK_decal_comment_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+
+ALTER TABLE decal ADD CONSTRAINT FK_decal_last_comment_id	
+	FOREIGN KEY (last_comment_id) REFERENCES decal_comment(id);
+	
+ALTER TABLE collection ADD CONSTRAINT  FK_collection_last_comment_id 
+	FOREIGN KEY (last_comment_id) REFERENCES decal_comment(id);
+
+create table decal_love (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	viewer_uid bigint unsigned NOT NULL,
+	decal_id bigint unsigned NOT NULL,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT UNIQUE INDEX UK_decal_love (viewer_uid,decal_id), 
+	CONSTRAINT FK_decal_love_viewer_uid FOREIGN KEY (viewer_uid) REFERENCES decalz_user_profile (uid),		
+	CONSTRAINT FK_decal_love_decal_id	FOREIGN KEY (decal_id) REFERENCES decal(id),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+
+create table decal_topfive (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	owner_uid bigint unsigned NOT NULL,
+	decal_id bigint unsigned NOT NULL,
+	status_id tinyint(1) NOT NULL DEFAULT 1,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_decal_topfive_owner_uid FOREIGN KEY (owner_uid) REFERENCES decalz_user_profile (uid),		
+	CONSTRAINT FK_decal_topfive_decal_id	FOREIGN KEY (decal_id) REFERENCES decal(id),
+	CONSTRAINT FK_decal_topfive_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table collection_topthree (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	owner_uid bigint unsigned NOT NULL,
+	collection_id bigint unsigned NOT NULL,
+	status_id tinyint(1) NOT NULL DEFAULT 1,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_collection_topthree_owner_uid FOREIGN KEY (owner_uid) REFERENCES decalz_user_profile (uid),		
+	CONSTRAINT FK_collection_topthree_collection_id	FOREIGN KEY (collection_id) REFERENCES collection(id),
+	CONSTRAINT FK_collection_topthree_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+create table collection_follow (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	follower_uid bigint unsigned NOT NULL,
+	collection_id bigint unsigned NOT NULL,
+	status_id tinyint(1) NOT NULL DEFAULT 1,
+	created_date datetime NOT NULL,
+	updated_ts timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT FK_collection_follow_follower_uid FOREIGN KEY (follower_uid) REFERENCES decalz_user_profile (uid),		
+	CONSTRAINT FK_collection_follow_collection_id	FOREIGN KEY (collection_id) REFERENCES collection(id),
+	CONSTRAINT FK_collection_follow_status_id FOREIGN KEY (status_id) REFERENCES status (id),
+	PRIMARY KEY (id)
+) ENGINE= InnoDB DEFAULT CHARSET= utf8;
+
+insert into decalz_user_profile (uid, firstname, lastname, profile_image_url, created_date) values(2,"Peter", "Rensburg", null, now());
+insert into decalz_user_profile (uid, firstname, lastname, profile_image_url, created_date) values(3,"Archit", "Chakravarti", null, now());
+insert into decalz_user_profile (uid, firstname, lastname, profile_image_url, created_date) values(4,"David", "Young", null, now());
+insert into decalz_user_profile (uid, firstname, lastname, profile_image_url, created_date) values(5,"Srijith", "Sreedharan", null, now());
+insert into decalz_user_profile (uid, firstname, lastname, profile_image_url, created_date) values(6,"Ben", "Scannell", null, now());
+
+insert into category(id, name, description, created_date)  values (1, "DIY", "DIY", now());
+insert into category(id, name, description, created_date)  values (2, "Entertainment", "Entertainment", now());
+insert into category(id, name, description, created_date)  values (3, "Fashion", "Fashion", now());
+insert into category(id, name, description, created_date)  values (4, "Food & Drink", "Food & Drink", now());
+insert into category(id, name, description, created_date)  values (5, "Funny", "Funny", now());
+insert into category(id, name, description, created_date)  values (6, "Games", "Games", now());
+insert into category(id, name, description, created_date)  values (7, "Home", "Home", now());
+insert into category(id, name, description, created_date)  values (8, "Love & Dating", "Love & Dating", now());
+insert into category(id, name, description, created_date)  values (9, "Music", "Music", now());
+insert into category(id, name, description, created_date)  values (10, "People", "People", now());
+insert into category(id, name, description, created_date)  values (11, "Reads", "Reads", now());
+insert into category(id, name, description, created_date)  values (12, "R&R", "R&R", now());
+insert into category(id, name, description, created_date)  values (13, "Sports", "Sports", now());
+insert into category(id, name, description, created_date)  values (14, "Tech & Gadgets", "Tech & Gadgets", now());
+insert into category(id, name, description, created_date)  values (15, "Travel", "Travel", now());
+insert into category(id, name, description, created_date)  values (16, "Cuteness", "Cuteness", now());
+insert into category(id, name, description, created_date)  values (17, "Pets & Animals", "Pets & Animals", now());
+insert into category(id, name, description, created_date)  values (18, "Nature", "Nature", now());
+insert into category(id, name, description, created_date)  values (19, "Places", "Places", now()); 
+insert into category(id, name, description, created_date)  values (20, "Other", "Other", now());
+
+update category set name="DIY", description="DIY" where id=1;
+update category set name="Entertainment", description="Entertainment" where id=2;
+update category set name="Fashion", description="Fashion" where id=3;
+update category set name="Food & Drink", description="Food & Drink" where id=4;
+update category set name="Funny", description="Funny" where id=5;
+update category set name="Games", description="Games" where id=6;
+update category set name="Home", description="Home" where id=7;
+update category set name="Love & Dating", description="Love & Dating" where id=8;
+update category set name="Music", description="Music" where id=9;
+update category set name="People", description="People" where id=10;
+update category set name="Reads", description="Reads" where id=11;
+update category set name="R&R", description="R&R" where id=12;
+update category set name="Sports", description="Sports" where id=13;
+update category set name="Tech & Gadgets", description="Tech & Gadgets" where id=14;
+update category set name="Travel", description="Travel" where id=15;
+
+insert into decal_entity_type(id,type_name, created_date)  values (1, "Image", now());
+insert into decal_entity_type(id,type_name, created_date)  values (2, "LimitedEdition", now());
+insert into decal_entity_type(id,type_name, created_date)  values (3, "Play", now());
+insert into decal_entity_type(id,type_name, created_date)  values (4, "Shop", now());
+insert into decal_entity_type(id,type_name, created_date)  values (5, "Photo", now());
+
+insert into decal_entity_status(id,description,created_date) values(0,'DELETED',now());
+insert into decal_entity_status(id,description,created_date) values(1,'ACTIVE',now());
+insert into decal_entity_status(id,description,created_date) values(2,'INACTIVE',now());
+insert into decal_entity_status(id,description,created_date) values(3,'ENERGIZED',now());
+
+insert into status(id,description,created_date) values(0,'DELETED',now());
+insert into status(id,description,created_date) values(1,'ACTIVE',now());
+

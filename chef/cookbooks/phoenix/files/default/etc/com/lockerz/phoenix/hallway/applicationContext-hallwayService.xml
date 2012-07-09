@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+   	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import resource="classpath:com/lockerz/phoenix/hallway/applicationContext-newsFeedListeners.xml" />
+	<import resource="classpath:com/lockerz/phoenix/hallway/applicationContext-hallwayService-dao.xml" />
+
+	<bean id="hallwayService" class="com.lockerz.phoenix.hallway.HallwayService">
+		<property name="hallwayServiceServant" ref="hallwayServiceServant" />
+	</bean>
+
+	<bean id="hallwayServiceServant" class="com.lockerz.phoenix.hallway.HallwayServiceI">
+		<property name="hallwayDAO" ref="hallwayDAO" />
+		<property name="newsFeedMasterDAO" ref="masterNewsFeedDAO" />
+		<property name="newsFeedSlaveDAO" ref="slaveNewsFeedDAO" />
+	</bean>
+
+</beans>

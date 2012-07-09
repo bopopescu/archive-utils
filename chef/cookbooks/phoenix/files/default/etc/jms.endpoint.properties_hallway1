@@ -1,0 +1,24 @@
+# Connection and failover properties for JMS message producer
+
+# Queue connection credentials
+jms.endpoint.username=prodlockerzjms
+jms.endpoint.password=prodlockerzjms
+
+# IMPORTANT: FOR CLUSTERED CONFIGURATION use comma-separated urls (ex:  '10.218.35.175:7676, 10.102.35.253:7676' )
+
+# UAT broker cluster url's 
+#jms.endpoint.host.url=10.218.35.175:7676,10.102.35.253:7676,10.218.57.207:7676
+
+# DEV broker cluster url's 
+#jms.endpoint.host.url=localhost:7676
+
+#PROD broker cluster url's
+jms.endpoint.host.url=10.245.191.208:7676
+userTopic=userTopic1
+
+# for hallway-1
+friendTopic=friendTopic1
+playTopic=playTopic1
+photoTopic=photoTopic1
+decalTopic=decalTopic1
+commentsServiceTopic=commentsServiceTopic2

@@ -1,0 +1,9 @@
+##
+# LDAP config.
+uri <%= @ldapServers.map{|fqdn,srv| "ldaps://%s:636" % srv[:ipaddress] }.join( " " ) %>
+base <%= @baseDN %>
+rootbinddn <%= @rootBindDN %>
+ldap_version 3
+pam_password md5
+tls_checkpeer no
+nss_initgroups_ignoreusers backup,bin,couchdb,daemon,games,gnats,haldaemon,irc,landscape,libuuid,list,lp,mail,man,messagebus,mongodb,mysql,news,postfix,proxy,root,snmp,sshd,statd,stompserver,stunnel4,sync,sys,syslog,uucp,www-data

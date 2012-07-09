@@ -1,0 +1,34 @@
+##
+# add2any.lockerz.com
+#
+server {
+	listen	80;
+	server_name <%= @envName == "prod" ? "add2any.lockerz.com" : "add2any.%s.lockerz.us" % @envName %>;
+
+    error_log <%= @fsLogRoot %>/add2any.error.log;
+    access_log <%= @fsLogRoot %>/add2any.access.log;
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+
+	# Proxy options
+	proxy_buffering		on;
+	proxy_set_header	Host             $host;
+	proxy_set_header	X-Real-IP        $remote_addr;
+	proxy_set_header	X-Forwarded-For  $proxy_add_x_forwarded_for;
+	proxy_intercept_errors	off;
+
+	# Error pages
+	error_page   500 = /500.html;
+	error_page   404 = /400.html;
+
+	location /500.html { root /var/www/outage/errors; }
+	location /400.html { root /var/www/outage/errors; }
+
+	location / { proxy_pass http://add2any_<%= @envName %>_upstream; }
+}
+

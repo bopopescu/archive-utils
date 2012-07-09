@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dailies/applicationContext-dailiesService-dao.xml" />
+
+	<bean id="dailiesService" class="com.lockerz.phoenix.dailies.DailiesService">
+		<property name="dailiesServiceServant" ref="dailiesServiceServant" />
+		<property name="dailiesServiceAdminServant" ref="dailiesServiceAdminServant" />
+	</bean>
+
+	<bean id="dailiesServiceServant" class="com.lockerz.phoenix.dailies.DailiesServiceI">
+		<property name="dailiesDAO" ref="dailiesDAO" />
+	</bean>
+
+	<bean id="dailiesServiceAdminServant" class="com.lockerz.phoenix.dailies.DailiesServiceAdminI">
+		<constructor-arg>
+			<ref bean="dailiesServiceServant"/>
+		</constructor-arg>
+	</bean>
+
+</beans>

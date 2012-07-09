@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+        <import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+        <import resource="classpath:com/lockerz/phoenix/decal/applicationContext-decalService-dao.xml" />
+        
+        <bean id="decalService" class="com.lockerz.phoenix.decal.DecalService">
+                <property name="decalServiceServant" ref="decalServiceServant"/>
+        </bean>
+        
+	<bean id="decalServiceServant" class="com.lockerz.phoenix.decal.DecalServiceI">
+		<property name="decalDAO" ref="decalDAO"/>
+		<property name="decalBundleDAO" ref="decalBundleDAO" />
+	</bean>
+        
+</beans>

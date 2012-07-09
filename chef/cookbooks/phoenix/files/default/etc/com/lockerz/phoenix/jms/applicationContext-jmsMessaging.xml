@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging-dao.xml" />
+	
+   	<bean name="omqConnectionFactory" class="com.lockerz.phoenix.jms.factory.OMQConnectionFactoryFactoryBean">
+		<property name="addressList" value="${jms.endpoint.host.url}" />
+		<property name="username" value="${jms.endpoint.username}" />
+        <property name="password" value="${jms.endpoint.password}" />
+	</bean>
+	
+	<bean id="lockerzMessageProducer" class="com.lockerz.phoenix.jms.producer.LockerzMessageProducer" >
+		<property name="newsMessageProducer" ref="newsMessageProducer" />
+		<property name="searchMessageProducer" ref="searchMessageProducer" />
+		<property name="userEventsMessageProducer" ref="userEventsMessageProducer" />
+	</bean>
+	
+	<!-- message consumer JMS-template injection -->
+
+	<bean id="messageConsumer" class="com.lockerz.phoenix.jms.consumer.JmsMessageReceiver">
+		<property name="searchJmsTemplate" ref="searchJmsTemplate" />
+	</bean>
+
+	<!-- message producer configuration -->
+
+	<bean id="newsMessageProducer" class="com.lockerz.phoenix.jms.producer.NewsMessageProducer">
+		<property name="decalJmsTemplate" ref="decalJmsTemplate" />
+		<property name="friendJmsTemplate" ref="friendJmsTemplate" />
+		<property name="playJmsTemplate" ref="playJmsTemplate" />
+		<property name="photoJmsTemplate" ref="photoJmsTemplate" />
+		<property name="commentsServiceJmsTemplate" ref="commentsServiceJmsTemplate" />
+	</bean>	
+	
+	<!-- search queue configuration -->
+
+	<bean id="searchJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="searchQueue" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+	
+	<bean id="searchQueue" class="com.sun.messaging.Queue">
+	     <constructor-arg type="java.lang.String" value="searchQueue"/>
+	</bean>
+	
+	<bean id="searchMessageProducer" class="com.lockerz.phoenix.jms.producer.SearchMessageProducer">
+		<property name="searchJmsTemplate" ref="searchJmsTemplate" />
+	</bean>
+	
+	<!-- friend topic configuration -->
+	
+	<bean id="friendJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="friendTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="friendTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${friendTopic}"/>
+	</bean>
+	
+	<!-- photo topic configuration -->
+	
+	<bean id="photoJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="photoTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="photoTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${photoTopic}"/>
+	</bean>
+	
+	<!-- play topic configuration -->
+	
+	<bean id="playJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="playTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="playTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${playTopic}"/>
+	</bean>
+	
+	<!-- comments service topic configuration -->
+	
+	<bean id="commentsServiceJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="commentsServiceTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="commentsServiceTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${commentsServiceTopic}"/>
+	</bean>
+
+	<!-- decal topic configuration -->
+	
+	<bean id="decalJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="decalTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="decalTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${decalTopic}"/>
+	</bean>
+
+	<!--  userEventsMessageProducer  -->
+	<bean id="userEventsMessageProducer" class="com.lockerz.phoenix.jms.producer.UserEventsMessageProducer">
+		<property name="userJmsTemplate" ref="userJmsTemplate" />
+	</bean>
+	<!-- user topic configuration -->
+	
+	<bean id="userJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="omqConnectionFactory" />
+		<property name="defaultDestination" ref="userTopic" />
+		<property name="deliveryPersistent" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="sessionTransacted" value="true" />
+		<property name="pubSubDomain" value="true" />
+	</bean>
+	
+	<bean id="userTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${userTopic}"/>
+	</bean>
+	
+</beans>

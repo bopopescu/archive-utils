@@ -1,0 +1,3 @@
+root@<%= node.fqdn %>	root@lockerz.com
+logmanager@<%= node.fqdn %>	root@lockerz.com
+@<%= node.fqdn %>	<%= node.fqdn =~ /commerce[0-9]+.site.prod/ ? "orders"  : "alerts" %>@lockerz.com

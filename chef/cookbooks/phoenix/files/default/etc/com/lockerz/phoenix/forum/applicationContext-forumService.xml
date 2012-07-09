@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import
+		resource="classpath:com/lockerz/phoenix/forum/applicationContext-forumService-dao.xml" />
+
+	<bean id="forumService" class="com.lockerz.phoenix.forum.ForumService">
+		<property name="forumServiceServant" ref="forumServiceServant" />
+	</bean>
+
+	<bean id="forumServiceServant" class="com.lockerz.phoenix.forum.ForumServiceI">
+		<property name="chatForumDAO" ref="chatForumDAO" />
+	</bean>
+
+	<!-- Scheduled Tasks -->
+    <!--  reload cache every 5 minutes, this will not do much more than update comment counts as necessary -->
+	<bean id="reloadCache"
+		class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+		<property name="targetObject" ref="forumServiceServant" />
+		<property name="targetMethod" value="reloadCache" />
+	</bean>
+	<bean id="reloadCacheTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="delay" value="50" />  <!-- delay 50 ms -->
+		<property name="period" value="900000" /> <!-- once each 15 minutes-->
+		<property name="timerTask" ref="reloadCache" />
+	</bean>
+
+	<bean id="timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="reloadCacheTask" />
+			</list>
+		</property>
+	</bean>
+
+</beans>

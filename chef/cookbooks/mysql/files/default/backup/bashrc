@@ -1,0 +1,13 @@
+export EDITOR=`which vim`
+export EC2_HOME=/usr/local/ec2/api
+export EC2_AMITOOL_HOME=/root/ec2/amitools
+
+export EC2_CERT=/home/mysqlbackup/ec2/cert.pem
+export EC2_PRIVATE_KEY=/home/mysqlbackup/ec2/pk.pem
+
+export JAVA_HOME=/usr/
+
+export PATH=$PATH:$EC2_HOME/bin:$EC2_AMITOOL_HOME/bin
+
+set -o vi
+

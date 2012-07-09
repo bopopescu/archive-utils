@@ -1,0 +1,12 @@
+<% if( @envName == "wit" ) %>
+hibernate.connection.url=jdbc:mysql://mysql-master0.dba.<%= @envName %>.lockerz.int:3306/video
+hibernate.connection.username=awsuser
+hibernate.connection.password=8RUwdO4Khk3HIF
+<% else %>
+hibernate.connection.url=jdbc:mysql://mysql-masters0.dba.<%= @envName %>.lockerz.int:3306/video
+hibernate.connection.username=videouser
+hibernate.connection.password=mnghlhgl
+<% end %>
+
+hibernate.memcached.servers=<%= (@envName == "prod" ? "memc0.site.%s.lockerz.int" % @envName : "localhost") %>:11211
+hibernate.memcached.cacheTimeSeconds=86400

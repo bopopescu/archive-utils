@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import
+		resource="classpath:com/lockerz/phoenix/payment/applicationContext-paymentService-dao.xml" />
+
+	<bean id="paymentService" class="com.lockerz.phoenix.payment.PaymentService">
+		<property name="paymentServiceServant" ref="paymentServiceServant" />
+		<property name="paymentServiceAdminServant" ref="paymentServiceAdminServant" />
+	</bean>
+
+	<bean id="paymentServiceServant" class="com.lockerz.phoenix.payment.PaymentServiceI">
+		<property name="paymentDAO" ref="paymentDAO" />
+	    <property name="providers">
+	        <list>
+	            <ref bean="amazonPaymentProvider" />
+	            <ref bean="paypalPaymentProvider" />
+	        </list>
+	    </property>
+	</bean>
+
+	<bean id="paymentServiceAdminServant" class="com.lockerz.phoenix.payment.PaymentServiceAdminI">
+        <property name="paymentService" ref="paymentServiceServant"/>
+	</bean>
+	
+	<bean id="amazonPaymentProvider" class="com.lockerz.phoenix.payment.domain.AmazonPaymentsHandler">
+	    <property name="paymentDAO" ref="paymentDAO" />
+	</bean>
+	
+	<bean id="paypalPaymentProvider" class="com.lockerz.phoenix.payment.domain.PaypalHandler">
+        <property name="paymentDAO" ref="paymentDAO" />
+    </bean>
+    
+</beans>
+

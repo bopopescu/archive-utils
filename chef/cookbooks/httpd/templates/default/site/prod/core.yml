@@ -1,0 +1,45 @@
+--- %YAML:1.0 
+# Memcache - Achieve connection pooling by adding multiple hosts to each cache
+"memcache":
+  "sources":
+    "session_cache":
+      "memcache1": {"host": "10.217.49.183", "port": 11211, "persistent": true, "weight": 1, "timeout": 2, "retry_interval": 1}
+    "settings_cache":
+      "memcache1": {"host": "10.104.41.207", "port": 11212, "persistent": true, "weight": 1, "timeout": 2, "retry_interval": 1}
+    "limits_cache":
+      "memcache1": {"host": "10.113.7.182", "port": 11214, "persistent": true, "weight": 1, "timeout": 1, "retry_interval": 15}
+    "photo_upload_cache":
+      "memcache1": {"host": "10.104.41.207", "port": 11215, "persistent": true, "weight": 1, "timeout": 1, "retry_interval": 15}
+    "fraud_cache":
+      "memcache1": {"host": "10.104.41.207", "port": 11212, "persistent": true, "weight": 1, "timeout": 1, "retry_interval": 15}
+
+# Session - Info required for session logic
+"session":
+    "encryption_key": "74237b2adaa12b9cb28652a2834d529a"
+    "expiration": 1209600
+    "expiration_buffer": 3600
+    "type_name": "type2"
+
+# Plixi stuff
+"plixi":
+    "endpoint": "https://api.plixi.com/api/tpapi.svc/json/"
+    "service_name": "Lockerz"
+    "api_key": "eadabad1-af1a-4470-ab10-9f9e2ead2ebf"
+    "static_feed_uid": 17691566
+
+# Facebook
+"facebook":
+    "app_id": "176821459030181"
+    "app_secret" : "9a508ae69fbe49fc57f39621dec9f998"
+    "api_key" : "2a5e01fcd74d959c90aba994fe47e94d"
+    "fb_permission_scope" : "email,user_birthday,user_location,publish_stream,offline_access"
+    "fb_redirect_uri" : "oauth/signup_facebook"
+    "fb_response_type" : "code"
+
+# Twitter
+"twitter":
+    "consumer_key" : "hzOwgULKH7CMNJcyjqy6A"
+    "consumer_secret" : "d3CnroJBMBMBM7fCVdrfPuRJVOK9kR3qQ4zOQBy8U"
+
+# Zendesk
+'zendesk_token': 'wZ1NNGkHQ9SBORyBMY5TYU0L4PqBB44jVD7Nt5cHiLJJGTrz'

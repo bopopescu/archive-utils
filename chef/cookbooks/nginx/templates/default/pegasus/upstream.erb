@@ -1,0 +1,9 @@
+##
+# Pegasus upstream
+##
+upstream pegasus_prod_upstream {
+	<% @nodes.each do |node| %>
+		server <%= node["ipaddress"] %>:80; 
+	<% end %>
+}
+

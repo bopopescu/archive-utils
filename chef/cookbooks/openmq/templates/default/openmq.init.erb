@@ -1,0 +1,138 @@
+#!/bin/sh
+#
+#
+# chkconfig: - 80 30
+# description: openmq server
+# processname: openmq
+# config: /usr/local/openmq/etc/openmq.cfg
+
+# Source function library
+if [ -f /etc/rc.d/init.d/functions ]; then
+. /etc/rc.d/init.d/functions
+elif [ -f /etc/init.d/functions ]; then
+. /etc/init.d/functions
+elif [ -f /etc/rc.d/functions ]; then
+. /etc/rc.d/functions
+fi
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# change to the / directory just incase
+export OPENMQ_DATA_ROOT="<%= @fsOpenMQPath %>"
+export OPENMQ_APP_ROOT="/usr/local/openmq-4.5/"
+
+export DATE=`date +%Y%m%d_%H%M%S`
+export OPENMQ_OUT="${OPENMQ_DATA_ROOT}/logs/openmq_stdout.${DATE}.log"
+
+export CURRENT_SCRIPT="/etc/init.d/openmq"
+export PID="<%= @fsOpenMQPidPath %>/openmq.pid"
+
+export PASSFILE="${OPENMQ_APP_ROOT}/etc/mq/admin.pw"
+export IMQ_HOME="${OPENMQ_APP_ROOT}/mq"
+export IMQ_VARHOME="${OPENMQ_APP_ROOT}/var/mq"
+
+start()
+{
+		if [ "$USER" == "openmq" ]; then
+			echo -n "Starting OpenMQ Service ..."
+			${IMQ_HOME}/bin/imqbrokerd 1>${OPENMQ_OUT} 2>&1 &
+			# Wait for it to fire up
+			for i in `seq 1 3`; do echo -n ".";sleep 1;done
+			ps auxww | egrep "^openmq.*java.*Broker" | grep -v grep | awk '{print $2}' >${PID}
+			echo "done"
+		fi
+
+		if [ "$USER" == "root" ]; then
+			su - openmq -c "$CURRENT_SCRIPT start"
+		fi
+
+}
+
+stop()
+{
+
+		if [ "$USER" == "openmq" ]; then
+		echo -n "Stopping OpenMQ ..."
+
+		${IMQ_HOME}/bin/imqcmd -passfile $PASSFILE -u admin -f shutdown bkr
+
+		echo -n "[Waiting for graceful shutdown]"
+                for i in `seq 1 10`; do
+                echo -n "."; sleep 1; done
+		kill `cat $PID`; sleep 2;
+		kill -9 `cat $PID` 1>/dev/null 2>&1
+		echo "done!"
+		rm -f $PID
+		fi
+
+		if [ "$USER" == "root" ]; then
+			su - openmq -c "$CURRENT_SCRIPT stop"
+		fi
+
+}
+
+status()
+{
+	echo -n "Status of OpenMQ Servers..."
+	${IMQ_HOME}/bin/imqcmd -passfile $PASSFILE -u admin -f list bkr
+
+	export NUM_PIDFILES=`find /var/run/openmq -maxdepth 1 -name "openmq.pid" | wc -l`
+	if [ "$NUM_PIDFILES" -eq "0" ]; then
+		echo -n "No PID files detected, scanning process tree.."
+		export JAVA_PROCS=`ps auxw | grep -v grep | grep -ic java`
+		if [ "$JAVA_PROCS" -gt "0" ]; then
+			echo "There appears to be some java stuff running but I don't know what it is:"
+			ps auxww | grep -v grep | grep -i java
+			echo -e "\n\nI don't know what to do now so I'll exit.."
+			exit 0
+		else
+			echo "There doesn't appear to be anything running.."
+			exit 0
+		fi
+	fi
+
+	for i in `echo /var/run/openmq/openmq.pid`; do
+	export PID="$i"
+	echo -n "..[ Checking $PID "
+		grep -c java /proc/`cat $PID`/cmdline 1>/dev/null 2>&1
+		RETURN=$?
+		if [ "$RETURN" -eq "0" ]; then
+			echo -n " RUNNING!]";
+		else
+			echo -n " NOT RUNNING(removing stale PID)]";
+			rm -f $PID
+		fi
+	done
+	# insert a blank line here
+	echo ""
+
+}
+
+reload()
+{
+	echo "What are you nuts? This is java, there is no reload function *smack*"
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		start
+		;;
+	reload)
+		reload
+		;;
+	status)
+		status
+		;;
+        *)
+                echo $"Usage: $0 {start|stop|restart|status}"
+                RETVAL=1
+esac
+

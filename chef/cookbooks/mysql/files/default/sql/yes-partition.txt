@@ -1,0 +1,127 @@
+Personalities : [raid0] 
+md1 : active raid0 sdj1[0] sdo1[5] sdn1[4] sdm1[3] sdl1[2] sdk1[1]
+      314568192 blocks 64k chunks
+      
+md0 : active raid0 sdd1[0] sdi1[5] sdh1[4] sdg1[3] sdf1[2] sde1[1]
+      314568192 blocks 64k chunks
+      
+unused devices: <none>
+
+Disk /dev/sda1: 1305 cylinders, 255 heads, 63 sectors/track
+
+Disk /dev/sdb: 112213 cylinders, 255 heads, 63 sectors/track
+
+Disk /dev/sdc: 112213 cylinders, 255 heads, 63 sectors/track
+
+Disk /dev/sdd: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdd1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdd2          0       -       0          0    0  Empty
+/dev/sdd3          0       -       0          0    0  Empty
+/dev/sdd4          0       -       0          0    0  Empty
+
+Disk /dev/sdf: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdf1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdf2          0       -       0          0    0  Empty
+/dev/sdf3          0       -       0          0    0  Empty
+/dev/sdf4          0       -       0          0    0  Empty
+
+Disk /dev/sdj: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdj1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdj2          0       -       0          0    0  Empty
+/dev/sdj3          0       -       0          0    0  Empty
+/dev/sdj4          0       -       0          0    0  Empty
+
+Disk /dev/sdk: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdk1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdk2          0       -       0          0    0  Empty
+/dev/sdk3          0       -       0          0    0  Empty
+/dev/sdk4          0       -       0          0    0  Empty
+
+Disk /dev/sdl: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdl1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdl2          0       -       0          0    0  Empty
+/dev/sdl3          0       -       0          0    0  Empty
+/dev/sdl4          0       -       0          0    0  Empty
+
+Disk /dev/sdn: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdn1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdn2          0       -       0          0    0  Empty
+/dev/sdn3          0       -       0          0    0  Empty
+/dev/sdn4          0       -       0          0    0  Empty
+
+Disk /dev/sdo: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdo1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdo2          0       -       0          0    0  Empty
+/dev/sdo3          0       -       0          0    0  Empty
+/dev/sdo4          0       -       0          0    0  Empty
+
+Disk /dev/md0: 78642048 cylinders, 2 heads, 4 sectors/track
+
+Disk /dev/md1: 78642048 cylinders, 2 heads, 4 sectors/track
+
+Disk /dev/sdg: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdg1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdg2          0       -       0          0    0  Empty
+/dev/sdg3          0       -       0          0    0  Empty
+/dev/sdg4          0       -       0          0    0  Empty
+
+Disk /dev/sdi: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdi1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdi2          0       -       0          0    0  Empty
+/dev/sdi3          0       -       0          0    0  Empty
+/dev/sdi4          0       -       0          0    0  Empty
+
+Disk /dev/sdm: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdm1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdm2          0       -       0          0    0  Empty
+/dev/sdm3          0       -       0          0    0  Empty
+/dev/sdm4          0       -       0          0    0  Empty
+
+Disk /dev/sdh: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sdh1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sdh2          0       -       0          0    0  Empty
+/dev/sdh3          0       -       0          0    0  Empty
+/dev/sdh4          0       -       0          0    0  Empty
+
+Disk /dev/sde: 6527 cylinders, 255 heads, 63 sectors/track
+Units = cylinders of 8225280 bytes, blocks of 1024 bytes, counting from 0
+
+   Device Boot Start     End   #cyls    #blocks   Id  System
+/dev/sde1          0+   6526    6527-  52428127   fd  Linux raid autodetect
+/dev/sde2          0       -       0          0    0  Empty
+/dev/sde3          0       -       0          0    0  Empty
+/dev/sde4          0       -       0          0    0  Empty
+

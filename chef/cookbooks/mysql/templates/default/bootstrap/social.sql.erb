@@ -1,0 +1,75 @@
+
+--
+-- Table structure for table `friend_request`
+--
+
+DROP TABLE IF EXISTS `friend_request`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `friend_request` (
+  `inviter_uid` int(10) unsigned NOT NULL,
+  `receiver_uid` int(10) unsigned NOT NULL,
+  `message` varchar(200) DEFAULT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`inviter_uid`,`receiver_uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friend_request`
+--
+
+LOCK TABLES `friend_request` WRITE;
+/*!40000 ALTER TABLE `friend_request` DISABLE KEYS */;
+/*!40000 ALTER TABLE `friend_request` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friend_request_action`
+--
+
+DROP TABLE IF EXISTS `friend_request_action`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `friend_request_action` (
+  `inviter_uid` int(10) unsigned NOT NULL,
+  `receiver_uid` int(10) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friend_request_action`
+--
+
+LOCK TABLES `friend_request_action` WRITE;
+/*!40000 ALTER TABLE `friend_request_action` DISABLE KEYS */;
+/*!40000 ALTER TABLE `friend_request_action` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_social_network`
+--
+
+DROP TABLE IF EXISTS `user_social_network`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_social_network` (
+  `uid` int(10) unsigned NOT NULL,
+  `network_id` int(10) unsigned NOT NULL,
+  `network_user_id` bigint(20) unsigned NOT NULL,
+  `oauth_token` text NOT NULL,
+  UNIQUE KEY `UQ_networkid_user_uid` (`uid`,`network_id`,`network_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_social_network`
+--
+
+LOCK TABLES `user_social_network` WRITE;
+/*!40000 ALTER TABLE `user_social_network` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_social_network` ENABLE KEYS */;
+UNLOCK TABLES;

@@ -1,0 +1,15 @@
+#!/bin/bash
+##
+# Log rotation script
+#
+
+LOG_FILE=<%= @logFilename %>
+NEW_LOG_FILE=<%= @path %>/<%= @basename %>.`date +%s`.lm
+
+sudo mv ${LOG_FILE} ${NEW_LOG_FILE}
+sudo touch ${LOG_FILE}
+sudo chown <%= @owner %>:<%= @group %> ${LOG_FILE}
+
+<%= @postCmd %>
+
+#sudo bzip2 ${NEW_LOG_FILE}

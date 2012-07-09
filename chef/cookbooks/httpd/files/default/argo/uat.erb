@@ -1,0 +1,13 @@
+NameVirtualHost *:443
+<VirtualHost *:443>
+	ServerName api.nonprodlockerz.com
+	DocumentRoot /var/www
+	SSLEngine On
+	SSLCertificateFile /etc/ssl/certs/api.crt
+	SSLCertificateKeyFile /etc/ssl/private/api.key
+
+	SSLProxyEngine On
+	ProxyPass / https://localhost:8443/
+	ProxyPassReverse / https://localhost:8443/
+</VirtualHost>
+

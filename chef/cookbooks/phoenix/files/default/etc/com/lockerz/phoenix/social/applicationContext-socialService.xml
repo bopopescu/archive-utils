@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging.xml" />
+	<import resource="classpath:com/lockerz/phoenix/social/applicationContext-socialService-dao.xml" />
+	
+	<bean id="socialService" class="com.lockerz.phoenix.social.SocialService">
+		<property name="socialServiceServant" ref="socialServiceServant"/>
+	</bean>
+	
+	<bean id="socialServiceServant" class="com.lockerz.phoenix.social.SocialServiceI">
+		<property name="friendListDAO" ref="friendListDAO"/>
+		<property name="friendRequestDAO" ref="friendRequestDAO"/>
+		<property name="entityActionMasterDAO" ref="entityActionMasterDao"/>
+		<property name="entityCommentMasterDAO" ref="entityCommentMasterDao"/>
+	</bean>
+	
+</beans>

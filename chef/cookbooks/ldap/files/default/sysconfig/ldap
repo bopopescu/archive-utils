@@ -1,0 +1,16 @@
+# Parameters to ulimit called right before starting slapd
+# - use this to change system limits for slapd
+ULIMIT_SETTINGS=
+
+# How long to wait between sending slapd TERM and KILL
+# signals when stopping slapd by init script
+# - format is the same as used when calling sleep
+STOP_DELAY=3s
+
+# By default only listening on ldap:/// is turned on.
+# If you want to change listening options for slapd,
+# set following three variables to yes or no
+SLAPD_LDAP=yes
+SLAPD_LDAPS=yes
+SLAPD_LDAPI=no
+

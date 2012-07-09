@@ -1,0 +1,1 @@
+{"resources":{"preprod":{"argo":["10.254.214.143"]}},"id":"service","defaults":{"instanceType":"m1.large","ami":"ami-086d9661"},"roles":{"comments":{"max":1,"ports":["preprod","preprod-service","preprod-service-comments"],"min":1},"argo":{"max":1,"ports":["preprod","preprod-service","preprod-service-argo"],"min":1}}}

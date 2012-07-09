@@ -1,0 +1,9 @@
+Freeze.DbEnv.IceStorm.DbHome=/usr/phoenix/db
+IceStorm.Flush.Timeout=2000
+IceStorm.InstanceName=LockerzIceStorm
+IceStorm.TopicManager.Endpoints=default -p 9600
+IceStorm.Publish.Endpoints=tcp -p 9601:udp -p 9601
+IceStorm.Trace.Subscriber=1
+IceStorm.Trace.Topic=1
+IceStorm.Trace.TopicManager=2
+

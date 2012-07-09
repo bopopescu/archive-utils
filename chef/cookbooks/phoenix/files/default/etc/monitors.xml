@@ -1,0 +1,8 @@
+<monitors>
+	<monitor class="com.lockerz.phoenix.dashboard.monitor.LocatorServiceMonitor" proxy="LocatorService: tcp -h localhost -p 10000"/>
+	
+	<monitor class="com.lockerz.phoenix.dashboard.monitor.UserServiceMonitor" proxy="UserService: tcp -h localhost -p 10100"/>
+
+	<monitor class="com.lockerz.phoenix.dashboard.monitor.PodServiceMonitor" proxy="PodService: tcp -h localhost -p 10300"/>
+	<monitor class="com.lockerz.phoenix.dashboard.monitor.PodServiceMonitor" proxy="PodService: tcp -h gatekeeper -p 10300"/>
+</monitors>

@@ -1,0 +1,40 @@
+##
+# Virtual host configuration for the video admin tool
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+LDAPVerifyServerCert Off
+Listen 443
+LoadModule ssl_module modules/mod_ssl.so
+<VirtualHost *:443>
+	ServerName videoadmin.<%= @domain %>
+	ServerAdmin ops@lockerz.com
+	#DocumentRoot /var/www/lockerz.com/site/current/public
+
+	ErrorLog /mnt/local/lockerz.com/logs/httpd/video_admin.error.log
+	CustomLog /mnt/local/lockerz.com/logs/httpd/video_admin.access.log lockerz
+
+	SSLEngine On
+	SSLCertificateFile /etc/httpd/ssl/server.crt
+	SSLCertificateKeyFile /etc/httpd/ssl/server.key
+
+	<Location />
+		AuthType Basic
+		AuthName "Videoadmin"
+		AuthBasicProvider ldap
+		AuthLDAPURL "ldaps://auth0.opz.prod.lockerz.int:636/dc=lockerz,dc=com?uid?sub?(objectClass=*)"
+		AuthLDAPBindDN "cn=admin,dc=lockerz,dc=com"
+		AuthLDAPBindPassword "lat8-towards"
+		require valid-user
+
+		ProxyPass http://localhost:8000/
+		ProxyPassReverse http://localhost:8000/
+	</Location>
+</VirtualHost>
+
+Listen 80
+<VirtualHost *:80>
+	ServerName videoadmin.<%= @domain %>
+	RewriteEngine On
+	RewriteRule ^(.*)$ https://videoadmin.<%= @domain %>/$1
+</VirtualHost>

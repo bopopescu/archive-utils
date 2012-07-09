@@ -1,0 +1,8 @@
+<% @monitors.each do |monitor,sourceType| %>
+	<% if( sourceType == "" ) ## No source type defined %>
+	<% else %>
+[source::<%= monitor %>]
+sourcetype = <%= sourceType %>
+
+	<% end %>
+<% end %>

@@ -1,0 +1,19 @@
+# keep it simple for now
+%admin	ALL	= (root) NOPASSWD: ALL
+%ops	ALL	= (root) NOPASSWD: ALL
+%logmanager	ALL	= (root) NOPASSWD: ALL
+
+bryan	ALL	= (root) NOPASSWD: ALL
+buddy	ALL	= (root) NOPASSWD: ALL
+steve	ALL	= (root) NOPASSWD: ALL
+bernard	ALL	= (root) NOPASSWD: ALL
+
+Cmnd_Alias SUBSYS_LOCK = /bin/touch /var/lock/subsys/*, /bin/rm -f /var/lock/subsys/*
+
+## Nagios checks
+nrpe	ALL=(root) NOPASSWD: /usr/bin/jps ""
+nagios  ALL=(root) NOPASSWD: /usr/lib64/nagios/plugins/check_aws_scheduled_maintenance ""
+
+## depricated
+Host_Alias TOMCAT_SERVERS = *-rest-*
+tomcat	TOMCAT_SERVERS=(root)   NOPASSWD:SUBSYS_LOCK

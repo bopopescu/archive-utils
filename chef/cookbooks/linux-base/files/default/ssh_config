@@ -1,0 +1,1320 @@
+Host 10.102.13.232
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.23.196
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.5.212
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod2.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.71.139
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod2.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.9.64
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod1.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.23.154
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.217.171
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.109.247
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.114.191
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.45.159
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.45.144
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.23.191
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.13.238
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod1.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.109.230
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod3.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.25.231
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod3.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.63.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod4.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.99.244
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod4.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.63.209
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod6.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.19.230
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod6.pem"
+	StrictHostKeyChecking no
+
+Host 10.206.27.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod1.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.155.239
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod4.pem"
+	StrictHostKeyChecking no
+
+Host 10.201.225.219
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod2.pem"
+	StrictHostKeyChecking no
+
+Host 10.206.30.32
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod3.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.50.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod5.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.35.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.69.183
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.7.183
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.141.188
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.245.205.209
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.107.208
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod3.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.234.143
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/nagioslockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.146.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/user-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.248.55.191
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/user-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.212.114.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/invitation-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.249.106.48
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/email-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.194.112
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hallway-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.248.31.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/locator-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.179.192
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/ptz-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.49.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hallway-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.38.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/locator-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.202.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dailies-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.212.71.175
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/authentication-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.41.220
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/email-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.54.240
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/ptz-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.212.114.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod4.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.57.155
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod5.pem"
+	StrictHostKeyChecking no
+
+Host 10.242.198.176
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/user-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.50.159
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/user-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.249.123.32
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod6.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.58.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.171.95
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.118.96
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-tools.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.41.126
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.247.160
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/content-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.169.140
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/content-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.255.14.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod2.pem"
+	StrictHostKeyChecking no
+
+Host 10.217.49.183
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.242.153.123
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/uat-lb.pem"
+	StrictHostKeyChecking no
+
+Host 10.241.98.239
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.212.190.239
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/uat-lb.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.38.240
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.19.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.19.175
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce.pem"
+	StrictHostKeyChecking no
+
+Host 10.192.95.95
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce.pem"
+	StrictHostKeyChecking no
+
+Host 10.192.27.49
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.166.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/test-lb.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.215.97
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.253.135.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.158.79
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.177.155
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.212.206.79
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.134.239
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.193.227.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.192.235.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.167.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.193.227.31
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.193.1.123
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.202.135.205
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.49.235
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.250.191.95
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.242.143
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.195.127
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.194.255
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.195.214.3
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.199.159
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.253.95.47
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.250.218.47
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.250.143.96
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.223.30.206
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.103.210
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.29.175
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.151.90
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.150.31
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.253.181.171
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.55.231
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.43.174
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.15.186
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.15.227
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.59.237
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.115.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.105.237
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.41.151
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.25.192
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.59.214
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.9.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.9.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.9.234
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.117.21.100
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.96.17.189
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.96.110.197
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.198.75.127
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.45.189
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.41.53
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.115.226
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.116.242.146
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.96.233.225
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.7.182
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.240.34.144
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.192.229.222
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.7.38
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/role_factory.pem"
+	StrictHostKeyChecking no
+
+Host 10.77.101.161
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.110.243.151
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.78.11.159
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.76.30.110
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.53.171
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.59.184
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.15.38
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.66.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.69.209
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.77.22
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.9.204
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.66.162.195
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.87.150.185
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.120.33.167
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.110.86.50
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-ops.pem"
+	StrictHostKeyChecking no
+
+Host 10.250.77.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dashboard.pem"
+	StrictHostKeyChecking no
+
+Host 10.250.110.47
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/site-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.7.25
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.57.90
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.207.192
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.207.45.215
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod6.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.245.180
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.223.55.127
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.220.166.224
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/media-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.249.182.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/media-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.251.227
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/decal-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.41.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.203.3.38
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services-vshop.pem"
+	StrictHostKeyChecking no
+
+Host 10.120.66.233
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services-vshop.pem"
+	StrictHostKeyChecking no
+
+Host 10.217.39.155
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.217.13.199
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.99.199
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.57.167
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-a.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.45.191
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.95.251
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.97.167
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.69.243
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-web-b.pem"
+	StrictHostKeyChecking no
+
+Host 10.202.55.162
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services-vshop.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.175.224
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.208.245.123
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.35.187
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.35.155
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.113.7.182
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.98.213.157
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.245.191.208
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.114.233.86
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services.pem"
+	StrictHostKeyChecking no
+
+Host 10.96.222.153
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.110.30.68
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.114.171.93
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/auction-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.77.6.167
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/LOADTEST-SERVICES.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.37.220
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/LOADTEST-SERVICES.pem"
+	StrictHostKeyChecking no
+
+Host 10.112.93.38
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services-vshop.pem"
+	StrictHostKeyChecking no
+
+Host 10.252.242.63
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/role_factory.pem"
+	StrictHostKeyChecking no
+
+Host 10.100.147.181
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/nagioslockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.226.223
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/nagioslockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.191.52
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.105.235
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.84.86.96
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.72.45.67
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/payment-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.73.5.45
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/payment-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.209.203
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/nagioslockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.84.93.242
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/prod-mysql-d.pem"
+	StrictHostKeyChecking no
+
+Host 10.84.23.134
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.178.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pod1.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.93.163
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.195.91.79
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.170.96
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.15.63
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.192.126.160
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/L-MerchTool.pem"
+	StrictHostKeyChecking no
+
+Host 10.242.62.240
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/L-MerchTool.pem"
+	StrictHostKeyChecking no
+
+Host 10.244.239.143
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.194.110.32
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.109.224
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.109.228
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.109.248
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.45.214
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.19.218
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.126.25.63
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.59.185
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.252.226.143
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.64.145.124
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.76.62.196
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.97.146
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.102.176
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-pod1.pem"
+	StrictHostKeyChecking no
+
+Host 10.198.51.208
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.118.30.173
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/ROLEFACTORY.pem"
+	StrictHostKeyChecking no
+
+Host 10.84.94.198
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.57.141
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/mysql-performance.pem"
+	StrictHostKeyChecking no
+
+Host 10.82.199.168
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pegasus-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.83.7.250
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/pegasus-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.255.102.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.210.46.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.243.11.96
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.245.143.129
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/services-java-deployment.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.42.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hemisphere-content.pem"
+	StrictHostKeyChecking no
+
+Host 10.209.147.161
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.240.62.193
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/L-UMTool.pem"
+	StrictHostKeyChecking no
+
+Host 10.249.206.134
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.201.161
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.241.23.144
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/commerce-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.31.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.18.240
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dns-east.pem"
+	StrictHostKeyChecking no
+
+Host 10.206.59.128
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.74.31
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.141.146
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.253.33.155
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.73.220
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.78.152
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.123.182
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.252.25.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-pod2.pem"
+	StrictHostKeyChecking no
+
+Host 10.122.217.241
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-pod3.pem"
+	StrictHostKeyChecking no
+
+Host 10.202.82.192
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.205.1.196
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.202.47
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.35.253
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.35.154
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.205.7.86
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.196.237.221
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-frontend.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.198.255
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.193.34.207
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.255.62.111
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.162.176
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.119.78.97
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.205.7.53
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.85.99
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.64.137.165
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.104.97.165
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.96.79.230
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/hydra-uat-services.pem"
+	StrictHostKeyChecking no
+
+Host 10.78.109.103
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.245.45
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/dailies-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.68.74.172
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/decal-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.46.245.209
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/authentication-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.204.246.144
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/invitation-java.pem"
+	StrictHostKeyChecking no
+
+Host 10.108.231.240
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/frontend-hydra.pem"
+	StrictHostKeyChecking no
+
+Host 10.218.99.148
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/yatrik-apache.pem"
+	StrictHostKeyChecking no
+
+Host 10.82.125.43
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/sql-saviors.pem"
+	StrictHostKeyChecking no
+
+Host 10.71.15.254
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.102.45.211
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/social-dev.pem"
+	StrictHostKeyChecking no
+
+Host 10.211.151.192
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.215.58.15
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.214.171.95
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.241.21.187
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.240.30.143
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/bloglockerzcom.pem"
+	StrictHostKeyChecking no
+
+Host 10.254.71.16
+	User root
+	IdentityFile "/home/bryan/.ssh/keys/LOCKMerchTool.pem"
+	StrictHostKeyChecking no
+

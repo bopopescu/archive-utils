@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+    
+	<!--  master mongo configs -->
+	<bean id="masterServerAddress" class="com.mongodb.ServerAddress">
+	    <constructor-arg type="java.lang.String" value="${mongodb.hostname}"/>
+    	<constructor-arg type="int" value="${mongodb.port}"/>
+	</bean>
+	
+	<bean id="masterMongoOptions" class="com.lockerz.phoenix.common.mongo.MongoOptionsBean">
+		<property name="connectionsPerHost" value="${mongodb.connectionsPerHost}"/>
+		<property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongodb.threadsAllowedToBlockForConnectionMultiplier}"/>	
+		<property name="maxWaitTime" value="${mongodb.maxWaitTime}"/>
+	   	<property name="connectTimeout" value="${mongodb.connectTimeout}"/>
+	</bean>
+	
+    <bean id="mongoMasterServer" class="com.mongodb.Mongo">
+    	<constructor-arg ref="masterServerAddress"/>
+    	<constructor-arg ref="masterMongoOptions"/>	
+   	</bean>
+   	
+   	<bean id="commentMasterServerAddress" class="com.mongodb.ServerAddress">
+        <constructor-arg type="java.lang.String" value="${mongodb.comment.hostname}"/>
+        <constructor-arg type="int" value="${mongodb.comment.port}"/>
+    </bean>
+    
+    <bean id="commentMasterMongoOptions" class="com.lockerz.phoenix.common.mongo.MongoOptionsBean">
+        <property name="connectionsPerHost" value="${mongodb.comment.connectionsPerHost}"/>
+        <property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongodb.comment.threadsAllowedToBlockForConnectionMultiplier}"/> 
+	   <property name="connectTimeout" value="${mongodb.comment.connectTimeout}" />
+	   <property name="maxWaitTime" value="${mongodb.comment.maxWaitTime}" />
+    </bean>
+    
+    <bean id="commentMongoMasterServer" class="com.mongodb.Mongo">
+        <constructor-arg ref="commentMasterServerAddress"/>
+        <constructor-arg ref="commentMasterMongoOptions"/> 
+    </bean>
+   	
+   		<!-- slave mongo configs -->
+	<bean id="slaveServerAddress" class="com.mongodb.ServerAddress">
+	    <constructor-arg type="java.lang.String" value="${mongodb.slave.hostname}"/>
+    	<constructor-arg type="int" value="${mongodb.slave.port}"/>
+	</bean>
+	
+	<bean id="slaveMongoOptions" class="com.lockerz.phoenix.common.mongo.MongoOptionsBean">
+		<property name="connectionsPerHost" value="${mongodb.slave.connectionsPerHost}"/>
+		<property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongodb.slave.threadsAllowedToBlockForConnectionMultiplier}"/>	
+	   	<property name="connectTimeout" value="${mongodb.slave.connectTimeout}" />
+	   	<property name="maxWaitTime" value="${mongodb.slave.maxWaitTime}" />
+	</bean>
+	
+    <bean id="mongoSlaveServer" class="com.mongodb.Mongo">
+    	<constructor-arg ref="slaveServerAddress"/>
+    	<constructor-arg ref="slaveMongoOptions"/>	
+   	</bean>
+   	
+</beans>

@@ -1,0 +1,9 @@
+direct_only = True
+hosts = <%= @nodes.join( "," ) %>
+ignore_netmask = True
+license_file = /root/lockerz.vertica.dat
+record_to = vertica.install
+rpm_file_name = /root/vertica-5.0.4-0.x86_64.RHEL5.rpm
+vertica_dba_group = verticadba
+vertica_dba_user = dbadmin
+

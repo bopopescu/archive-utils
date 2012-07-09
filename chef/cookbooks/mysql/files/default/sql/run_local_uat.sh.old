@@ -1,0 +1,29 @@
+#!/bin/sh
+source ~/set_alais.sh
+
+TMPFILE=$(mktemp /tmp/$0.XXXXXXXXXX)
+
+echo `date` > $TMPFILE
+echo
+
+CMD=" hostname; ls  /etc/aws/keys/ ;"  
+
+echo ------------ $0 ---------->> $TMPFILE
+echo  $CMD  
+
+echo "CONTINUE ??  yes/no";  read CHOICE;  pod1savior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  pod2savior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  pod3savior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  pod4savior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  pod5savior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  bitssavior $CMD   | tee -a  $TMPFILE
+echo "CONTINUE ??  yes/no";  read CHOICE;  locatorsavior $CMD  | tee -a  $TMPFILE
+
+cat $TMPFILE
+rm $TMPFILE
+exit
+
+mailx -s "Vital Sign of Mysql Slaves" larry@lockerz.com  < $TMPFILE
+
+exit
+

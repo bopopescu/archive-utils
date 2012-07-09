@@ -1,0 +1,26 @@
+
+db.runCommand({ addshard: "10.108.86.218:27017" });
+db.runCommand({ addshard: "10.47.66.255:27017" });
+db.runCommand({ addshard: "10.108.197.73:27017" });
+db.runCommand({ addshard: "10.73.65.143:27017" });
+
+db.runCommand({ addshard: "pegasus-shard0.dba.prod.lockerz.int:27017" });
+db.runCommand({ addshard: "pegasus-shard1.dba.prod.lockerz.int:27017" });
+
+db.runCommand( { enablesharding : "pegasus_prod" } );
+db.runCommand( { shardcollection : "pegasus_prod.MetricsEvent", key : { event : 1, time : 1 } });
+
+db.MetricsEvent.ensureIndex({ time: 1 });
+db.MetricsEvent.ensureIndex({ event: 1 });
+db.MetricsEvent.ensureIndex({ event: 1, time: 1 });
+
+db.runCommand( { enablesharding : "pegasus_uat" } );
+db.runCommand( { shardcollection : "pegasus_uat.MetricsEvent", key : { event : 1, time : 1 } });
+
+db.runCommand({ enablesharding: "opz" });
+db.runCommand({ shardcollection: "opz.apache_access_log", key: {remoteHost: 1} });
+
+use search;
+db.users.ensureIndex({"name" : 1});
+db.users.ensureIndex({"lower_first_name" : 1});
+db.users.ensureIndex({"lower_last_name" : 1});

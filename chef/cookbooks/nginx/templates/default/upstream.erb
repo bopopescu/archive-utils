@@ -1,0 +1,9 @@
+##
+# Upstream for <%= @upstreamName %>
+
+upstream <%= @upstreamName %> {
+	<% @nodes.each do |ipaddress| %>
+		server <%= ipaddress %>:<%= @defaultPort %>; 
+	<% end %>
+}
+

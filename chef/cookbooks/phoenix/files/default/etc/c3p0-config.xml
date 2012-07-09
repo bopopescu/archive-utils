@@ -1,0 +1,115 @@
+<c3p0-config>
+        <default-config>
+                <property name="acquireIncrement">1</property>
+                <property name="acquireRetryAttempts">0</property> <!-- 0 means retry indefinitely -->
+                <property name="acquireRetryDelay">1000</property>
+                <property name="breakAfterAcquireFailure">false</property>
+                <property name="checkoutTimeout">4500</property>
+                <property name="driverClass">com.mysql.jdbc.Driver</property>
+                <property name="idleConnectionTestPeriod">30</property>
+                <property name="initialPoolSize">10</property>
+                <property name="maxIdleTime">300</property>
+                <property name="maxPoolSize">50</property>
+                <property name="minPoolSize">1</property>
+                <property name="maxStatements">200</property>
+                <property name="preferredTestQuery">select 1</property>
+                <property name="testConnectionOnCheckout">true</property>
+        </default-config>  <!-- This app is massive! -->
+
+        <named-config name="master">
+                <property name="jdbcUrl">jdbc:mysql://10.102.35.223:3306/locator</property>
+                <property name="user">locator</property>
+                <property name="password">taw49huzzas</property>
+        </named-config>
+
+        <named-config name="slave">
+                <property name="jdbcUrl">jdbc:mysql://10.102.35.223:3306/locator</property>
+                <property name="user">locator</property>
+                <property name="password">taw49huzzas</property>
+        </named-config>
+
+        <named-config name="bitsMaster">
+                <property name="jdbcUrl">jdbc:mysql://10.102.35.223:3306/bits</property>
+                <property name="user">bits</property>
+                <property name="password">idle912giro</property>
+        </named-config>
+
+        <named-config name="bitsSlave">
+                <property name="jdbcUrl">jdbc:mysql://10.102.35.223:3306/bits</property>
+                <property name="user">bits</property>
+                <property name="password">idle912giro</property>
+        </named-config>
+
+	<named-config name="forumMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.104.7.183:3306/forum</property>
+		<property name="user">forum</property>
+		<property name="password">rdxljydmr</property>
+	</named-config>
+
+	<named-config name="forumSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.104.7.183:3306/forum</property>
+		<property name="user">forum</property>
+		<property name="password">rdxljydmr</property>
+	</named-config>
+
+	<named-config name="socialGraphMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.102.43.174/socialgraph</property>
+		<property name="user">socialap</property>
+		<property name="password">dllfsjwsjn</property>
+	</named-config>
+
+	<named-config name="socialGraphSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.102.43.174/socialgraph</property>
+		<property name="user">socialap</property>
+		<property name="password">dllfsjwsjn</property>
+	</named-config>
+
+	<named-config name="socialMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.102.43.174/social</property>
+		<property name="user">socialap</property>
+		<property name="password">dllfsjwsjn</property>
+	</named-config>
+
+	<named-config name="socialSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.102.43.174/social</property>
+		<property name="user">socialap</property>
+		<property name="password">dllfsjwsjn</property>
+	</named-config>
+
+	<named-config name="mediaMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.102.41.151/media</property>
+		<property name="user">media</property>
+		<property name="password">LaiPeuqueT0k</property>
+	</named-config>
+
+	<named-config name="mediaSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.102.41.151/media</property>
+		<property name="user">media</property>
+		<property name="password">LaiPeuqueT0k</property>
+	</named-config>
+
+	<named-config name="auctionProxyMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.102.9.172/auction_proxy</property>
+		<property name="user">aproxy</property>
+		<property name="password">hdlghdjel</property>
+	</named-config>
+
+	<named-config name="auctionProxySlave">
+		<property name="jdbcUrl">jdbc:mysql://10.102.9.172/auction_proxy</property>
+		<property name="user">aproxy</property>
+		<property name="password">hdlghdjel</property>
+	</named-config>
+
+        <named-config name="paymentMaster">
+                <property name="jdbcUrl">jdbc:mysql://10.102.9.172/payments</property>
+                <property name="user">paymuser</property>
+                <property name="password">dfgreecto</property>
+        </named-config>
+
+        <named-config name="paymentSlave">
+                <property name="jdbcUrl">jdbc:mysql://10.102.9.172/payments</property>
+                <property name="user">paymuser</property>
+                <property name="password">dfgreecto</property>
+        </named-config>
+</c3p0-config>
+

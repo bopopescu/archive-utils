@@ -1,0 +1,24 @@
+<dataConfig>
+  <dataSource name="video" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://<%= @dbHostname %>:3306/video" user="<%= @dbUsername %>" password="<%= @dbPassword %>"/>
+
+  <document>
+    <entity name="video" dataSource="video" query="
+        SELECT
+          id,
+          title,
+          artist,
+          artist_display_name,
+          updated_on AS timestamp
+        FROM video_video
+        WHERE is_deleted_by_source=0
+        AND publish_from_date &lt; NOW()
+        AND (publish_till_date IS NULL OR publish_till_date > NOW())"
+      transformer="TemplateTransformer" pk="id">
+      <field column="id" />
+      <field column="title" />
+      <field column="artist" />
+      <field column="artist_display_name" />
+      <field column="timestamp" />
+    </entity>
+  </document>
+</dataConfig>

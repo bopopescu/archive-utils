@@ -1,0 +1,29 @@
+{
+  "attributes": {
+  },
+  "suggestions": {
+  },
+  "license": "All rights reserved",
+  "conflicting": {
+  },
+  "dependencies": {
+  },
+  "recipes": {
+  },
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES:\n\n= USAGE:\n\n",
+  "providing": {
+  },
+  "description": "Installs/Configures tomcat",
+  "maintainer": "YOUR_COMPANY_NAME",
+  "replacing": {
+  },
+  "platforms": {
+  },
+  "version": "0.0.1",
+  "maintainer_email": "YOUR_EMAIL",
+  "name": "tomcat",
+  "groupings": {
+  },
+  "recommendations": {
+  }
+}

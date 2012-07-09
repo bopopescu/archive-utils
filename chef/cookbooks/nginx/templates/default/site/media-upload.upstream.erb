@@ -1,0 +1,9 @@
+##
+# Media upload upstream
+##
+upstream media-upload_<%= @envName %>_upstream {
+	<% @nodes.each do |host| %>
+		server <%= host %>:8080; 
+	<% end %>
+}
+

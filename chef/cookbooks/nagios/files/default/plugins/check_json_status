@@ -1,0 +1,51 @@
+#!/usr/bin/python26
+
+import json
+import urllib2
+import sys
+import time
+
+start=time.time()
+
+try:
+	statedict=json.load(urllib2.urlopen(sys.argv[1]))
+except urllib2.HTTPError, ex:
+	if ex.headers.getheader('content-type').startswith('application/json'):
+		err=json.load(ex)
+		if err.has_key('body'):
+			print "CRITICAL: %s"%(err['body']['message'])
+			sys.exit(2)
+		else:
+			print "CRITICAL: %s when retreiving %s"%(ex, sys.argv[1])
+			sys.exit(2)
+	else:
+		print "CRITICAL: %s when retrieving %s"%(ex, sys.argv[1])
+		sys.exit(2)
+except urllib2.URLError, ex:
+	print "CRITICAL: %s when retrieving %s"%(ex, sys.argv[1])
+	sys.exit(2)
+except ValueError, ex:
+	print "UNKNOWN: %s when retrieving %s"%(ex, sys.argv[1])
+	sys.exit(3)
+except:
+	print "UNKNOWN: unable to process JSON from %s"%(sys.argv[1])
+	sys.exit(3)
+
+took=time.time()-start
+
+problems=filter(lambda i: i[1]!="OK", statedict.items())
+
+if problems:
+	if len(problems)==1:
+		print "CRITICAL: %s: %s|time=%0.3f"%(problems[0],took)
+		sys.exit(2)
+	else:
+		print "CRITICAL: %d items are not OK|time=%03.f"%(len(problems),took)
+		sys.exit(2)
+else:
+	if len(statedict)==1:
+		print "OK: %s: %s|time=%0.3f"%(statedict[0],took)
+		sys.exit(0)
+	else:
+		print "OK: %d items are all OK|time=%0.3f"%(len(statedict),took)
+		sys.exit(0)

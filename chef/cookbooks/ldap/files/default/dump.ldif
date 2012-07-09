@@ -1,0 +1,1310 @@
+dn: dc=lockerz,dc=com
+dc: lockerz
+objectClass: top
+objectClass: domain
+
+dn: ou=people,dc=lockerz,dc=com
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=lockerz,dc=com
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=automount,dc=lockerz,dc=com
+ou: automount
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=auto.master,ou=automount,dc=lockerz,dc=com
+ou: auto.master
+objectClass: top
+objectClass: automountMap
+
+dn: cn=/home,ou=auto.master,ou=automount,dc=lockerz,dc=com
+cn: /home
+objectClass: top
+objectClass: automount
+automountInformation: ldap:ou=auto.home,ou=automount,dc=lockerz,dc=com --timeo
+ ut=60 --ghost
+
+dn: uid=autotest,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: autotest
+cn: autotest
+sn: test
+uidNumber: 1001
+gidNumber: 1001
+userPassword:: PHBhc3N3b3JkPg==
+gecos: Autotest Account
+loginShell: /bin/bash
+homeDirectory: /home/autotest
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+shadowLastChange: 10877
+
+dn: cn=autotest,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: autotest
+gidNumber: 1001
+
+dn: ou=System,dc=lockerz,dc=com
+ou: System
+objectClass: top
+objectClass: organizationalUnit
+
+dn: uid=replicator,ou=System,dc=lockerz,dc=com
+uid: replicator
+cn: replicator
+objectClass: account
+objectClass: posixAccount
+objectClass: top
+uidNumber: 9999
+gidNumber: 9999
+homeDirectory: /dev/null
+userPassword:: e1NTSEF9TXhMNk80ZEdTOFNSdkFuV0FmS2d0dDNNSUtYcWNSakY=
+
+dn: cn=noc,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: noc
+gidNumber: 10001
+
+dn: cn=ops,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: ops
+gidNumber: 10002
+
+dn: uid=mgh,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: mgh
+uid: mgh
+sn: mgh
+uidNumber: 10001
+gidNumber: 10002
+gecos: Michael Herman
+loginShell: /bin/bash
+homeDirectory: /home/mgh
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e2NyeXB0fSQxJGpJeDhGc1EyJGhrb0R3eHhzQldISW81QW41SzFKeS4=
+shadowLastChange: 14873
+
+dn: cn=nate,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: nate
+gidNumber: 10003
+
+dn: uid=nate,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: nate
+uid: nate
+sn: nate
+uidNumber: 10002
+gidNumber: 10003
+gecos: Nate Amsden
+loginShell: /bin/bash
+homeDirectory: /home/nate
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+shadowLastChange: 14840
+userPassword:: e1NTSEF9RDQ5aXJONjR3cG5Xa3BDLy8xRVN0S09sVlMyZ3JVYWM=
+
+dn: uid=yatrik,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: yatrik
+uid: yatrik
+sn: yatrik
+uidNumber: 10003
+gidNumber: 10002
+gecos: yatrik
+loginShell: /bin/bash
+homeDirectory: /home/yatrik
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9Uk5yb05GMnFVL3JNUzN4akdqRmNra2NhSDBCclJrNUI=
+
+dn: uid=bernard,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: bernard
+uid: bernard
+sn: bernard
+uidNumber: 10004
+gidNumber: 10002
+gecos: Bernard Gardner
+loginShell: /bin/bash
+homeDirectory: /home/bernard
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9Qzl5aVdUbEpIYVQxZmdOaVVmaW9iNW9IVXNKSlpFNVU=
+
+dn: cn=splunkadmin,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: splunkadmin
+gidNumber: 20001
+memberUid: mgh
+memberUid: yatrik
+memberUid: bernard
+memberUid: drew
+memberUid: luke
+memberUid: nate
+memberUid: craig
+memberUid: steph
+memberUid: ken
+memberUid: john
+memberUid: buddy
+
+dn: cn=splunkuser,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: splunkuser
+gidNumber: 20002
+memberUid: kumar
+memberUid: larry
+memberUid: paul
+memberUid: petervan
+memberUid: samir
+memberUid: toddg
+memberUid: acastle
+memberUid: archit
+memberUid: srijith
+memberUid: bens
+memberUid: sohail
+memberUid: hallwayposter
+memberUid: anthony
+memberUid: nathaniel
+memberUid: matt
+memberUid: gomathy
+memberUid: eric
+memberUid: amo
+memberUid: amodelbello
+memberUid: bryan
+memberUid: drewk
+memberUid: gautam
+memberUid: glyn
+memberUid: gina
+memberUid: bing
+memberUid: martin
+memberUid: arpan
+memberUid: danielm
+memberUid: danielg
+memberUid: ali
+memberUid: matsuura
+memberUid: tara
+memberUid: jesse
+memberUid: tricia
+
+dn: uid=drew,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: drew
+uid: drew
+sn: drew
+uidNumber: 10005
+gidNumber: 10002
+gecos: Drew Zhrodague
+loginShell: /bin/bash
+homeDirectory: /home/drew
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9L1BGZzZ6K3FCeFhua1hCQlRmTjRMK0FuNEtSVVIyWk0=
+
+dn: cn=webapps,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: webapps
+gidNumber: 10004
+
+dn: uid=kumar,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: kumar
+uid: kumar
+sn: kumar
+uidNumber: 10006
+gidNumber: 10004
+gecos: Kumar
+loginShell: /bin/bash
+homeDirectory: /home/kumar
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9L3h2RU9FTTRLVmZZUlJqc21HNTZlWmMxeEVReGNtWnY=
+
+dn: uid=larry,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: larry
+uid: larry
+sn: larry
+uidNumber: 10007
+gidNumber: 10002
+gecos: Larry Li
+loginShell: /bin/bash
+homeDirectory: /home/larry
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9VVRoT3NWdy8rVDNsS3MzNVRPYXFsYlgzT0Zucy9VWnA=
+
+dn: cn=development,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: development
+gidNumber: 10005
+
+dn: uid=paul,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: paul
+uid: paul
+sn: paul
+uidNumber: 10008
+gidNumber: 10005
+gecos: Paul Philion
+loginShell: /bin/bash
+homeDirectory: /home/paul
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9RkI2alVWSnZtZTMxYWVka1cxMXg5TzBPZ2Y5YW1pc1Y=
+
+dn: ou=auto.home,ou=automount,dc=lockerz,dc=com
+ou: auto.home
+objectClass: top
+objectClass: automountMap
+
+dn: cn=autotest,ou=auto.home,ou=automount,dc=lockerz,dc=com
+cn: autotest
+objectClass: top
+objectClass: automount
+automountInformation: -fstype=nfs,rw,hard,intr,nodev,exec,nosuid,rsize=8192,ws
+ ize=8192 int-home00.prod.lockerz:/export/home/autotest
+
+dn: cn=mgh,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: mgh
+automountInformation: int-home01.prod.lockerz:/export/home/mgh
+
+dn: cn=nate,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: nate
+automountInformation: int-home00.prod.lockerz:/export/home/nate
+
+dn: cn=yatrik,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: yatrik
+automountInformation: int-home02.prod.lockerz:/export/home/yatrik
+
+dn: cn=bernard,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: bernard
+automountInformation: int-home02.prod.lockerz:/export/home/bernard
+
+dn: cn=drew,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: drew
+automountInformation: int-home00.prod.lockerz:/export/home/drew
+
+dn: cn=kumar,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: kumar
+automountInformation: int-home00.prod.lockerz:/export/home/kumar
+
+dn: cn=larry,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: larry
+automountInformation: int-home00.prod.lockerz:/export/home/larry
+
+dn: cn=paul,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: paul
+automountInformation: int-home00.prod.lockerz:/export/home/paul
+
+dn: uid=petervan,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: petervan
+uid: petervan
+sn: petervan
+uidNumber: 10009
+gidNumber: 10004
+gecos: Peter
+loginShell: /bin/bash
+homeDirectory: /home/petervan
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9MTYyVmUxZWMzclN5Ty9PL3VpZ1VYM0EyVnFBMVJqQjE=
+
+dn: cn=petervan,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: petervan
+automountInformation: int-home02.prod.lockerz:/export/home/petervan
+
+dn: uid=luke,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: luke
+uid: luke
+sn: luke
+uidNumber: 10010
+gidNumber: 10001
+gecos: Luke Stimak
+loginShell: /bin/bash
+homeDirectory: /home/luke
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9UUx1RU9ZdC9jNktPVXJ5ZmVxcmVaVzdlb1A5eVZuQjU=
+
+dn: cn=luke,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: luke
+automountInformation: int-home00.prod.lockerz:/export/home/luke
+
+dn: uid=craig,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: craig
+uid: craig
+sn: craig
+uidNumber: 10011
+gidNumber: 10002
+gecos: Craig Kelly
+loginShell: /bin/bash
+homeDirectory: /home/craig
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e2NyeXB0fSQxJEU2U1VaNC9NJFdKOTV2dVdJM09YTkh6bTNNcFMuczA=
+shadowLastChange: 15019
+
+dn: cn=craig,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: craig
+automountInformation: int-home01.prod.lockerz:/export/home/craig
+
+dn: cn=commerce,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: commerce
+gidNumber: 10006
+
+dn: uid=samir,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: samir
+uid: samir
+sn: samir
+uidNumber: 10012
+gidNumber: 10006
+gecos: Samir Rahan
+loginShell: /bin/bash
+homeDirectory: /home/samir
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9T1FMdERaRS8vOUxGcjZWaHJHS3IwSzRrbUZSellXeDA=
+
+dn: cn=samir,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: samir
+automountInformation: int-home01.prod.lockerz:/export/home/samir
+
+dn: uid=toddg,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: toddg
+uid: toddg
+sn: toddg
+uidNumber: 10013
+gidNumber: 10005
+gecos: Todd GreenwoodGeer
+loginShell: /bin/bash
+homeDirectory: /home/toddg
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9SzUxOFIydjhDeVp5Z2ZVSXJieVo5ZmpXbEY5RUdjdEI=
+
+dn: cn=toddg,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: toddg
+automountInformation: int-home01.prod.lockerz:/export/home/toddg
+
+dn: uid=acastle,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: acastle
+uid: acastle
+sn: acastle
+uidNumber: 10014
+gidNumber: 10005
+gecos: Al Castle
+loginShell: /bin/bash
+homeDirectory: /home/acastle
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9bmxXQVpZdGFvV3ZlUWp0SUxLMHJUMnFkTms5ck9pb1k=
+
+dn: cn=acastle,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: acastle
+automountInformation: int-home02.prod.lockerz:/export/home/acastle
+
+dn: uid=archit,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: archit
+uid: archit
+sn: archit
+uidNumber: 10015
+gidNumber: 10005
+gecos: Archit Chakravarti
+loginShell: /bin/bash
+homeDirectory: /home/archit
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9dENPRXAyZU9wS3lVY3Nzc0gxQ1ZrcHNtdHBOSGI3MSs=
+
+dn: cn=archit,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: archit
+automountInformation: int-home01.prod.lockerz:/export/home/archit
+
+dn: uid=srijith,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: srijith
+uid: srijith
+sn: srijith
+uidNumber: 10016
+gidNumber: 10005
+gecos: Srijith Sreedharan
+loginShell: /bin/bash
+homeDirectory: /home/srijith
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9UzJERE9NOUFFSGNlOEZZaVM2SzB4bmtOWEs3bkhPZ0E=
+
+dn: cn=srijith,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: srijith
+automountInformation: int-home02.prod.lockerz:/export/home/srijith
+
+dn: uid=bens,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: bens
+uid: bens
+sn: bens
+uidNumber: 10017
+gidNumber: 10005
+gecos: Ben Scannell
+loginShell: /bin/bash
+homeDirectory: /home/bens
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9dTJ2YXJZYjBqZkxzcmwyelM3b2xoQlN6WlRoellXeDA=
+
+dn: cn=bens,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: bens
+automountInformation: int-home00.prod.lockerz:/export/home/bens
+
+dn: uid=sohail,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: sohail
+uid: sohail
+sn: sohail
+uidNumber: 10018
+gidNumber: 10005
+gecos: Sohail Hines
+loginShell: /bin/bash
+homeDirectory: /home/sohail
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9ZmVJUzZKajJwZWVCVjFsVE1qNFFiUGNYeGZ6dFRZUEo=
+
+dn: cn=sohail,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: sohail
+automountInformation: int-home02.prod.lockerz:/export/home/sohail
+
+dn: uid=steph,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: steph
+uid: steph
+sn: steph
+uidNumber: 10019
+gidNumber: 10002
+gecos: Stephanie Dean
+loginShell: /bin/bash
+homeDirectory: /home/steph
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9bWlOekI0R3hVVHN1Tm4zaU9SekFlMVpZOUhrMVIwUjE=
+
+dn: cn=steph,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: steph
+automountInformation: int-home00.prod.lockerz:/export/home/steph
+
+dn: uid=hallwayposter,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: hallwayposter
+uid: hallwayposter
+sn: hallwayposter
+uidNumber: 10020
+gidNumber: 10001
+gecos: HallwayPoster User
+homeDirectory: /home/hallwayposter
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9cWNyQmlwQmplMzdxK3NuMDJVSmY2dzhxZ1ZRNWNrNVQ=
+loginShell: /opt/lockerz/bin/nonroot_hallwayposter.py
+
+dn: cn=hallwayposter,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: hallwayposter
+automountInformation: int-home01.prod.lockerz:/export/home/hallwayposter
+
+dn: uid=anthony,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: anthony
+uid: anthony
+sn: anthony
+uidNumber: 10021
+gidNumber: 10005
+gecos: Anthony Mendonca
+loginShell: /bin/bash
+homeDirectory: /home/anthony
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9ZTd1Z0JzM0owdVJFTnJKeW1GbWlvMUdOL1RkdlRXazA=
+
+dn: cn=anthony,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: anthony
+automountInformation: int-home02.prod.lockerz:/export/home/anthony
+
+dn: uid=ken,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: ken
+uid: ken
+sn: ken
+uidNumber: 10022
+gidNumber: 10002
+gecos: Ken Lesick
+loginShell: /bin/bash
+homeDirectory: /home/ken
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9aUFacjk1dUxSNFE1RDRyb2Y4eHFPcmpKZUYwNE9IVlU=
+
+dn: cn=ken,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: ken
+automountInformation: int-home01.prod.lockerz:/export/home/ken
+
+dn: uid=nathaniel,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: nathaniel
+uid: nathaniel
+sn: nathaniel
+uidNumber: 10023
+gidNumber: 10005
+gecos: Nathaniel Michael
+loginShell: /bin/bash
+homeDirectory: /home/nathaniel
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9YXMwVzFLOEFCK3I3Z1lFeU1HWFV2VzgzdFNjU0ZNS2I=
+
+dn: cn=nathaniel,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: nathaniel
+automountInformation: int-home02.prod.lockerz:/export/home/nathaniel
+
+dn: uid=matt,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: matt
+uid: matt
+sn: matt
+uidNumber: 10024
+gidNumber: 10005
+gecos: Matthew Plant
+loginShell: /bin/bash
+homeDirectory: /home/matt
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9VVlxQW1WdFB2cFJrNURaeHpsV1ltUFI1WCtGMmRrVk4=
+
+dn: cn=matt,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: matt
+automountInformation: int-home00.prod.lockerz:/export/home/matt
+
+dn: uid=gomathy,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: gomathy
+uid: gomathy
+sn: gomathy
+uidNumber: 10025
+gidNumber: 10006
+gecos: Gomathy Sankaran
+loginShell: /bin/bash
+homeDirectory: /home/gomathy
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9b0Z2dEJmR2hZbW9TMHByYmNaVVpIVGZpZ3Y1R1VsUTQ=
+
+dn: cn=gomathy,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: gomathy
+automountInformation: int-home01.prod.lockerz:/export/home/gomathy
+
+dn: uid=eric,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: eric
+uid: eric
+sn: eric
+uidNumber: 10026
+gidNumber: 10005
+gecos: Eric True
+loginShell: /bin/bash
+homeDirectory: /home/eric
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9YUNMY1Y4RFI4RzNWMXp5eCtrU243T0doTXZ4TmFHTnI=
+
+dn: cn=eric,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: eric
+automountInformation: int-home02.prod.lockerz:/export/home/eric
+
+dn: uid=amo,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: amo
+uid: amo
+sn: amo
+uidNumber: 10027
+gidNumber: 10005
+gecos: Amo DelBello
+loginShell: /bin/bash
+homeDirectory: /home/amo
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9amhhWlROKzBWVUp3Nk5oR1hWbFY4N1NzTTQwd1FsVTQ=
+
+dn: cn=amo,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: amo
+automountInformation: int-home00.prod.lockerz:/export/home/amo
+
+dn: uid=amodelbello,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: amodelbello
+uid: amodelbello
+sn: amodelbello
+uidNumber: 10028
+gidNumber: 10005
+gecos: Amo DelBello
+loginShell: /bin/bash
+homeDirectory: /home/amodelbello
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9M2dyQzNNWHNtbER0bW9GbHdLTHZIUlFjTHBWWWRITkg=
+
+dn: cn=amodelbello,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: amodelbello
+automountInformation: int-home00.prod.lockerz:/export/home/amodelbello
+
+dn: uid=bryan,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: bryan
+uid: bryan
+sn: bryan
+uidNumber: 10029
+gidNumber: 10001
+gecos: Bryan Kroger
+loginShell: /bin/bash
+homeDirectory: /home/bryan
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9LzQ3dTY4Nys3TFI3MmN1UE5EQU44N3B4U1JselpHNU4=
+
+dn: cn=bryan,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: bryan
+automountInformation: int-home00.prod.lockerz:/export/home/bryan
+
+dn: uid=john,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: john
+uid: john
+sn: john
+uidNumber: 10030
+gidNumber: 10001
+gecos: John VanDyke
+loginShell: /bin/bash
+homeDirectory: /home/john
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9Z3RqSG5BRlBTTG5NaU82SDFWSUtrM0ZjNXE5cE0za3U=
+
+dn: cn=john,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: john
+automountInformation: int-home01.prod.lockerz:/export/home/john
+
+dn: uid=drewk,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: drewk
+uid: drewk
+sn: drewk
+uidNumber: 10031
+gidNumber: 10005
+gecos: DrewK
+loginShell: /bin/bash
+homeDirectory: /home/drewk
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9ck5ieGx2ZlRhbVVYWWYxUUJ1SXpMeDdyNkU5RFpFOUI=
+
+dn: cn=drewk,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: drewk
+automountInformation: int-home00.prod.lockerz:/export/home/drewk
+
+dn: uid=gautam,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: gautam
+uid: gautam
+sn: gautam
+uidNumber: 10032
+gidNumber: 10005
+gecos: Gautam Sathe
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+loginShell: /bin/bash
+userPassword:: e1NTSEF9WCtXd25SdjN5V0xXY3ZrUlpXekRDSHdCZElCellXeDA=
+homeDirectory: /home/gautam
+
+dn: cn=gautam,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: gautam
+automountInformation: int-home01.prod.lockerz:/export/home/gautam
+
+dn: uid=glyn,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: glyn
+uid: glyn
+sn: glyn
+uidNumber: 10033
+gidNumber: 10005
+gecos: Glyn Beaumont
+homeDirectory: /home/glyn
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9WCtXd25SdjN5V0xXY3ZrUlpXekRDSHdCZElCellXeDA=
+loginShell: /bin/bash
+
+dn: cn=glyn,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: glyn
+automountInformation: int-home02.prod.lockerz:/export/home/glyn
+
+dn: uid=gina,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: gina
+uid: gina
+sn: gina
+uidNumber: 10034
+gidNumber: 10004
+gecos: Gina Kerrigan
+loginShell: /bin/bash
+homeDirectory: /home/gina
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9U2NvVnE1NTcvcjlpeGhYcGo1bWZQSWZHOExjNGNtcFU=
+
+dn: cn=gina,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: gina
+automountInformation: int-home02.prod.lockerz:/export/home/gina
+
+dn: uid=bing,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: bing
+uid: bing
+sn: bing
+uidNumber: 10035
+gidNumber: 10002
+gecos: Bing Wu
+loginShell: /bin/bash
+homeDirectory: /home/bing
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9dnQ0OVlORFBXOVRHL3J2am9saGcrWC9nV2Q1bFFTOVk=
+
+dn: cn=bing,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: bing
+automountInformation: int-home02.prod.lockerz:/export/home/bing
+
+dn: uid=martin,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: martin
+uid: martin
+sn: martin
+uidNumber: 10036
+gidNumber: 10005
+gecos: Martin Linenweber
+loginShell: /bin/false
+homeDirectory: /home/martin
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9d1Q3d1FSNXIveW9tMHJEUWEwb1NRK2pEckVSRll6VlQ=
+
+dn: cn=martin,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: martin
+automountInformation: int-home02.prod.lockerz:/export/home/martin
+
+dn: cn=pim,ou=groups,dc=lockerz,dc=com
+objectClass: posixGroup
+cn: pim
+gidNumber: 20003
+memberUid: bernard
+memberUid: nate
+memberUid: craig
+memberUid: steph
+memberUid: ken
+memberUid: john
+memberUid: gomathy
+memberUid: bryan
+memberUid: amo
+
+dn: uid=buddy,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: buddy
+uid: buddy
+sn: buddy
+uidNumber: 10037
+gidNumber: 10002
+gecos: Buddy Lumpkin
+loginShell: /bin/bash
+homeDirectory: /home/buddy
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9bVBpT2xLQTg5Rzd2NDJDK0I2d3JwUlI4aFE3T1Z0WmU=
+
+dn: cn=buddy,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: buddy
+automountInformation: int-home00.prod.lockerz:/export/home/buddy
+
+dn: uid=arpan,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: arpan
+uid: arpan
+sn: arpan
+uidNumber: 10038
+gidNumber: 10005
+gecos: Arpan Sheth
+loginShell: /bin/bash
+homeDirectory: /home/arpan
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9NDRwYTRnZkc4R084dTlrR25OczlGL2RLV2ljaFY2K3M=
+
+dn: cn=arpan,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: arpan
+automountInformation: int-home02.prod.lockerz:/export/home/arpan
+
+dn: uid=danielm,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: danielm
+uid: danielm
+sn: danielm
+uidNumber: 10039
+gidNumber: 10005
+gecos: Daniel Marashlian
+loginShell: /bin/bash
+homeDirectory: /home/danielm
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9enIxWHFsSk0rQ2tZaThHWnd6TlNocGFCZGpVNGJFNXk=
+
+dn: cn=danielm,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: danielm
+automountInformation: int-home01.prod.lockerz:/export/home/danielm
+
+dn: uid=danielg,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: danielg
+uid: danielg
+sn: danielg
+uidNumber: 10040
+gidNumber: 10005
+gecos: Daniel Gardner
+loginShell: /bin/bash
+homeDirectory: /home/danielg
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9aHFDNXhJcXhuL3R3YzIvMWJzWWZIZXc2S1ZWbE4zSmk=
+
+dn: cn=danielg,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: danielg
+automountInformation: int-home00.prod.lockerz:/export/home/danielg
+
+dn: uid=ali,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: ali
+uid: ali
+sn: ali
+uidNumber: 10041
+gidNumber: 10005
+gecos: Ali Elicin
+loginShell: /bin/bash
+homeDirectory: /home/ali
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9NXNOQmdQZVA1L2VGUVNaVE1UdjFSVkJGMTJoUkwxQlo=
+
+dn: cn=ali,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: ali
+automountInformation: int-home00.prod.lockerz:/export/home/ali
+
+dn: uid=matsuura,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: matsuura
+uid: matsuura
+sn: matsuura
+uidNumber: 10042
+gidNumber: 10001
+gecos: Anthony-Matsuura
+loginShell: /bin/bash
+homeDirectory: /home/matsuura
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9WWQ3K0Q4ZThBS0lhZEVUYkREY0c0RTlyWjhjeFJWRTU=
+
+dn: cn=matsuura,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: matsuura
+automountInformation: int-home00.prod.lockerz:/export/home/matsuura
+
+dn: uid=tara,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: tara
+uid: tara
+sn: tara
+uidNumber: 10043
+gidNumber: 10005
+gecos: Tara
+loginShell: /bin/bash
+homeDirectory: /home/tara
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9dFVIclhEUlVDYis5dzV1Z3ZCMUxTT2hDS0VWclUwdHo=
+
+dn: cn=tara,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: tara
+automountInformation: int-home01.prod.lockerz:/export/home/tara
+
+dn: uid=jesse,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: jesse
+uid: jesse
+sn: jesse
+uidNumber: 10044
+gidNumber: 10006
+gecos: Jesse Stein
+loginShell: /bin/bash
+homeDirectory: /home/jesse
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9RTU4OGpIdjU1WVI4SDN1WU5iU1g5ZUNiVk0xcWN6Qm8=
+
+dn: cn=jesse,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: jesse
+automountInformation: int-home02.prod.lockerz:/export/home/jesse
+
+dn: uid=tricia,ou=people,dc=lockerz,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: tricia
+uid: tricia
+sn: tricia
+uidNumber: 10045
+gidNumber: 10006
+gecos: Tricia Flajole
+loginShell: /bin/bash
+homeDirectory: /home/tricia
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+userPassword:: e1NTSEF9N2QyVjZLcFVFaE96L25hbzhLQ3poV3ZLaGdCMVpuUko=
+
+dn: cn=tricia,ou=auto.home,ou=automount,dc=lockerz,dc=com
+objectClass: top
+objectClass: automount
+cn: tricia
+automountInformation: int-home01.prod.lockerz:/export/home/tricia
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging.xml" />
+
+	<bean id="accessControlService" class="com.lockerz.phoenix.accesscontrol.AccessControlService">
+		<property name="accessControlServiceServant" ref="accessControlServiceServant"/>
+	</bean>
+	
+	<bean id="accessControlServiceServant" class="com.lockerz.phoenix.accesscontrol.AccessControlServiceI" />
+	
+</beans>

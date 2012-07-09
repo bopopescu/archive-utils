@@ -1,0 +1,9 @@
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+127.0.0.1		localhost.localdomain localhost
+::1		localhost6.localdomain6 localhost6
+
+10.17.25.119 vertica0.dba.prod.lockerz.int
+10.17.22.121 vertica1.dba.prod.lockerz.int
+10.17.21.116 vertica2.dba.prod.lockerz.int
+

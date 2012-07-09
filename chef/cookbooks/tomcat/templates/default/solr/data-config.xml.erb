@@ -1,0 +1,18 @@
+<dataConfig>
+  <% podId = 0 %>
+  <% @pods.each do |pod| %>
+  <dataSource name="pod<%= podId+=1 %>" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://<%= pod %>:3306/pod<%= podId %>" batchSize="-1" user="<%= @node["mysql"]["username"] %>" password="<%= @node["mysql"]["password"] %>"/>
+  <% end %>
+
+  <% podId = 0 %>
+  <document>
+    <% @pods.each do |pod| %>
+    <entity name="pod<%= podId+=1 %>user" dataSource="pod<%= podId %>" query="select uid, first_name, last_name, profile_image_url from user_profile" transformer="TemplateTransformer" pk="uid">
+      <field column="full_name" template="${pod<%= podId %>user.first_name} ${pod<%= podId %>user.last_name}" />
+    </entity>
+    <% end %>
+  </document>
+
+</dataConfig>
+
+

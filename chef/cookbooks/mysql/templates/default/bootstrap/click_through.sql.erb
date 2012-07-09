@@ -1,0 +1,34 @@
+
+CREATE DATABASE `clickthrough`;
+
+DROP TABLE IF EXISTS `clickthroughaction`;
+
+CREATE TABLE `clickthroughaction` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `createdOn` datetime DEFAULT NULL,
+  `decalId` bigint(20) NOT NULL,
+  `owner` bigint(20) NOT NULL,
+  `ptz_awarded` int(11) NOT NULL DEFAULT '0',
+  `referenceId` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `updatedOn` datetime DEFAULT NULL,
+  `uvid` varchar(255) DEFAULT NULL,
+  `viewer` bigint(20) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `actiontype`;
+
+CREATE TABLE `actiontype` (
+  `actionType` varchar(255) NOT NULL,
+  `ptzValue` bigint(20) NOT NULL,
+  `ptzType` bigint(20) NOT NULL,
+  PRIMARY KEY (`actionType`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `actiontype`
+(`actionType`,`ptzType`,`ptzValue`)
+VALUES
+('Play', 10, 15),
+('Shop', 50, 17);

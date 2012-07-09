@@ -1,0 +1,9 @@
+##
+# blog upstream
+##
+
+upstream blog_prod_upstream {
+	<% @nodes.each do |host| %>
+		server <%= host %>:80; 
+	<% end %>
+}

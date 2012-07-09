@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="masterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="bitsMaster"/>
+	</bean>
+	
+	<bean id="slaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="bitsSlave"/>
+	</bean>
+	
+	<bean id="contentDAO" class="com.lockerz.phoenix.content.dao.impl.ContentDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="slaveDataSource" />
+		<property name="masterDataSource" ref="masterDataSource"/>
+	</bean>
+	
+</beans>

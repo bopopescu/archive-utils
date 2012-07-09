@@ -1,0 +1,5 @@
+# LDAP Defaults
+#
+BASE    <%= @rootBindDN %>
+URI     <%= @ldapServers.map{|fqdn,srv| "ldaps://%s:636" % srv[:ipaddress] }.join( " " ) %>
+TLS_REQCERT allow

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import resource="classpath:com/lockerz/phoenix/email/applicationContext-emailService-dao.xml" />
+
+	<bean id="emailService" class="com.lockerz.phoenix.email.EmailService">
+		<property name="emailServiceServant" ref="emailServiceServant" />
+	</bean>
+
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityPropertiesMap">
+			<map>
+				<entry key="resource.loader" value="ds"/>
+				<entry key="ds.resource.loader.instance">
+				 	<ref bean="templateLoader"/>
+				 </entry>
+				<entry key="ds.resource.loader.resource.table" value="template"/>
+				<entry key="ds.resource.loader.resource.keycolumn" value="name"/>
+				<entry key="ds.resource.loader.resource.templatecolumn" value="content"/>
+				<entry key="ds.resource.loader.resource.timestampcolumn" value="last_updated"/>
+				<entry key="ds.resource.loader.resource.cache" value="true"/>
+				<entry key="ds.resource.loader.resource.modificationCheckInterval" value="30"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Velocity Database Template Loader -->
+	<bean id="templateLoader" class="org.apache.velocity.runtime.resource.loader.DataSourceResourceLoader">
+		<property name="dataSource" ref="masterDataSource" />
+	</bean>
+
+	<bean id="emailServiceServant" class="com.lockerz.phoenix.email.EmailServiceI">
+		<property name="templateDAO" ref="templateDAO" />
+		<property name="velocityEngine" ref="velocityEngine"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,8 @@
+## Slave configuration
+[mysqld]
+master-host=<%= node["mysql"]["replication"]["hostname"] %>
+master-port=<%= node["mysql"]["replication"]["port"].to_i() %>
+master-user=<%= @rplUser["username"] %>
+master-password=<%= @rplUser["password"] %>
+master-connect-retry=60
+slave-skip-error=1062

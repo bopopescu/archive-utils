@@ -1,0 +1,241 @@
+#! /bin/bash
+#
+# -----------------------------------
+# Initscript for Phoenix services
+# -----------------------------------
+#
+# This controls the Lockerz Ice Service
+#
+
+set -e
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DESC="Lockerz Ice Service"
+NAME=phoenix
+USER="phoenix"
+HOME="/usr/phoenix"
+CP="$HOME/etc"
+export LOG_DATE=`date +%Y%m%d_%H%M%S`
+
+for jar in `find $HOME/lib -type f | grep -i jar$ | grep -iv commons-codec-1.2.jar | grep -iv logback` ; do
+        CP=$CP:$jar
+done
+#echo $CP
+POD_MAIN=" -Dlog.filename=podservice com.lockerz.phoenix.pod.PodServiceMain"
+POD_CP=$CP
+POD_NAME="podservice"
+POD_JAVA_OPTS="-Xmx512m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${POD_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+POD_CP=$CP
+POD_PIDFILE=/var/run/$NAME-pod.pid
+
+USER_MAIN=" -Dlog.filename=userservice com.lockerz.phoenix.user.UserServiceMain"
+USER_CP=$CP
+USER_NAME="userservice"
+USER_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${USER_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+USER_PIDFILE=/var/run/$NAME-user.pid
+
+LOCATOR_MAIN=" -Dlog.filename=locatorservice com.lockerz.phoenix.locator.LocatorServiceMain"
+LOCATOR_CP=$CP
+LOCATOR_NAME="locatorservice"
+LOCATOR_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${LOCATOR_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+LOCATOR_PIDFILE=/var/run/$NAME-locator.pid
+
+AUTHENTICATION_MAIN=" -Dlog.filename=authenticationservice com.lockerz.phoenix.authentication.AuthenticationServiceMain"
+AUTHENTICATION_CP=$CP
+AUTHENTICATION_NAME="authenticationservice"
+AUTHENTICATION_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${AUTHENTICATION_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+AUTHENTICATION_PIDFILE=/var/run/$NAME-authentication.pid
+
+EMAIL_MAIN=" -Dlog.filename=emailservice com.lockerz.phoenix.email.EmailServiceMain"
+EMAIL_CP=$CP
+EMAIL_NAME="emailservice"
+EMAIL_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${EMAIL_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+EMAIL_PIDFILE=/var/run/$NAME-email.pid
+
+INVITATION_MAIN=" -Dlog.filename=invitationservice com.lockerz.phoenix.invitation.InvitationServiceMain"
+INVITATION_CP=$CP
+INVITATION_NAME="invitationservice"
+INVITATION_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${INVITATION_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+INVITATION_PIDFILE=/var/run/$NAME-invitation.pid
+
+DAILIES_MAIN=" -Dlog.filename=dailiesservice com.lockerz.phoenix.dailies.DailiesServiceMain"
+DAILIES_CP=$CP
+DAILIES_NAME="dailiesservice"
+DAILIES_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${DAILIES_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+DAILIES_PIDFILE=/var/run/$NAME-dailies.pid
+
+HALLWAY_MAIN=" -Dlog.filename=hallwayservice com.lockerz.phoenix.hallway.HallwayServiceMain"
+HALLWAY_CP=$CP
+HALLWAY_NAME="hallwayservice"
+HALLWAY_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${HALLWAY_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+HALLWAY_PIDFILE=/var/run/$NAME-hallway.pid
+
+PTZ_MAIN=" -Dlog.filename=ptzservice com.lockerz.phoenix.ptz.PtzServiceMain"
+PTZ_CP=$CP
+PTZ_NAME="ptzservice"
+PTZ_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${PTZ_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+PTZ_PIDFILE=/var/run/$NAME-ptz.pid
+
+CONTENT_MAIN=" -Dlog.filename=contentservice com.lockerz.phoenix.content.ContentServiceMain"
+CONTENT_CP=$CP
+CONTENT_NAME="contentservice"
+CONTENT_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${CONTENT_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+CONTENT_PIDFILE=/var/run/$NAME-content.pid
+
+PLATFORM_PLUGIN_MAIN=" -Dlog.filename=platformplugin com.lockerz.phoenix.content.metadata.theplatform.ThePlatformMetadataProviderMain"
+PLATFORM_PLUGIN_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${PLATFORM_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+PLATFORM_PLUGIN_PIDFILE=/var/run/$NAME-platform.pid
+
+SERVICE_LOCATION_MAIN=" -Dlog.filename=servicelocationservice com.lockerz.phoenix.servicelocation.ServiceLocationServiceMain"
+SERVICE_LOCATION_CP=$CP
+SERVICE_LOCATION_NAME="servicelocation"
+SERVICE_LOCATION_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${SERVICE_LOCATION_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+SERVICE_LOCATION_PIDFILE=/var/run/$NAME-sls.pid 
+
+FORUM_MAIN=" -Dlog.filename=forum com.lockerz.phoenix.forum.ForumServiceMain"
+FORUM_CP=$CP
+FORUM_NAME="forum"
+FORUM_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${FORUM_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+FORUM_PIDFILE=/var/run/$NAME-forum.pid
+
+CONTENT_PUBLISH_MAIN=" -Dlog.filename=contentpublish com.lockerz.phoenix.content.publish.ContentPublishService"
+CONTENT_PUBLISH_CP=$CP
+CONTENT_PUBLISH_NAME="contentpublish"
+CONTENT_PUBLISH_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${CONTENT_PUBLISH_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+CONTENT_PUBLISH_PIDFILE=/var/run/$NAME-contentpublish.pid
+
+SOCIAL_MAIN=" -Dlog.filename=socialservice com.lockerz.phoenix.social.SocialServiceMain"
+SOCIAL_CP=$CP
+SOCIAL_NAME="socialservice"
+SOCIAL_JAVA_OPTS="-Xmx4096m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${SOCIAL_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+SOCIAL_PIDFILE=${PIDDIR}/$NAME-social.pid
+
+MEDIA_MAIN=" -Dlog.filename=mediaservice com.lockerz.phoenix.media.MediaServiceMain"
+MEDIA_CP=$CP
+MEDIA_NAME="mediaservice"
+MEDIA_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${MEDIA_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+MEDIA_PIDFILE=${PIDDIR}/$NAME-media.pid
+
+USER_MEDIA_UPLOAD_MAIN=" -Dlog.filename=usermediauploadservice com.lockerz.phoenix.media.upload.UserMediaUploadService"
+USER_MEDIA_UPLOAD_CP=$CP
+USER_MEDIA_UPLOAD_NAME="usermediauploadservice"
+USER_MEDIA_UPLOAD_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${USER_MEDIA_UPLOAD_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+USER_MEDIA_UPLOAD_PIDFILE=${PIDDIR}/$NAME-user_media_upload.pid
+
+IMAGE_PROCESSING_MAIN=" -Dlog.filename=imageprocessingservice -Djava.library.path=$HOME/lib com.lockerz.phoenix.media.processing.ImageProcessingServiceMain"
+IMAGE_PROCESSING_CP=$CP
+IMAGE_PROCESSING_NAME="imageprocessingservice"
+IMAGE_PROCESSING_JAVA_OPTS="-Xmx2048m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${IMAGE_PROCESSING_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+IMAGE_PROCESSING_PIDFILE=${PIDDIR}/$NAME-image_processing.pid
+
+ACCESS_CONTROL_MAIN=" -Dlog.filename=accesscontrolservice com.lockerz.phoenix.accesscontrol.AccessControlServiceMain"
+ACCESS_CONTROL_CP=$CP
+ACCESS_CONTROL_NAME="accesscontrolservice"
+ACCESS_CONTROL_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${ACCESS_CONTROL_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+ACCESS_CONTROL_PIDFILE=${PIDDIR}/$NAME-access_control.pid
+
+DECAL_MAIN=" -Dlog.filename=decalservice com.lockerz.phoenix.decal.DecalServiceMain"
+DECAL_CP=$CP
+DECAL_NAME="decalservice"
+DECAL_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${DECAL_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+DECAL_PIDFILE=${PIDDIR}/$NAME-decal.pid
+
+AUCTION_MAIN=" -Dlog.filename=auctionservice -Dhazelcast.config=/usr/phoenix/etc/auction.hazelcast.xml -Dorg.aspectj.weaver.loadtime.configuration=META-INF/loggingaop.xml -Dhazelcast.logging.type=log4j com.lockerz.phoenix.auction.AuctionServiceMain"
+AUCTION_CP=$CP
+AUCTION_NAME="auctionservice"
+AUCTION_JAVA_OPTS="-Xmx512m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${AUCTION_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+AUCTION_PIDFILE=${PIDDIR}/$NAME-auction.pid
+
+AUCTION_PROXY_MAIN=" -Dlog.filename=auctionproxyservice -Dhazelcast.config=/usr/phoenix/etc/auctionProxy.hazelcast.xml -Dhazelcast.logging.type=log4j com.lockerz.phoenix.auctionProxy.AuctionProxyServiceMain"
+AUCTION_PROXY_CP=$CP
+AUCTION_PROXY_NAME="auctionproxy"
+AUCTION_PROXY_JAVA_OPTS="-Xmx512m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${AUCTION_PROXY_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+AUCTION_PROXY_PIDFILE=${PIDDIR}/$NAME-auction-proxy.pid
+
+PAYMENT_MAIN=" -Dlog.filename=paymentservice com.lockerz.phoenix.payment.PaymentServiceMain"
+PAYMENT_CP=$CP
+PAYMENT_NAME="paymentservice"
+PAYMENT_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${PAYMENT_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+PAYMENT_PIDFILE=${PIDDIR}/$NAME-payment.pid
+
+GIFTCARD_MAIN=" -Dlog.filename=giftcardservice com.lockerz.phoenix.giftcard.GiftCardServiceMain"
+GIFTCARD_CP=$CP
+GIFTCARD_NAME="giftcard"
+GIFTCARD_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${GIFTCARD_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+GIFTCARD_PIDFILE=${PIDDIR}/$NAME-auction.pid
+
+SEARCH_MAIN=" -Dlog.filename=searchservice com.lockerz.phoenix.search.SearchServiceMain"
+SEARCH_CP=$CP
+SEARCH_NAME="searchservice"
+SEARCH_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${SEARCH_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+SEARCH_PIDFILE=${PIDDIR}/$NAME-search.pid
+
+FWB_PHOTO_MAIN=" -Dlog.filename=fwbphotoservice com.lockerz.phoenix.photos.FwbPhotoServiceMain"
+FWB_PHOTO_CP=$CP
+FWB_PHOTO_NAME="fwbphotoservice"
+FWB_PHOTO_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/usr/phoenix/logs/${FWB_PHOTO_NAME}-gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/lockerz/dump"
+FWB_PHOTO_PIDFILE=${PIDDIR}/$NAME-fwbphoto.pid
+
+ARGS="-Duser.timezone=UTC -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.Log4JLogger -Dfile.encoding=utf-8 -Dcom.mchange.v2.c3p0.cfg.xml=$HOME/etc/c3p0-config.xml -Dlog.dir=$HOME/logs/ -Dconfig.dir=$HOME/etc/ -javaagent:${HOME}/lib/aspectjweaver.jar"
+
+PLATFORM_PLUGIN_CP="$HOME/etc"
+for jar in `find $HOME/lib -type f | grep -i jar$ | grep -iv commons-codec-1.4.jar` ; do
+        PLATFORM_PLUGIN_CP=$PLATFORM_PLUGIN_CP:$jar
+done
+
+#DAEMON="/usr/bin/java -server -cp ${SERVICE_CP} -Djava.awt.headless=true $ARGS"
+
+SCRIPTNAME=$HOME/bin/$NAME
+
+# Gracefully exit if the package has been removed.
+test -x /usr/bin/java || exit 0
+
+# ---------------------------------------
+# Function that starts the daemon/service
+# ---------------------------------------
+d_start()
+{
+DAEMON="/usr/bin/java -server ${!SERVICE_JAVA_OPTS} -cp ${!SERVICE_CP} -Djava.awt.headless=true $ARGS"
+ulimit -n 8192; $DAEMON ${!SERVICE_MAIN} >> $HOME/logs/stdout.log 2>&1 & echo $! > ${!SERVICE_PIDFILE}
+ln -sf /usr/phoenix/logs/${!SERVICE_NAME}-gc_${LOG_DATE}.log /usr/phoenix/logs/${!SERVICE_NAME}-gc.log
+
+}
+# --------------------------------------
+# Function that stops the daemon/service
+# --------------------------------------
+d_stop()
+{
+start-stop-daemon --stop --quiet --pidfile ${!SERVICE_PIDFILE}
+}
+
+SERVICE_MAIN=$2_MAIN
+SERVICE_NAME=$2_NAME
+SERVICE_PIDFILE=$2_PIDFILE
+SERVICE_CP=$2_CP
+SERVICE_JAVA_OPTS=$2_JAVA_OPTS
+
+case "$1" in
+start)
+echo -n "Starting $DESC: $2"
+d_start
+echo "."
+;;
+stop)
+echo -n "Stopping $DESC: $2"
+d_stop
+echo "."
+;;
+restart|force-reload)
+echo -n "Restarting $DESC: $2"
+d_stop
+sleep 1
+d_start
+echo "."
+;;
+*)
+echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload} {POD|USER|LOCATOR|AUTHENTICATION|EMAIL|INVITATION|DAILIES|HALLWAY|GIFTCARD|PTZ|CONTENT|PLATFORM_PLUGIN|SERVICE_LOCATION|FORUM|CONTENT_PUBLISH|AUCTION|SOCIAL|MEDIA|USER_MEDIA_UPLOAD|IMAGE_PROCESSING|ACCESS_CONTROL|DECAL|FWB_PHOTO}" >&2
+exit 1
+;;
+esac
+
+exit 0

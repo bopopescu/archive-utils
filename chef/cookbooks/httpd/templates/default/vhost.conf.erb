@@ -1,0 +1,35 @@
+##
+# Virtual host configuration. 
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+Listen <%= @listen %>
+<VirtualHost *:<%=  @listen %>>
+	ServerName <%= @serverName %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot <%= @documentRoot %>
+
+	LogLevel <%= @logLevel %>
+	ErrorLog <%= @logRoot %>/error.log
+	CustomLog <%= @logRoot %>/access.log lockerz
+
+	SetEnv LOCKERZ_ENV <%= (@envName == "prod" ? "production" : "test") %>
+
+	Alias /vshop /var/www/lockerz.com/vshop/current/public
+	Alias /vShop /var/www/lockerz.com/vshop/current/public
+
+	<Directory /var/www/lockerz.com/site/current/public>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	<Directory /var/www/lockerz.com/vshop/current/public>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+</VirtualHost>
+

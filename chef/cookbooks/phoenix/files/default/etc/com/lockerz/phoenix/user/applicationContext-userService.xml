@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/user/applicationContext-userService-dao.xml"/> 
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging.xml" />
+
+	<bean id="userService" class="com.lockerz.phoenix.user.UserService">
+		<property name="userServiceServant" ref="userServiceServant"/>
+	</bean>
+	
+	<bean id="userServiceServant" class="com.lockerz.phoenix.user.UserServiceI">
+		<property name="userDAO" ref="userDAO" />
+	</bean>
+
+</beans>

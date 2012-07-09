@@ -1,0 +1,206 @@
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod1.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod2.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod3.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod4.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod5.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod6.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod7.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod8.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod9.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on bits.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on locator.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+
+GRANT SELECT, Execute, References on pod2.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod3.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod4.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod5.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on bits.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on locator.* TO 'luke'@'%' IDENTIFIED BY 'stimak';
+flush privileges;
+
+
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod1.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod2.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod3.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod4.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod5.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod6.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod7.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod8.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod9.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on bits.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on locator.* TO 'brad'@'%' IDENTIFIED BY 'brad';
+flush privileges;
+
+
+
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod1.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod2.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod3.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod4.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod5.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod6.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod7.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod8.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on pod9.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on bits.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on locator.* TO 'chris'@'%' IDENTIFIED BY 'cpage';
+flush privileges;
+
+
+-------------BEGIN should be DELETED
+
+GRANT SELECT, Execute, References on pod1.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod2.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod3.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod4.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on pod5.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on bits.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+GRANT SELECT, Execute, References on locator.* TO 'lukestimak'@'%' IDENTIFIED BY 'stimak';
+flush privileges;
+
+GRANT SELECT, Execute, References on pod1.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on pod2.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on pod3.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on pod4.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on pod5.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on bits.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+GRANT SELECT, Execute, References on locator.* TO 'bradbrown'@'%' IDENTIFIED BY 'brad';
+flush privileges;
+
+GRANT SELECT, Execute, References on pod1.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on pod2.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on pod3.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on pod4.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on pod5.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on bits.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+GRANT SELECT, Execute, References on locator.* TO 'chrispage'@'%' IDENTIFIED BY 'cpage';
+flush privileges;
+
+-------------END should be DELETED
+
+GRANT ALL PRIVILEGES ON locator.* TO 'locator'@'%' IDENTIFIED BY 'taw49huzzas';
+GRANT ALL PRIVILEGES ON bits.* TO 'bits'@'%' IDENTIFIED BY 'idle912giro';
+GRANT ALL PRIVILEGES ON pod1.* TO 'phoenix'@'%' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod2.* TO 'phoenix'@'%' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod3.* TO 'phoenix'@'%' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod4.* TO 'phoenix'@'%' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod5.* TO 'phoenix'@'%' IDENTIFIED BY 'Dixie6scam';
+
+GRANT ALL PRIVILEGES ON locator.* TO 'locator'@'127.0.0.1' IDENTIFIED BY 'taw49huzzas';
+GRANT ALL PRIVILEGES ON bits.* TO 'bits'@'127.0.0.1' IDENTIFIED BY 'idle912giro';
+GRANT ALL PRIVILEGES ON pod1.* TO 'phoenix'@'127.0.0.1' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod2.* TO 'phoenix'@'127.0.0.1' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod3.* TO 'phoenix'@'127.0.0.1' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod4.* TO 'phoenix'@'127.0.0.1' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod5.* TO 'phoenix'@'127.0.0.1' IDENTIFIED BY 'Dixie6scam';
+
+GRANT ALL PRIVILEGES ON locator.* TO 'locator'@'localhost' IDENTIFIED BY 'taw49huzzas';
+GRANT ALL PRIVILEGES ON bits.* TO 'bits'@'localhost' IDENTIFIED BY 'idle912giro';
+GRANT ALL PRIVILEGES ON pod1.* TO 'phoenix'@'localhost' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod2.* TO 'phoenix'@'localhost' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod3.* TO 'phoenix'@'localhost' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod4.* TO 'phoenix'@'localhost' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod5.* TO 'phoenix'@'localhost' IDENTIFIED BY 'Dixie6scam';
+
+
+
+GRANT ALL PRIVILEGES ON locator.* TO 'locator' IDENTIFIED BY 'taw49huzzas';
+GRANT ALL PRIVILEGES ON bits.* TO 'bits' IDENTIFIED BY 'idle912giro';
+GRANT ALL PRIVILEGES ON pod1.* TO 'phoenix' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod2.* TO 'phoenix' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod3.* TO 'phoenix' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod4.* TO 'phoenix' IDENTIFIED BY 'Dixie6scam';
+GRANT ALL PRIVILEGES ON pod5.* TO 'phoenix' IDENTIFIED BY 'Dixie6scam';
+
+#GRANT INSERT, UPDATE, SELECT, DELETE, Execute, References on mydb.* TO 'myuser'@'%' IDENTIFIED BY 'mypassword';
+
+GRANT SELECT, Execute, References on pod1.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on pod2.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on pod3.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on pod4.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on pod5.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on bits.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on locator.* TO 'lockerzreport'@'%' IDENTIFIED BY 'njurodf2dvjwpn';
+GRANT SELECT, Execute, References on *.* TO 'lockerzread'@'%' IDENTIFIED BY 'ilmwalvm';
+
+GRANT ALL on *.* TO 'leaf'@'%' IDENTIFIED BY 'ilmwalvmed' with grant option;
+flush privileges;
+
+GRANT ALL on *.* TO 'ulockerz'@'%' IDENTIFIED BY 'u10ckerz' with grant option;
+GRANT ALL on *.* TO 'ulockerz'@'localhost' IDENTIFIED BY 'u10ckerz' with grant option;
+GRANT ALL on *.* TO 'ulockerz'@'127.0.0.1' IDENTIFIED BY 'u10ckerz' with grant option;
+
+GRANT ALL on *.* TO 'blockerz'@'%' IDENTIFIED BY 'b10ckerz' with grant option;
+GRANT ALL on *.* TO 'blockerz'@'localhost' IDENTIFIED BY 'b10ckerz' with grant option;
+GRANT ALL on *.* TO 'blockerz'@'127.0.0.1' IDENTIFIED BY 'b10ckerz' with grant option;
+
+
+GRANT ALL on *.* TO 'mlockerz'@'%' IDENTIFIED BY 'm10ckerz' with grant option;
+GRANT ALL on *.* TO 'mlockerz'@'localhost' IDENTIFIED BY 'm10ckerz' with grant option;
+GRANT ALL on *.* TO 'mlockerz'@'127.0.0.1' IDENTIFIED BY 'm10ckerz' with grant option;
+
+GRANT ALL on *.* TO 'nlockerz'@'%' IDENTIFIED BY 'n10ckerz' with grant option;
+GRANT ALL on *.* TO 'nlockerz'@'localhost' IDENTIFIED BY 'n10ckerz' with grant option;
+GRANT ALL on *.* TO 'nlockerz'@'127.0.0.1' IDENTIFIED BY 'n10ckerz' with grant option;
+
+GRANT ALL on *.* TO 'olockerz'@'%' IDENTIFIED BY 'o10ckerz' with grant option;
+GRANT ALL on *.* TO 'olockerz'@'localhost' IDENTIFIED BY 'o10ckerz' with grant option;
+GRANT ALL on *.* TO 'olockerz'@'127.0.0.1' IDENTIFIED BY 'o10ckerz' with grant option;
+
+GRANT ALL on *.* TO 'dlockerz'@'%' IDENTIFIED BY 'd10ckerz' with grant option;
+GRANT ALL on *.* TO 'dlockerz'@'localhost' IDENTIFIED BY 'd10ckerz' with grant option;
+GRANT ALL on *.* TO 'dlockerz'@'127.0.0.1' IDENTIFIED BY 'd10ckerz' with grant option;
+
+GRANT ALL on *.* TO 'larry'@'%' IDENTIFIED BY '1arry' with grant option;
+GRANT ALL on *.* TO 'larry'@'localhost' IDENTIFIED BY '1arry' with grant option;
+GRANT ALL on *.* TO 'larry'@'127.0.0.1' IDENTIFIED BY '1arry' with grant option;
+flush privileges;
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl_slave'@'%' IDENTIFIED BY 'oobaecathaireiwaipheexohj';
+
+GRANT REPLICATION CLIENT ON *.* TO 'nagios'@'%' IDENTIFIED BY 'L8d0vbY5uzKpug1ahgFxB0XAU';
+GRANT PROCESS, SUPER, PROCESS on *.* to 'lockerzCACTIro' identified by 'GjKVs62F8Kbv29Vf';
+
+flush privileges;
+
+
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl_slave'@'%' IDENTIFIED BY 'oobaecathaireiwaipheexohj';
+
+
+
+BITSMYSQLM=10.218.15.211
+BITSMYSQLS=10.218.25.195
+bitsslave
+CHANGE MASTER to MASTER_HOST='10.218.15.211',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000003',MASTER_LOG_POS=3531;
+
+LOCATORMYSQLM=10.217.21.251
+LOCATORMYSQLS=10.218.5.135
+CHANGE MASTER to MASTER_HOST='10.217.21.251',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=70885818;
+
+POD1M=10.218.7.163
+POD1S=10.218.5.167
+CHANGE MASTER to MASTER_HOST='10.218.7.163',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=70885818;
+
+POD2ALTERNATEM=10.218.19.251
+POD2ALTERNATES=10.218.25.147
+CHANGE MASTER to MASTER_HOST='10.218.19.251',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=70885818;
+
+POD3M=10.217.21.231
+POD3S=10.217.21.247
+CHANGE MASTER to MASTER_HOST='10.217.21.231',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=70885818;
+
+POD4M=10.218.25.151
+POD4S=10.217.23.215
+CHANGE MASTER to MASTER_HOST='10.218.25.151',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=98;
+
+POD5M=10.218.25.187
+POD5S=10.217.23.199
+CHANGE MASTER to MASTER_HOST='10.218.25.187',MASTER_PORT=3306,MASTER_USER='repl_slave',MASTER_PASSWORD='oobaecathaireiwaipheexohj',MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=98;
+
+CHANGE MASTER to MASTER_LOG_FILE='mysql-bin.000002',MASTER_LOG_POS=98;
+
+
+Add PW and delete empty user:
+

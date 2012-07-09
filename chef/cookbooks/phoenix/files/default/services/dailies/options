@@ -1,0 +1,5 @@
+
+SERVICE_JAVA_OPTS="-Xmx256m -XX:+PrintTenuringDistribution -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:${LOG_PATH}/${SERVICE_NAME}/gc_${LOG_DATE}.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${LOG_PATH}/${SERVICE_NAME}/dump"
+
+SERVICE_MAIN=" -Dlog.filename=${SERVICE_NAME}/service com.lockerz.phoenix.dailies.DailiesServiceMain"
+

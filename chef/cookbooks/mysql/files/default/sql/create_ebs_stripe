@@ -1,0 +1,130 @@
+#!/bin/bash
+
+# Usage and warnings for non-root:
+if [ $USER != "root" ]; then
+	echo "You must use 'sudo' or be root to use this tool."
+  exit
+fi 
+
+if [ -z "$1" ]; then
+  echo "Usage: create_ebs_stripe [volume size in gigabytes]"
+  exit
+fi 
+
+# Check for 'aws' and '.awssecret' program and conf file:
+#SECFILE=`ls ~/.awssecret` | wc -l`
+#if [ $SECFILE  == 0 ]; then
+#	echo "No ~/.awssecret config file present.  Exiting..."
+#	exit
+#fi
+#
+#PROGFILE=`ls /usr/local/bin/aws | wc -l`
+#if [ $PROGFILE == 0 ]; then
+#	echo "No 'aws' in /usr/local/bin.  Exiting..."
+#	exit
+#fi
+
+
+# Define variables:
+VOLSIZE=$1
+DEVLIST=`echo "/dev/sdb
+/dev/sdc
+/dev/sdd
+/dev/sde
+/dev/sdf
+/dev/sdg"`
+
+echo "Attaches 6 $VOLSIZE gigabyte volumes in a raid0.  Do you wish to proceed?
+yes/no"
+read CHOICE
+
+if [ $CHOICE = "yes" ]; then
+	# Get our IPv4 address:
+	IP=`ifconfig eth0 | grep "inet addr:" | awk 'BEGIN { FS = ":" }{ print $2 }' \
+	| awk '{print $1}'`
+	
+	# Get our AWS availability zone:
+	AVZONE=`aws din | grep 10.248.181.219 | grep -v + \
+	| awk 'BEGIN {FS = "availabilityZone="}{print $2}' | awk '{print $1}'`
+	
+	# Get our AWS instance ID:
+	IID=`aws din | grep 10.248.181.219 | grep -v + | awk '{print $2}'`
+	
+	# Create and attach EBS volumes:
+	for DEVICE in $DEVLIST;
+		do
+		echo "Attaching $DEVICE..."
+		VOLUME=`aws cvol --size $VOLSIZE --zone $AVZONE | grep "vol-" | awk '{print $4}'`
+		echo "Attaching volume $VOLUME..."
+		aws attvol $VOLUME -i $IID -d $DEVICE
+		sleep 10
+		echo "...done"
+		done
+elif [ $CHOICE != yes ]; then
+	echo "Exiting..."
+	exit
+fi
+
+
+#!/bin/bash
+
+# Get some tools for our host
+echo "Installing tools for formatting and installing volumes."
+aptitude update
+apt-get -y install mdadm xfsdump
+
+# Get our list of newly added EBS volumes
+EBSVOLS=$DEVLIST
+
+# Get number of EBS volumes
+echo "$DEVLIST" > /tmp/devlist
+NUMBEROFVOLS=`cat /tmp/devlist | wc -l`
+
+# Make our partition Linux Raid Autodetect
+for VOL in $EBSVOLS
+	do
+sfdisk $VOL << EOF
+,,fd
+EOF
+	done
+
+# Get a string to feed to mdadm
+STRIPEDEVS=`echo $EBSVOLS | tr -s '\n' ' '`
+
+# Build our raid stripe
+mdadm --create --verbose /dev/md0 --level=raid0 --raid-devices=$NUMBEROFVOLS $STRIPEDEVS
+
+# Configure fstab
+echo "/dev/md0 /ebs_raid xfs defaults 0 0" >> /etc/fstab
+
+# Make our mountpoint
+mkdir -p /ebs_raid
+
+# Backup up /etc/fstab and edit out the default lvm vols
+mv /etc/fstab /etc/fstab.backup
+grep -v "STORAGE" /etc/fstab.backup > /etc/fstab
+
+# Stop MySQL
+/etc/init.d/mysql stop
+
+# Unmount the old lvm volumes
+for D in `grep STORAGE /etc/fstab.backup | awk '{ print $1 }'`
+	do 
+	umount $D
+	done
+
+# Remove our improper default mysql directories
+rm -rf /mnt/mysql-data /mnt/mysql-misc
+
+# Make an ext3 filesystem on our raid stripe
+mkfs.xfs -f /dev/md0
+
+# Mount our new device
+mount -a
+
+# Set up symlinks to mountpoint for our sql data directories
+# mkdir -p /mnt/sql_ebs/mysql-data /mnt/sql_ebs/mysql-misc
+# ln -s /mnt/sql_ebs/mysql-misc /mysql-misc
+# ln -s /mnt/sql_ebs/mysql-data /mysql-data
+
+

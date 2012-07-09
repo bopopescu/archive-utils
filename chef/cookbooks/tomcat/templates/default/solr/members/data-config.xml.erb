@@ -1,0 +1,38 @@
+<dataConfig>
+  <dataSource name="follow" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://<%= @dbHostname %>:3306/follow" user="<%= @dbUsername %>" password="<%= @dbPassword %>"/>
+
+  <document>
+    <entity name="user" dataSource="follow" query="
+        SELECT
+          users.id AS id,
+          CONCAT(users.first_name, ' ', users.last_name) AS name
+        FROM users
+        WHERE '${dataimporter.request.clean}' != 'false' OR users.modified > '${dataimporter.last_index_time}'"
+        pk="id">
+      <field column="id" />
+      <field column="name" />
+      <entity name="follower" dataSource="follow" query="
+          SELECT users.id as id,
+            followers.follower_id as follower
+          FROM followers
+          JOIN users ON users.id = followers.user_id
+          WHERE followers.status = '1'
+            AND ('${dataimporter.request.clean}' != 'false' OR users.modified > '${dataimporter.last_index_time}')
+          ORDER BY id"
+          processor="CachedSqlEntityProcessor"  where="id=user.id">
+        <field column="follower" />
+      </entity>
+      <entity name="followee" dataSource="follow" query="
+          SELECT users.id as id,
+            followers.user_id as followee
+          FROM followers
+          JOIN users ON users.id = followers.follower_id
+          WHERE followers.status = '1'
+            AND ('${dataimporter.request.clean}' != 'false' OR users.modified > '${dataimporter.last_index_time}')
+          ORDER BY followee"
+          processor="CachedSqlEntityProcessor"  where="id=user.id">
+        <field column="followee" />
+      </entity>
+    </entity>
+  </document>
+</dataConfig>

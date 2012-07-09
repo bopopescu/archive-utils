@@ -1,0 +1,9 @@
+<% @forwarders.each do |f| %>
+[tcpout:<%= f[:ipaddress] %>_<%= @port %>]
+server = <%= f[:ipaddress] %>:<%= @port %>
+[tcpout-server://<%= f[:ipaddress] %>:<%= @port %>]
+<% end %>
+
+[tcpout]
+defaultGroup = <%= @forwarders.map{|f| "%s_%i" % [f[:ipaddress],@port] }.join( "," ) %>
+disabled = false

@@ -1,0 +1,83 @@
+alias uatbitsM='ssh -i ~/.ssh/hydra-uat-bits.pem  root@204.236.196.6'
+
+
+alias dev1locatorM='ssh -i ~/.ssh/hydra-dev1-locator.pem root@75.101.193.87'
+alias dev1locatorS='ssh -i ~/.ssh/hydra-dev1-locator.pem root@174.129.91.130'
+
+alias dev1pod1M='ssh -i ~/.ssh/hydra-dev1-pod1.pem root@75.101.241.79'
+alias dev1pod1S='ssh -i ~/.ssh/hydra-dev1-pod1.pem root@75.101.217.79'
+
+alias dev1pod2M='ssh -i ~/.ssh/hydra-dev1-pod2.pem root@174.129.53.16'
+alias dev1pod2S='ssh -i ~/.ssh/hydra-dev1-pod2.pem root@75.101.202.238'
+
+alias locatorsavior='ssh -i ~/.ssh/hydra-savior.pem root@204.236.195.106'
+alias bitssavior='ssh -i ~/.ssh/hydra-savior.pem root@204.236.192.41'
+alias pod1savior='ssh -i ~/.ssh/hydra-savior.pem root@75.101.234.182'
+alias pod2savior='ssh -i ~/.ssh/hydra-savior.pem root@204.236.195.195'
+alias pod3savior='ssh -i ~/.ssh/hydra-savior.pem root@75.101.228.126'
+alias pod4savior='ssh -i ~/.ssh/hydra-savior.pem root@204.236.195.130'
+alias pod5savior='ssh -i ~/.ssh/hydra-savior.pem root@174.129.131.13'
+
+
+alias loadtest1='ssh -i ~/.ssh/LOADTEST-SERVICES.pem root@174.129.175.150'
+alias loadtest2='ssh -i ~/.ssh/LOADTEST-SERVICES.pem root@75.101.245.110'
+
+alias auth1='ssh -i ~/.ssh/authentication-java.pem root@174.129.83.69'
+alias auth2='ssh -i ~/.ssh/authentication-java.pem root@67.202.53.42'
+
+alias dailies1='ssh -i ~/.ssh/dailies-java.pem root@174.129.97.214'
+alias dailies2='ssh -i ~/.ssh/dailies-java.pem root@204.236.242.104'
+
+alias email1='ssh -i ~/.ssh/email-java.pem root@174.129.149.77'
+alias email2='ssh -i ~/.ssh/email-java.pem root@75.101.171.197'
+
+alias hallway1='ssh -i ~/.ssh/hallway-java.pem root@174.129.163.235'
+alias hallway2='ssh -i ~/.ssh/hallway-java.pem root@174.129.102.191'
+
+alias invitation1='ssh -i ~/.ssh/invitation-java.pem root@174.129.48.43'
+alias invitation2='ssh -i ~/.ssh/invitation-java.pem root@67.202.62.253'
+
+alias locator1='ssh -i ~/.ssh/locator-java.pem root@174.129.132.228'
+alias locator2='ssh -i ~/.ssh/locator-java.pem root@174.129.191.225'
+
+alias pod1='ssh -i ~/.ssh/pod1.pem root@67.202.24.12'
+alias pod1master='ssh -i ~/.ssh/pod1.pem root@75.101.253.71'
+alias pod1slave='ssh -i ~/.ssh/pod1.pem root@174.129.47.135'
+alias pod2='ssh -i ~/.ssh/pod2.pem root@174.129.49.188'
+alias pod2master='ssh -i ~/.ssh/pod2-alternate.pem root@174.129.53.106'
+alias pod2slave='ssh -i ~/.ssh/pod2-alternate.pem root@75.101.217.59'
+alias pod3='ssh -i ~/.ssh/pod3.pem root@174.129.174.200'
+alias pod3master='ssh -i ~/.ssh/pod3.pem root@67.202.49.122'
+alias pod3slave='ssh -i ~/.ssh/pod3.pem root@174.129.54.71'
+alias pod4='ssh -i ~/.ssh/pod4.pem root@174.129.155.221'
+alias pod4master='ssh -i ~/.ssh/pod4.pem root@75.101.255.176'
+alias pod4slave='ssh -i ~/.ssh/pod4.pem root@75.101.223.53'
+alias pod5='ssh -i ~/.ssh/pod5.pem root@174.129.183.31'
+alias pod5master='ssh -i ~/.ssh/pod5.pem root@67.202.54.78'
+alias pod5slave='ssh -i ~/.ssh/pod5.pem root@75.101.247.190'
+
+alias ptz1='ssh -i ~/.ssh/ptz-java.pem root@75.101.236.171'
+alias ptz2='ssh -i ~/.ssh/ptz-java.pem root@174.129.102.206'
+
+alias user1='ssh -i ~/.ssh/user-java.pem root@174.129.127.171'
+alias user2='ssh -i ~/.ssh/user-java.pem root@174.129.91.127'
+alias user3='ssh -i ~/.ssh/user-java.pem root@174.129.53.227'
+alias user4='ssh -i ~/.ssh/user-java.pem root@67.202.48.36'
+
+
+alias bitsmaster='ssh -i ~/.ssh/bits-mysql.pem root@67.202.49.184'
+alias bitsslave='ssh -i ~/.ssh/bits-mysql.pem root@174.129.82.233'
+
+alias locatormaster='ssh -i ~/.ssh/locator-mysql.pem root@174.129.138.20'
+alias locatorslave='ssh -i ~/.ssh/locator-mysql.pem root@72.44.38.178'
+
+alias thevault='ssh -i ~/.ssh/production_infrastructure.pem ubuntu@ec2-174-129-46-225.compute-1.amazonaws.com'
+alias fmaster='ssh -i  ~/.ssh/LOCKDBPRD03.pem  root@174.129.65.73'
+alias fslave231='ssh  -i  ~/.ssh/LOCKDBPRD03.pem  root@174.129.68.231'
+alias larryhost='ssh  -i  ~/.ssh/drewlockerz.pem  root@174.129.63.1'
+alias alexhost='ssh  -i  ~/.ssh/drewlockerz.pem  root@174.129.66.214'
+alias snaphost='ssh  -i  ~/.ssh/drewlockerz.pem  root@174.129.104.74'
+
+alias snaptest='ssh  -i  ~/.ssh/snapshot-test.pem  root@75.101.254.154'
+alias snap69='ssh  -i  ~/.ssh/snapshot-test.pem  root@204.236.247.69'
+

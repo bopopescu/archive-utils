@@ -1,0 +1,29 @@
+{
+  "attributes": {
+  },
+  "maintainer_email": "cookbooks@linuxpowered.net",
+  "groupings": {
+  },
+  "license": "All rights reserved",
+  "recipes": {
+  },
+  "recommendations": {
+  },
+  "dependencies": {
+  },
+  "suggestions": {
+  },
+  "description": "Installs/Configures linux-base",
+  "conflicting": {
+  },
+  "platforms": {
+  },
+  "version": "0.0.1",
+  "providing": {
+  },
+  "name": "linux-base",
+  "maintainer": "Linuxpowered Networks",
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES:\n\n= USAGE:\n\n",
+  "replacing": {
+  }
+}

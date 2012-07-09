@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+       
+    <import resource="classpath:com/lockerz/phoenix/dao/applicationContext-mongo-dao.xml"/>
+    
+    <!--  entityActionDaos -->
+    <bean id="entityActionMasterDao" class="com.lockerz.phoenix.social.dao.impl.MongoEntityActionDAOImpl">
+        <constructor-arg ref="commentMongoMasterServer"/>
+        <constructor-arg value="${mongodb.entityaction.dbname}"/>
+    </bean>       
+    <bean id="entityActionSlaveDao" class="com.lockerz.phoenix.social.dao.impl.MongoEntityActionDAOImpl">
+        <constructor-arg ref="mongoSlaveServer"/>
+        <constructor-arg value="${mongodb.entityaction.dbname}"/>
+    </bean>
+    
+    <!--  entityCommentDaos -->
+    <bean id="entityCommentMasterDao" class="com.lockerz.phoenix.social.dao.impl.MongoEntityCommentDAOImpl">
+        <constructor-arg ref="commentMongoMasterServer"/>
+        <constructor-arg value="${mongodb.entitycomment.dbname}"/>
+    </bean> 
+    
+    <bean id="entityCommentSlaveDao" class="com.lockerz.phoenix.social.dao.impl.MongoEntityCommentDAOImpl">
+        <constructor-arg ref="mongoSlaveServer"/>
+        <constructor-arg value="${mongodb.entitycomment.dbname}"/>
+    </bean>
+
+	<bean id="queryPropertiesFactoryBean"  class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:queries.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="externalizedQueries" class="com.lockerz.phoenix.common.ExternalizedQueriesProperties">
+		<property name="queries" ref="queryPropertiesFactoryBean"/>
+	</bean>
+
+	<bean id="basicDAO" abstract="true" lazy-init="true">
+		<property name="queries" ref="externalizedQueries"/>
+	</bean>
+
+	<bean id="socialGraphMasterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="socialGraphMaster"/>
+	</bean>
+	
+	<bean id="socialGraphSlaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="socialGraphSlave"/>
+	</bean>
+	
+	<bean id="friendRequestMasterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="socialMaster"/>
+	</bean>
+	
+	<bean id="friendRequestSlaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<constructor-arg value="socialSlave"/>
+	</bean>
+
+	<bean id="socialGraphTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="socialGraphMasterDataSource"/>
+	</bean>
+	
+	<bean id="friendRequestTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="friendRequestMasterDataSource"/>
+	</bean>
+	
+	<bean id="friendListDAO" class="com.lockerz.phoenix.social.dao.impl.FriendListDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="socialGraphSlaveDataSource" />
+		<property name="masterDataSource" ref="socialGraphMasterDataSource"/>
+	</bean>
+
+	<bean id="friendRequestDAO" class="com.lockerz.phoenix.social.dao.impl.FriendRequestDAOJDBC" parent="basicDAO">
+		<property name="dataSource" ref="friendRequestSlaveDataSource" />
+		<property name="masterDataSource" ref="friendRequestMasterDataSource"/>
+	</bean>
+
+</beans>

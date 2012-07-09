@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Warn about this tool.
+echo "WARNING: This tool deletes all unattached EBS volumes!
+Are you sure you want to proceed?
+yes/no"
+read CHOICE
+
+if [ $CHOICE = "yes" ]; then
+	VOLNUMBER=`aws --simple dvol | grep -v "snap-" | grep available | awk '{print $2}' | wc -l`
+	echo "Deleting $VOLNUMBER volumes in 10 seconds..."
+	sleep 10
+	for VOL in `aws --simple dvol | grep -v "snap-" | grep available | awk '{print $2}'` 
+		do
+		echo "Deleting volume $VOL..."
+		aws delvol $VOL
+	done
+fi

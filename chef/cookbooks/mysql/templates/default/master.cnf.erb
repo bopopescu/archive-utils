@@ -1,0 +1,91 @@
+[client]
+port		= 3306
+socket		= <%= @node[:mysql][:fsRunRoot] %>/mysqld.sock
+
+[mysqld_safe]
+nice		= 0
+socket		= <%= @node[:mysql][:fsRunRoot] %>/mysqld.sock
+
+[mysqld]
+## Basic Settings
+user = mysql
+port = 3306
+socket = <%= @node[:mysql][:fsRunRoot] %>/mysqld.sock
+tmpdir = <%= @node[:mysql][:fsEBSDataRoot] %>/tmp
+basedir	= /usr/local/mysql
+datadir	= <%= @node[:mysql][:fsEBSDataRoot] %>/mysql
+pid-file = <%= @node[:mysql][:fsRunRoot] %>/mysqld.pid
+language = /usr/local/mysql/share/english
+bind-address = 0.0.0.0
+
+federated
+skip-slave-start
+log-slave-updates
+skip_name_resolve
+skip-external-locking
+
+default_table_type = innodb
+table_lock_wait_timeout = 600
+innodb_lock_wait_timeout = 600
+
+
+
+## Fine Tuning
+key_buffer = 1G
+table_cache = 4000
+wait_timeout = 300
+thread_stack = 1M
+max_tmp_tables = 3000
+tmp_table_size = 2G
+max_connections = 15000
+join_buffer_size = 10M
+thread_cache_size = 1M
+open-files-limit = 8096
+query_cache_size = 1G
+read_buffer_size = 4M
+sort_buffer_size = 32M
+query_cache_limit = 16M
+net_buffer_length = 1M
+max_allowed_packet = 16M
+thread_concurrency = 10
+max_heap_table_size = 2G
+read_rnd_buffer_size = 10M
+myisam_sort_buffer_size = 256M
+
+## InnoDB tweaks
+innodb_flush_method =  O_DIRECT
+#innodb_doublewrite = 0
+innodb_log_file_size =  256M
+innodb_data_file_path = ibdata1:10G;ibdata2:10G;ibdata3:10G;ibdata4:10G;ibdata5:10G;ibdata6:10G:autoextend
+innodb_log_buffer_size = 4M
+innodb_buffer_pool_size = 10G
+innodb_flush_log_at_trx_commit =  2
+
+## Logging and Replication
+#log = <%= @default[:mysql][:fsLocalDataRoot] %>/mysql.log
+long_query_time = 3
+log_slow_queries = <%= @default[:mysql][:fsLocalDataRoot] %>/slog/mysql-slow.log
+
+#log-queries-not-using-indexes
+
+#server-id = 1
+log_bin = <%= @default[:mysql][:fsLocalDataRoot] %>/logs/mysql-bin.log
+log-error = <%= @default[:mysql][:fsLocalDataRoot] %>/elog/mysqld.err
+
+# WARNING: Using expire_logs_days without bin_log crashes the server! See README.Debian!
+max_binlog_size = 100M
+expire_logs_days = 10
+#binlog_do_db = include_database_name
+#binlog_ignore_db = include_database_name
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet = 16M
+
+[mysql]
+
+[isamchk]
+key_buffer = 16M
+
+#!includedir /etc/mysql/conf.d/

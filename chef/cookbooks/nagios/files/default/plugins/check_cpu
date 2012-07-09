@@ -1,0 +1,122 @@
+#!/usr/bin/python
+
+"""check_cpu
+
+This is a nagios plugin that reads CPU utilisation data from /proc/stat
+by tracking previous state in /var/run/XXX it can determine how busy the CPU
+has been since it was last run and alert when a threshold is exceeded.
+
+As a side effect, the calculated data is written to syslog so it can be
+picked up for analysis by splunk.
+"""
+
+import sys
+import os
+import exceptions
+import marshal
+from syslog import *
+import getopt
+
+dfile="/proc/stat"
+sfile="/var/tmp/check_cpu.state"
+
+
+#######
+# Function Definitions
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+def usage():
+        sys.stderr.write("%s: usage [-w <warn percent>] [-c <crit percent>]\n")
+
+
+#######
+# Parse args
+
+try:
+        opts, args = getopt.getopt(sys.argv[1:], "w:c:")
+except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(3)
+
+warnpct=None
+critpct=None
+
+for o, a in opts:
+        if o == '-w':
+                if a[-1]=='%':
+                        warnpct=int(a[:-1])
+                else:
+                        warnpct=int(a)
+
+        elif o == '-c':
+                if a[-1]=='%':
+                        critpct=int(a[:-1])
+                else:
+                        critpct=int(a)
+
+
+
+#######
+# Main body
+try:
+	openlog("check_cpu")
+	units=os.sysconf("SC_CLK_TCK")
+	# Read the current data from the file
+	d=open(dfile, "r").readlines()
+	# Grab and clean up the cpu line (should be the first line)
+	cpu=d[0].strip().split()
+	if cpu[0] != "cpu":
+		raise "Unexpected format", "First line of %s starts with %s"%(dfile, cpu[0])
+	# Calculate the total and grab out the idle time
+	ctot=sum(map(int, cpu[1:]))/float(units)
+	cidl=int(cpu[4])/float(units)
+	# Count the number of lines that start with "cpu" - 1 for the summary
+	ccnt=map(lambda x: x.startswith('cpu'), d).count(True) - 1
+	
+	try:
+		prev=marshal.load(open(sfile, "rb"))
+	except:
+		prev={"ptot":0, "pidl":0}
+
+	dtot=ctot-prev['ptot']
+	didl=cidl-prev['pidl']
+
+	utl=((dtot-didl)/dtot)*100
+	msg="over the last %.02f seconds CPU utilisation was %.01f%%"%(dtot/ccnt, utl)
+	syslog(msg)
+
+	st={"ptot":ctot, "pidl":cidl}
+	marshal.dump(st, open(sfile, "wb"))
+
+	if critpct and (utl >= critpct):
+		CRIT(msg)
+	if warnpct and (utl >= warnpct):
+		WARN(msg)
+	OK(msg)
+	
+except exceptions.SystemExit:
+        raise
+except:
+        sys.stderr.write(`sys.exc_info()`+"\n")
+        CRIT("internal plugin failure")
+

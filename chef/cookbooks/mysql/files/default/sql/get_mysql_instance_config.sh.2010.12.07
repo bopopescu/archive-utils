@@ -1,0 +1,153 @@
+#!/bin/sh
+##source ~/set_alais.sh
+
+TMPFILE=$(mktemp /tmp/$0.XXXXXXXXXX)
+
+echo `date` > $TMPFILE
+echo
+
+CMD="$1"
+
+echo ------------ $0 ---------->> $TMPFILE
+echo  $CMD  
+
+HLIST="
+CommxxMaster
+Pod1nnMaster
+Pod2nnMaster
+Pod3nnMaster
+Pod4nnMaster
+Pod5nnMaster
+Pod6nnMaster
+LocaxxMaster
+ForuxxMaster
+SocaxxMaster
+MedixxMaster
+MasRepo
+LmTool
+RtxxMaster
+mema
+CommxxSlave
+Pod1nnSlave
+Pod2nnSlave
+Pod3nnSlave
+Pod4nnSlave
+Pod5nnSlave
+Pod6nnSlave
+LocaxxSlave
+ForuxxSlave
+SocaxxSlave
+MedixxSlave
+RtxxSlave
+memb
+SavxxComm
+SavxxPod1 
+SavxxPod2 
+SavxxPod3 
+SavxxPod4 
+SavxxPod5 
+SavxxPod6 
+SavxxLoca
+SavxxForu
+SavxxSoca
+SavxxMedi
+SavxxRt
+SavxxRt
+UatLoca
+UatPod1
+UatPod2
+UatPod3
+UatComm
+UatForu
+UatSoca
+SocDevMysql2
+UatCmLoca
+UatCmPod1
+UatCmPod2
+UatCmPod3
+"
+
+for MYHOST in $HLIST ; 
+do
+	MYCNT=`grep $MYHOST ~/set_alais.sh | grep -v '#' | wc -l`
+	echo $MYCNT  ------------ $MYHOST 
+done
+
+	echo "CONTINUE ??  yes/no";  read CHOICE;
+
+for MYHOST in $HLIST ; 
+do
+	MYKEY=`grep $MYHOST  ~/set_alais.sh  | grep -v '#'  | awk '{print $5}' | cut -d/ -f3`
+	MYUIP=`grep $MYHOST  ~/set_alais.sh  | grep -v '#'  | awk '{print $6}'`
+	echo; 
+	echo  $MYHOST 
+	ALS=`grep $MYHOST ~/set_alais.sh | grep -v '#'`
+	echo $ALS
+        ssh -i ~/.ssh/$MYKEY -o StrictHostKeyChecking=no   $MYUIP 'hostname'
+	ssh -i ~/.ssh/$MYKEY -o StrictHostKeyChecking=no   $MYUIP  "
+	export PATH=$PATH:/usr/local/mysql/bin:/opt/lockerz/bin:/usr/local/aws/ec2-api-tools/bin:/usr/local/bin:/var/lib/gems/1.8/bin:/usr/local/aws/ec2-api-tools/bin:/usr/local/aws/bin; 
+	export JAVA_HOME=/usr/lib/jvm/java-6-sun; 
+	export EC2_PRIVATE_KEY=/etc/aws/keys/pk.pem; 
+	export EC2_CERT=/etc/aws/keys/cert.pem; 
+	export EC2_HOME=/usr/local/aws/ec2-api-tools ;
+
+	ifconfig | head -2 | tail -1 | cut -d: -f2 | cut -dB -f1; 
+	MYISID=\`curl -s http://169.254.169.254/latest/meta-data/instance-id\`;
+	echo \$MYISID;
+	ec2din | grep  \$MYISID | awk '{print \$7 \"; \" \$9 \"; \" \$11  }' ;
+	echo ; " 
+done
+
+cat $TMPFILE
+rm $TMPFILE
+
+exit
+
+#################################################################################
+
+curl -s http://169.254.169.254/latest/meta-data/instance-id > /tmp/mymyid;
+cat /tmp/mymyid;
+MYISID=\`cat /tmp/mymyid\`;
+echo MYISID=== \$MYISID ;
+
+        curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone; 
+        echo; 
+        curl -s http://169.254.169.254/latest/meta-data/instance-id; 
+        echo;
+
+
+
+
+HLIST="
+CommxxMaster
+Pod1xxMaster
+Pod2xxMaster
+Pod3xxMaster
+Pod4xxMaster
+Pod5xxMaster
+Pod6xxMaster
+LocaxxMaster
+CommxxSlave
+Pod1xxSlave
+Pod2xxSlave
+Pod3xxSlave
+Pod4xxSlave
+Pod5xxSlave
+Pod6xxSlave
+LocaxxSlave
+SavxxComm
+SavxxPod1 
+SavxxPod2 
+SavxxPod3 
+SavxxPod4 
+SavxxPod5 
+SavxxPod6 
+SavxxLoca
+MasRepo
+UatLoca
+UatPod1
+UatPod2
+UatPod3
+UatComm
+"
+

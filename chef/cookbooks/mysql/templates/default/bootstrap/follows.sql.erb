@@ -1,0 +1,103 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 3408
+#
+# http://www.sequelpro.com/
+# http://code.google.com/p/sequel-pro/
+#
+# Host: 127.0.0.1 (MySQL 5.5.9)
+# Database: follows
+# Generation Time: 2011-11-23 13:10:27 -0800
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table followers
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `followers`;
+
+CREATE TABLE `followers` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `follower_id` bigint NOT NULL,
+  `status` bit(1) NOT NULL DEFAULT b'1',
+  `created` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id_status_created` (`user_id`,`status`,`created`),
+  KEY `follower_id_status_created` (`follower_id`,`status`,`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `followers` WRITE;
+/*!40000 ALTER TABLE `followers` DISABLE KEYS */;
+
+INSERT INTO `followers` (`id`, `user_id`, `follower_id`, `status`, `created`, `modified`)
+VALUES
+	(32,1000,2000,b'1','2011-11-22 15:28:31','2011-11-22 15:34:09'),
+	(33,2000,1000,b'1','2011-11-22 15:28:31','2011-11-22 15:28:31'),
+	(34,1000,3000,b'1','2011-11-22 16:58:08','2011-11-22 16:58:18'),
+	(35,2000,3000,b'1','2011-11-22 16:58:29','2011-11-22 16:58:29'),
+	(37,1000,4000,b'0','2011-11-23 11:14:47','2011-11-23 11:14:47');
+
+/*!40000 ALTER TABLE `followers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="" */;;
+/*!50003 CREATE */ /*!50017 DEFINER=`root`@`localhost` */ /*!50003 TRIGGER `before_followers_created` BEFORE INSERT ON `followers` FOR EACH ROW SET NEW.created = NOW() */;;
+DELIMITER ;
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
+
+
+# Dump of table users
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `users`;
+
+CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL,
+  `first_name` varchar(50) NOT NULL DEFAULT '',
+  `last_name` varchar(50) NOT NULL DEFAULT '',
+  `profile_image_url` varchar(256) DEFAULT '',
+  `city` varchar(50) DEFAULT '',
+  `state` varchar(50) DEFAULT '',
+  `ptz` int(11) NOT NULL DEFAULT '0',
+  `following` int(11) NOT NULL DEFAULT '0',
+  `followers` int(11) NOT NULL DEFAULT '0',
+  `fwbs` int(11) NOT NULL DEFAULT '0',
+  modified  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `first_name` (`first_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `profile_image_url`, `city`, `state`, `ptz`, `following`, `followers`, `fwbs`)
+VALUES
+	(1000,'FirstName1000','LastName1000',NULL,'City1000','State1000',0,1,2,1),
+	(2000,'FirstName2000','LastName2000',NULL,'City2000','State2000',0,0,0,0),
+	(3000,'FirstName3000\n','LastName3000','','City3000','State3000',0,0,0,0),
+	(4000,'FirstName4000','LastName4000','','City4000','State4000',0,0,0,0),
+	(7000,'FirstName7000','LastName7000',NULL,'City7000','State7000',0,0,0,0);
+
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

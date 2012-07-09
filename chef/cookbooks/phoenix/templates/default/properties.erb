@@ -1,0 +1,644 @@
+maxActionEntries=3
+cacheExpirationInterval=300000
+accessControl.address=10.104.41.207:11230
+AccessControlServiceAdapter.Endpoints=tcp -p 11900 -t 5000
+AccessControlServiceAdapter.ThreadPool.Size=15
+AccessControlServiceAdapter.ThreadPool.SizeMax=200
+AccessControlServiceAdminAdapter.Endpoints=tcp -p 11950 -t 2000
+AccessControlServiceAdminAdapter.ThreadPool.Size=5  # Give the AccessControlServiceAdmin adapter its own thread pool to avoid deadlocks
+AccessControlServiceAdminAdapter.ThreadPool.SizeMax=25
+AccessControlServiceProxy=AccessControlService: tcp -h 10.122.251.227 -p 11900 -t 5000 : tcp -h 10.68.74.172 -p 11900 -t 5000
+account=1290185046
+AllowTestEmails=false
+auction.address=10.104.41.207:11237
+AuctionDAO.addClaim=update user_stats set unclaimed_wins=unclaimed_wins-1 claimed_wins=claimed_wins+1 where uid=? 
+AuctionDAO.addWin=update user_stats set unclaimed_wins=unclaimed_wins+1 where uid=? 
+AuctionDAO.createAuction=insert into auction(id, creation_date, start_timestamp, end_timestamp, title, description, image_url, sku, opening_price, reserve_price, minimum_bid_increment, bid_increment, buy_now_price, type, status, tier, dollar_value, delivery_type) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+AuctionDAO.createStatRow=insert into user_stats(uid, unclaimed_wins, claimed_wins, losses) values (?,?,?,0)
+AuctionDAO.deleteAuction=delete from auction where id=?
+AuctionDAO.getAllAuctionsCount=select count(*) as total from auction;
+AuctionDAO.getAllAuctions=select * from auction order by end_timestamp desc
+AuctionDAO.getAllAuctionsWithStatusCount=select count(*) as total from auction where status=?
+AuctionDAO.getAuctionCounts=select * from user_stats where uid=?
+AuctionDAO.getAuction=select * from auction where id=?
+AuctionDAO.getAuctionsOfStatusAndTierPage=select * from auction where status=? and tier=? order by end_timestamp desc limit ?,?
+AuctionDAO.getAuctionsOfStatusPage=select * from auction where status=? order by end_timestamp desc limit ?,?
+AuctionDAO.getAuctionsOfStatus=select * from auction where status=? order by end_timestamp desc
+AuctionDAO.getAuctions=select * from auction order by end_timestamp desc limit ?,?
+AuctionDAO.getAuctionsWithStatus=select * from auction where status=? order by end_timestamp desc
+AuctionDAO.getUserAuctionsOfStatus=select id from auction where status=? and id in (select distinct auction_id from open_auction_bid where uid=?);
+AuctionDAO.getUserAuctionsOpen=select id from auction where status=? and id in (select distinct auction_id from open_auction_bid where uid=?);
+AuctionDAO.getUserWonAuctionsPage=select * from auction where winner_uid=? order by status desc limit ?,?
+AuctionDAO.getUserWonAuctions=select * from auction where winner_uid=? order by status desc
+AuctionDAO.getUserWonAuctionsWithStatusCount=select count(*) from auction where winner_uid=? and status=?
+AuctionDAO.setStatus=update auction set status=? where id=?
+AuctionDAO.updateAuction=update auction set creation_date=?, start_timestamp=?, end_timestamp=?, title=?, description=?, image_url=?, sku=?, opening_price=?, reserve_price=?, minimum_bid_increment=?, bid_increment=?, buy_now_price=?, type=?, status=?, winner_uid=?, winning_bid=?, ship_address_id=?, ip_address=?, tier=?, dollar_value=?, delivery_type=? where id=?
+AuctionProxyDAO.addCluster=insert into cluster_map (id, cluster_type, proxy_string, status) values (?,?,?,?)
+AuctionProxyDAO.getClusterForAuction=select cluster_id from auction_cluster where auction_id=?
+AuctionProxyDAO.getCluster=select * from cluster_map where id=? and cluster_type=?
+AuctionProxyDAO.getClusters=select * from cluster_map
+AuctionProxyDAO.registerAuction=insert into auction_cluster (cluster_id, creation_date) values (?, now())
+AuctionProxyDAO.removeAuction=delete from auction_cluster where auction_id=?
+AuctionProxyDAO.removeCluster=delete from cluster_map where id=? and cluster_type=?
+AuctionProxyDAO.updateClusterProxyString=update cluster_map set proxy_string=? where id=? and cluster_type=?
+AuctionProxyDAO.updateClusterStatus=update cluster_map set status=? where id=? and cluster_type=?
+AuctionProxyServiceAdapter.Endpoints=tcp -p 12300 -t 5000
+AuctionProxyServiceAdapter.ThreadPool.Size=15
+AuctionProxyServiceAdapter.ThreadPool.SizeMax=50
+AuctionProxyServiceAdminAdapter.Endpoints=tcp -p 12350 -t 2000
+AuctionProxyServiceAdminAdapter.ThreadPool.Size=5  # Give the AuctionServiceAdmin adapter its own thread pool to avoid deadlocks
+AuctionProxyServiceAdminAdapter.ThreadPool.SizeMax=25
+AuditServiceDAO.addEntryToAuditLog=insert into audit_log (uid, change_type, change_value, reason, description, lockerz_employee) values (?, ?, ?, ?, ?, ?)
+AuditServiceDAO.getAllAuditLogs=select * from audit_log
+AuditServiceDAO.getAuditLogByMeg=select * from audit_log where lockerz_employee = ?
+AuditServiceDAO.getAuditLogByUser=select * from audit_log where uid = ?
+AuthenticationServiceAdapter.Endpoints=tcp -p 10200 -t 5000
+AuthenticationServiceAdapter.ThreadPool.Size=15
+AuthenticationServiceAdapter.ThreadPool.SizeMax=200
+AuthenticationServiceAdminAdapter.Endpoints=tcp -p 10250 -t 2000
+AuthenticationServiceAdminAdapter.ThreadPool.Size=5  # Give the AuthenticationServiceAdmin adapter its own thread pool to avoid deadlocks
+AuthenticationServiceAdminAdapter.ThreadPool.SizeMax=25
+AuthenticationServiceProxy=AuthenticationService: tcp -h 10.46.245.209 -p 10200 -t 5000 : tcp -h 10.212.71.175 -p 10200 -t 5000
+AwsAccessKey=AKIAIPIJ7ICCKZ2URRDQ
+AwsAccessKey=AKIAIUIE3TUCLK7XDWKA
+AwsSecretKey=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
+AwsSecretKey=lXmb/bMvVyOFA1ICySYS1nPz4nvp/d471rEjDeHy
+AwsServiceEndPoint=https://fps.amazonaws.com
+BidDAO.getBidderSet=select uid from open_auction_bid where auction_id = ?
+BidDAO.getHighestBids=select * from open_auction_bid where auction_id = ? and ( status = ? or status = ? ) order by bid_amount desc limit ?,?
+BidDAO.placeBid=insert into open_auction_bid (uid, auction_id, bid_amount, current_bid_amount, timestamp, status) values (?, ?, ?, ?, ?, ?)
+bonusQuestion.address=10.253.181.171:11223
+cancelURL=http://www.lockerz.com/hermes/payment/cancel
+CBUIServiceEndPoint=https://authorize.payments.amazon.com/cobranded-ui/actions/start
+cdnEndpoint=http://lockerz-media-prod.s3.amazonaws.com
+ChatForumParentId=1
+ChatForumTitleMessageId=1
+ChatForumTitle=SHOUT OUTS
+chatMessages.address=10.104.41.207:11242
+chatServiceInfo.address=10.104.41.207:11243
+chatUserRateLimit.address=10.104.41.207:11241
+CivicScience.AccessKey=d79fd6cd78f8442513b293c121122e2d8160c912
+CivicScience.ConnectionPoolSize=200
+CivicScience.Endpoint=http://www.civicscience.com
+CivicScience.Salt=548958465465
+CivicScience.SecretKey=235247901cff92a74f26bccc9a9596470e878e72
+CivicScience.Target=1
+ContactUsEmail=support@lockerz.com
+ContentDAO.addVideoMetadata=insert into content_video_metadata (content_id, media_id, title, description, approved, remote_updated) values (?, ?, ?, ?, ?, ?)
+ContentDAO.addVideoToCatalog=insert into content_video_catalog (release_id, date_effective, ptz_value, provider_id, third_party_id, duration_seconds) values (?, ?, ?, ?, ?, ?)
+ContentDAO.deleteVideo=delete from content_video_catalog where id = ?
+ContentDAO.deleteVideoMetadata=delete from content_video_metadata where content_id = ?
+ContentDAO.getAllVideos=select * from content_video_catalog
+ContentDAO.getVideoByReleaseId=select * from content_video_catalog where release_id = ?
+ContentDAO.getVideoByThirdPartyId=select * from content_video_catalog where provider_id = ? and third_party_id = ?
+ContentDAO.getVideoMetadataForContentId=select * from content_video_metadata where content_id = ?
+ContentDAO.getVideoProviderByAccessKey=select * from content_providers where access_key = ?
+ContentDAO.getVideoProviderById=select * from content_providers where id = ?
+ContentDAO.getVideoPtzDefaults=select * from content_video_ptz_defaults order by min_duration
+ContentDAO.updateVideoMetadata=update content_video_metadata set media_id = ?, title = ?, description = ?, approved = ?, remote_updated = ? where content_id = ? and remote_updated < ?
+ContentDAO.updateVideo=update content_video_catalog set release_id = ?, provider_id = ?, third_party_id = ?, date_effective = ?, date_expire = ?, ptz_value = ?, duration_seconds = ? where id = ?
+ContentServiceAdapter.Endpoints=tcp -p 11000 -t 5000
+ContentServiceAdapter.ThreadPool.Size=15
+ContentServiceAdapter.ThreadPool.SizeMax=100
+ContentServiceAdminAdapter.Endpoints=tcp -p 11050 -t 2000
+ContentServiceAdminAdapter.ThreadPool.Size=5  # Give the ContentServiceAdmin adapter its own thread pool to avoid deadlocks
+ContentServiceAdminAdapter.ThreadPool.SizeMax=25
+ContentServiceAdminProxy=ContentServiceAdmin: tcp -h 10.214.247.160 -p 11050 -t 5000:tcp -h 10.211.169.140 -p 11050 -t 5000
+credential.address=10.244.141.188:11218
+DailiesDAO.createDailyPost=insert into daily_post (date_post, banner_image, daily_post_type_id, ptz_value, expose_statistics) values (?, ?, ?, ?, ?);
+DailiesDAO.createDailyPostOption=insert into daily_post_option (post_id, caption, ptz_value) values (?, ?, ?);
+DailiesDAO.createNewDailyStatistic=insert into daily_post_statistic (daily_post_id, daily_post_option_id, votes) values (?, ?, ?)
+DailiesDAO.deleteDailyPost=delete from daily_post where id = ?
+DailiesDAO.deleteDailyPostOptions=delete from daily_post_option where post_id = ?
+DailiesDAO.deleteDailyStatistic=delete from daily_post_statistic where daily_post_id = ?
+DailiesDAO.getDailies=select dp.*, dpo.* from daily_post dp left join daily_post_option dpo on dp.id = dpo.post_id order by dp.date_post desc, dpo.id desc
+DailiesDAO.getDailyStatistic=select * from daily_post_statistic where daily_post_id = ? and  daily_post_option_id = ?
+DailiesDAO.updateDailyPost=update daily_post set date_post=?, banner_image=?, daily_post_type_id=?, ptz_value=?, expose_statistics=? where id=?
+DailiesDAO.updateDailyStatistic=update daily_post_statistic set votes = votes + ? where daily_post_id = ? and daily_post_option_id = ?
+DailiesServiceAdapter.Endpoints=tcp -p 10700 -t 5000
+DailiesServiceAdapter.ThreadPool.Size=15
+DailiesServiceAdapter.ThreadPool.SizeMax=50
+DailiesServiceAdminAdapter.Endpoints=tcp -p 10750 -t 2000
+DailiesServiceAdminAdapter.ThreadPool.Size=5  # Give the DailiesServiceAdmin adapter its own thread pool to avoid deadlocks
+DailiesServiceAdminAdapter.ThreadPool.SizeMax=25
+dailyPostAnswer.address=10.244.141.188:11219
+dailyStatistics.address=10.244.141.188:11216
+decalAuthToken.address=10.104.41.207:11231
+DecalBundleDAO.addBundleType=insert into decal_bundle_types (type_name) values (?)
+DecalBundleDAO.addDecalIds=insert into decal_bundle_map (bundle_id, decal_id) values **
+DecalBundleDAO.addMetaInfo=insert into decal_bundle_meta_info (bundle_id, name, info) values **
+DecalBundleDAO.addTypeToBundle=insert into decal_bundle_type_map (bundle_id, bundle_type) values (?,?)
+DecalBundleDAO.createBundleInfo=insert into decal_bundle_info (name, created) values (?,now())
+DecalBundleDAO.deactivateBundleByBusinessId=update decal_bundle_info set active=0 where bundle_business_id=?
+DecalBundleDAO.deactivateBundleById=update decal_bundle_info set active=0 where bundle_id=?
+DecalBundleDAO.getBundleById=select decal_id from decal_bundle_map where bundle_id=?
+DecalBundleDAO.getBundleListPage=select * from decal_bundle_info order by bundle_id desc limit ?,?
+DecalBundleDAO.getBundlesByIds=select distinct decal_id from decal_bundle_map where bundle_id in (**)
+DecalBundleDAO.getBundlesOfType=select * from decal_bundle_info where bundle_id in (select bundle_id from decal_bundle_type_map where bundle_type=?)
+DecalBundleDAO.getBundlesWithMeta=select * from decal_bundle_info where bundle_id in (select bundle_id from decal_bundle_meta_info where name=? and info=?)
+DecalBundleDAO.getBundleTypes=select * from decal_bundle_types
+DecalBundleDAO.getMetaData=select * from decal_bundle_meta_info where bundle_id=?
+DecalBundleDAO.removeTypeFromBundle=delete from decal_bundle_type_map where bundle_id=? and bundle_type=?
+DecalDAO.addReleaseToDecalMapping=insert into content_decal_lookup (release_id, decal_id) values(?,?)
+DecalDAO.createDecalMaster=insert into decal_master(decal_type_category_id, name, decal_image_url, decal_detail_image_url, decal_click_url, status, created) values (?,?,?,?,?,?,?)
+DecalDAO.getDecalById=select d.id, d.name, d.decal_image_url, d.decal_detail_image_url, d.decal_click_url, dtc.decal_type, dtc.category from decal_master d inner join  decal_type_category dtc on d.decal_type_category_id = dtc.id  where d.id=?
+DecalDAO.getDecalByTypeAndCategory=select d.id, d.name, d.decal_image_url, d.decal_detail_image_url, d.decal_click_url, dtc.decal_type, dtc.category from decal_master d inner join  decal_type_category dtc on d.decal_type_category_id = dtc.id  where dtc.decal_type=? and dtc.category=?;
+DecalDAO.getDecalIdForReleaseId=select decal_id from content_decal_lookup where release_id=?
+DecalDAO.getDecalList=select d.id, d.name, d.decal_image_url, d.decal_detail_image_url, d.decal_click_url, dtc.decal_type, dtc.category from decal_master d inner join decal_type_category dtc on d.decal_type_category_id = dtc.id where d.id in (**)
+DecalDAO.getDecalsForSkus=select d.id, d.name, d.decal_image_url, d.decal_detail_image_url, d.decal_click_url, dtc.decal_type, dtc.category from decal_master d inner join decal_type_category dtc on d.decal_type_category_id = dtc.id where d.decal_click_url like ?
+DecalDAO.getDecalTypeCategoryId=select id from decal_type_category where decal_type=? and category=?
+DecalDAO.getDecalTypes=select distinct(decal_type) from decal_type_category
+DecalDAO.getTypeCategoriesForDecals=select dtc.decal_type, dtc.category from decal_type_category dtc, decal_master d where dtc.id = d.decal_type_category_id and d.id in (**)
+DecalDAO.updateDecalStatus=update decal_master set status = ? where id = ?
+DecalDAO.updateDecal=update decal_master set name=?,decal_type_category_id=?,decal_image_url=?,decal_detail_image_url=?,decal_click_url=?,status=? where id = ?
+decalMaster.address=10.104.41.207:11236
+decalsClicked.address=10.104.41.207:11235
+DecalServiceAdapter.Endpoints=tcp -p 11800 -t 5000
+DecalServiceAdapter.ThreadPool.Size=15
+DecalServiceAdapter.ThreadPool.SizeMax=200
+DecalServiceAdminAdapter.Endpoints=tcp -p 11850 -t 2000
+DecalServiceAdminAdapter.ThreadPool.Size=5  # Give the DecalServiceAdmin adapter its own thread pool to avoid deadlocks
+DecalServiceAdminAdapter.ThreadPool.SizeMax=25
+DecalServiceAdminProxy=DecalServiceAdmin: tcp -h 10.122.251.227 -p 11850 -t 5000 : tcp -h 10.68.74.172 -p 11850 -t 5000
+DecalServiceProxy=DecalService: tcp -h 10.122.251.227 -p 11800 -t 5000 : tcp -h 10.68.74.172 -p 11800 -t 5000
+DecalServiceProxy=DecalService: tcp -h 10.122.251.227 -p 11800 -t 5000 : tcp -h 10.68.74.172 -p 11800 -t 5000 
+DefaultAvatarURL=http://static.lockerz.com/4.0.0/img/avatar_medium.png
+disabledUids.address=10.104.41.207:11240
+EmailFrom=noreply@lockerz.com
+EmailOptionsLink=http://lockerz.com/user/update
+EmailOptionsLink=http://www.lockerz.com/emailsetttings/
+EmailOptionsLink=http://www.lockerz.com/user/update
+EmailReplyTo=noreply@lockerz.com
+EmailResetLink=http://www.lockerz.com/email/
+EmailServiceAdapter.Endpoints=tcp -p 10400 -t 5000
+EmailServiceAdapter.ThreadPool.Size=15
+EmailServiceAdapter.ThreadPool.SizeMax=50
+EmailServiceAdminAdapter.Endpoints=tcp -p 10450 -t 2000
+EmailServiceAdminAdapter.ThreadPool.Size=5  # Give the EmailServiceAdmin adapter its own thread pool to avoid deadlocks
+EmailServiceAdminAdapter.ThreadPool.SizeMax=25
+EmailServiceProxy=EmailService: tcp -h 10.249.106.48 -p 10400 -t 5000 : tcp -h 10.254.41.220 -p 10400 -t 5000
+EmailUpdateConfTemplateName=updateEmailConfirmation
+EmailUpdateTemplateName=updateEmail
+enablePtzForComments=false
+enablePtzForLikes=false
+enablePtzForUploads=true
+ForgotPasswordTemplateName=forgotPassword
+forum.address=10.250.143.96:11225
+Forum.blockForumMessage=update forum set active=0 where id=?
+Forum.createForumMessage=insert into forum (group_id,parent_id,uid,user_name,message,date_posted) values (?,?,?,?,?,now())
+forumFeedback.address=10.250.143.96:11225
+Forum.getForumComments=select * from forum where parent_id=? order by date_posted desc limit ?,? 
+Forum.getForumPost=select * from forum where id=? 
+Forum.getForumPosts=select * from forum where group_id=? and parent_id=0 order by date_posted desc limit ?,? 
+Forum.logDislike=update forum set dislike_count=dislike_count+1 where id=?
+Forum.logLike=update forum set like_count=like_count+1 where id=?
+Forum.reportAbuse=update forum set abuse=abuse+1 where id=?
+ForumServiceAdapter.Endpoints=tcp -p 11500 -t 5000
+ForumServiceAdapter.ThreadPool.Size=15
+ForumServiceAdapter.ThreadPool.SizeMax=50
+ForumServiceAdminAdapter.Endpoints=tcp -p 11550 -t 2000
+ForumServiceAdminAdapter.ThreadPool.Size=5  # Give the ForumServiceAdmin adapter its own thread pool to avoid deadlocks
+ForumServiceAdminAdapter.ThreadPool.SizeMax=25
+Forum.unblockForumMessage=update forum set active=1 where id=?
+friendList.address=10.104.41.207:11224
+FriendListDAO.addDisabledUid=insert into disabled_user_ids values(?)
+FriendListDAO.createFriend=insert into friend_list (uid, friend_uid, status, created) values (?, ?, ?, ?)
+FriendListDAO.getDisabledUids=select uid from disabled_user_ids
+FriendListDAO.getFriendList=select * from friend_list where uid = ?
+FriendListDAO.removeDisabledUids=delete from disabled_user_ids where uid=?
+FriendListDAO.removeFriend=delete from friend_list where uid = ? and friend_uid = ?
+FriendListDAO.updateFriendStatus=update friend_list set status = ? where uid = ? and friend_uid = ?
+friendRequest.address=10.104.41.207:11229
+FriendRequestDAO.addUserSocialNetwork = insert into user_social_network (uid, network_id, network_user_id, oauth_token) values (?,?,?,?)
+FriendRequestDAO.createFriendRequest=insert into friend_request (inviter_uid, receiver_uid, message, created) values (?, ?, ?, ?)
+FriendRequestDAO.getFriendRequests=select * from friend_request where receiver_uid = ? 
+FriendRequestDAO.getSocialNetworkList=select * from user_social_network where network_id=? and network_user_id in (**)
+FriendRequestDAO.getUserSocialNetwork = select * from user_social_network where uid = ? and network_id = ?
+FriendRequestDAO.removeFriendRequest=delete from friend_request where inviter_uid = ? and receiver_uid = ?
+FriendRequestDAO.removeUserSocialNetwork = delete from user_social_network where uid = ? and network_id = ?
+FwbPhotoServiceAdapter.Endpoints=tcp -p 12500 -t 5000
+FwbPhotoServiceAdapter.ThreadPool.Size=15
+FwbPhotoServiceAdapter.ThreadPool.SizeMax=200
+FwbPhotoServiceAdminAdapter.Endpoints=tcp -p 12550 -t 2000
+FwbPhotoServiceAdminAdapter.ThreadPool.Size=5  # Give the FwbPhotoServiceAdmin adapter its own thread pool to avoid deadlocks
+FwbPhotoServiceAdminAdapter.ThreadPool.SizeMax=25
+FwbPhotoServiceProxy=FwbPhotoService: tcp -h localhost -p 12500 -t 5000
+GiftCardServiceAdapter.Endpoints=tcp -p 12200 -t 5000
+GiftCardServiceAdapter.ThreadPool.Size=15
+GiftCardServiceAdapter.ThreadPool.SizeMax=50
+GiftCardServiceAdminAdapter.Endpoints=tcp -p 12250 -t 2000
+GiftCardServiceAdminAdapter.ThreadPool.Size=5  # Give the GiftCardServiceAdmin adapter its own thread pool to avoid deadlocks
+GiftCardServiceAdminAdapter.ThreadPool.SizeMax=25
+HallwayDAO.createLockerzMessage=insert into hallway_lockerz_message (event_type_id, message, date_posted, is_required) values (?, ?, ?, ?)
+HallwayDAO.deleteHallwayLockerzMessage=delete from hallway_lockerz_message where id = ?
+HallwayDAO.getAllHallwayLockerzMessagesPage=select * from hallway_lockerz_message hlm join hallway_event_type het on hlm.event_type_id = het.id order by date_posted desc limit ?,?
+HallwayDAO.getAllHallwayLockerzMessages=select * from hallway_lockerz_message hlm join hallway_event_type het on hlm.event_type_id = het.id order by date_posted desc
+HallwayDAO.getHallwayLockerzMessages=select * from hallway_lockerz_message hlm join hallway_event_type het on hlm.event_type_id = het.id where date_posted < now() order by date_posted desc
+HallwayDAO.updateHallwayLockerzMessage=update hallway_lockerz_message set event_type_id=?, message=?, date_posted=?, is_required=? where id=?
+hallwayPost.address=10.244.141.188:11220
+HallwayServiceAdapter.Endpoints=tcp -p 10800 -t 5000
+HallwayServiceAdapter.ThreadPool.Size=15
+HallwayServiceAdapter.ThreadPool.SizeMax=200
+HallwayServiceAdminAdapter.Endpoints=tcp -p 10850 -t 2000
+HallwayServiceAdminAdapter.ThreadPool.Size=5  # Give the HallwayServiceAdmin adapter its own thread pool to avoid deadlocks
+HallwayServiceAdminAdapter.ThreadPool.SizeMax=25
+HallwayServiceProxy=HallwayService: tcp -h 10.209.194.112 -p 10800 -t 5000 : tcp -h 10.210.49.172 -p 10800 -t 5000
+Ice.MessageSizeMax=4096
+Ice.Override.ConnectTimeout=2000
+Ice.Override.ConnectTimeout=2000
+Ice.Plugin.IceLog4jLogger=com.lockerz.phoenix.common.Log4jLoggerPluginFactory
+Ice.RetryIntervals=0 1000 2000
+Ice.RetryIntervals=0 1000 2000
+Ice.ThreadPool.Client.Size=5
+Ice.ThreadPool.Client.SizeMax=50
+Ice.ThreadPool.Server.Size=5
+Ice.ThreadPool.Server.SizeMax=50
+Ice.Warn.Connections=1
+Ice.Warn.Dispatch=2
+ignoreFriendRequestEmail.ignoreLink=http://www.lockerz.com/myLocker/friend-requests
+ImageProcessingServiceAdapter.Endpoints=tcp -p 11700 -t 5000
+ImageProcessingServiceAdapter.ThreadPool.Size=15
+ImageProcessingServiceAdapter.ThreadPool.SizeMax=200
+ImageProcessingServiceAdminAdapter.Endpoints=tcp -p 11750 -t 2000
+ImageProcessingServiceAdminAdapter.ThreadPool.Size=5  # Give the ImageProcessingServiceAdmin adapter its own thread pool to avoid deadlocks
+ImageProcessingServiceAdminAdapter.ThreadPool.SizeMax=25
+ImageProcessingServiceProxy=ImageProcessingService: tcp -h 10.220.166.224 -p 11700 -t 5000 : tcp -h 10.249.182.207 -p 11700 -t 5000
+inMemoryThresholdInBytes=1048576
+InternationalPaymentDAO.createInternationalPayment=insert into international_payments (uid, auction_id, payment_method, payment_account, update_date, creation_date) values (?,?,?,?,now(),now())
+InternationalPaymentDAO.getAuctionRecord=select * from international_payments where auction_id=?
+InternationalPaymentDAO.getPayments=select * from international_payments where auction_id in (**)
+InternationalPaymentDAO.getUserRecords=select * from international_payments where uid=?
+InternationalPaymentDAO.setTransactionId=update international_payments set transaction_id=?, transaction_date=now(), update_date=now() where auction_id=?
+InvitationDAO.addToOptout=insert into optout_email (email, ip_address, date_submitted) values (?, ?, now())
+InvitationDAO.getBlockedDomainId=select id from banned_email_domain where domain = ?
+InvitationDAO.getOptoutId=select id from optout_email where email = ?
+invitationSent.address=10.244.141.188:11222
+InvitationServiceAdapter.Endpoints=tcp -p 10500 -t 5000
+InvitationServiceAdapter.ThreadPool.Size=15
+InvitationServiceAdapter.ThreadPool.SizeMax=200
+InvitationServiceAdminAdapter.Endpoints=tcp -p 10550 -t 2000
+InvitationServiceAdminAdapter.ThreadPool.Size=5  # Give the InvitationServiceAdmin adapter its own thread pool to avoid deadlocks
+InvitationServiceAdminAdapter.ThreadPool.SizeMax=25
+InvitationServiceProxy=InvitationService: tcp -h 10.212.114.111 -p 10500 -t 5000 : tcp -h 10.204.246.144 -p 10500 -t 5000
+inviteeStatus.address=10.104.41.207:11227
+InviteLink=http://www.lockerz.com/signup/
+InviterAvatarSize=medium
+InviteTemplateName=inviteByEmail
+jms.endpoint.host.url=10.245.191.208:7676
+jms.endpoint.password=prodlockerzjms
+jms.endpoint.username=prodlockerzjms
+jmsMessageFetchLimit=10
+JoinGroupTopic=false
+JoinGroupTopic=true
+lastLoginPtzAwarded.address=10.244.141.188:11217
+LocatorClient.EnableCaching=true
+LocatorDAO.assignUID=insert into user_id (email) values (?)
+LocatorDAO.assignUIDToPod=insert into user_lookup (uid, pid, email, normalized_email, created) values (?, ?, ?, ?, ?)
+LocatorDAO.deleteTokenable= delete from tokenable where creator_uid = ?
+LocatorDAO.deleteUserId=delete from user_id where id = ?
+LocatorDAO.deleteUserLookup=delete from user_lookup where uid = ?
+LocatorDAO.findUIDAndPodForEmail=select uid, pid from user_lookup where email = ?
+LocatorDAO.findUIDAndPodForNormalizedEmail=select uid, pid from user_lookup where normalized_email = ?
+LocatorDAO.findUserEmail=select email from user_lookup where uid = ?
+LocatorDAO.findUserPods=select uid, pid from user_lookup where uid in (**);
+LocatorDAO.findUser=select pid from user_lookup where uid = ?
+LocatorDAO.getActivePods=select * from pod where status = ?
+LocatorDAO.getActiveSignupPods=select * from pod where status = ? and signup = ?
+LocatorDAO.getPod=select * from pod where id = ?
+LocatorDAO.updateEmailInUserId=update user_id set email = ? where id = ?
+LocatorDAO.updateEmailInUserLookup=update user_lookup set email = ?, normalized_email = ? where uid = ?
+LocatorServiceAdapter.Endpoints=tcp -p 10000 -t 5000
+LocatorServiceAdapter.ThreadPool.Size=15
+LocatorServiceAdapter.ThreadPool.SizeMax=200
+LocatorServiceAdminAdapter.Endpoints=tcp -p 10050 -t 2000
+LocatorServiceAdminAdapter.ThreadPool.Size=5  # Give the LocatorServiceAdmin adapter its own thread pool to avoid deadlocks
+LocatorServiceAdminAdapter.ThreadPool.SizeMax=25
+LocatorServiceProxy=LocatorService: tcp -h 10.248.31.223 -p 10000 -t 5000 : tcp -h 10.210.38.207 -p 10000 -t 5000
+LocatorServiceProxy=LocatorService: tcp -h 10.248.31.223 -p 10000 -t 5000 : tcp -h 10.210.38.207 -p 10000 -t 5000 
+LocatorServiceProxy=LocatorService: tcp -h locator0.phoenix.lockerz.int -p 10000 -t 5000 : tcp -h locator1.phoenix.lockerz.int -p 10000 -t 5000
+LockerzDomain=www.lockerz.com
+LogoImageURL=http://static.lockerz.com/emails/social/logo-email-oct2010.png
+LogoImageURL=http://www.lockerz.com/img/logo-email-aug2010.png
+LogoLink=http://static.lockerz.com/emails/social/logo-email-oct2010.png
+LogoLink=http://static.lockerz.com/sites/default/files/emails/global/lockerz.jpg
+mail.smtp.host=10.245.205.209
+MaxConnections=100
+MaxErrorRetry=3
+maxFileSizeInBytes=3145728
+maxFilesPerUpload=1
+maxInvitationsPerUserPerday=500
+MaxMessageCount=50
+MaxMessageCountPerPeriod=3
+MaxMessageLength=128
+maxPixelCount=921600
+maxPtzEarningCommentsPerUserPerDay=10
+maxPtzEarningLikesPerUserPerDay=10
+maxPtzEarningUploadsPerUserPerDay=10
+MaxWatchCountForPtz=3
+MediaDAO.addImageData=insert into image_data (media_id, width, height, mime_type) values (?, ?, ?, ?)
+MediaDAO.addUserMedia=insert into user_media (uid, media_type_id, flags, status_id, location, created_date) values (?, ?, ?, ?, ?, now())
+MediaDAO.getUserMediaById=select um.*,id.* from user_media um left join image_data id on um.id = id.media_id where um.id = ?
+MediaDAO.removeImageData=delete from image_data where id = ?
+MediaDAO.removeUserMedia=delete from user_media where id = ?
+MediaDAO.updateflagCount=update user_media set flags = ? where id = ?
+MediaDAO.updateUserMedia=update user_media set uid=?, media_type_id=?, flags=?, status_id=?, location=? where id=? 
+MediaServiceAdapter.Endpoints=tcp -p 11600 -t 5000
+MediaServiceAdapter.ThreadPool.Size=15
+MediaServiceAdapter.ThreadPool.SizeMax=200
+MediaServiceAdminAdapter.Endpoints=tcp -p 11650 -t 2000
+MediaServiceAdminAdapter.ThreadPool.Size=5  # Give the PtzServiceAdmin adapter its own thread pool to avoid deadlocks
+MediaServiceAdminAdapter.ThreadPool.SizeMax=25
+MediaServiceProxy=MediaService: tcp -h 10.220.166.224 -p 11600 -t 5000 : tcp -h 10.249.182.207 -p 11600 -t 5000
+MediaServiceProxy=MediaService: tcp -h 10.249.182.207 -p 11600 -t 5000 : tcp -h 10.220.166.224 -p 11600 -t 5000
+mediaUploadToken.address=10.104.41.207:11228
+MinAcceptedInvitesForZlistStatus=20
+mongodb.comment.connectionsPerHost=200
+mongodb.comment.connectTimeout=5000
+mongodb.comment.hostname=10.78.11.159
+mongodb.comment.maxWaitTime=500
+mongodb.comment.port=27017
+mongodb.comment.threadsAllowedToBlockForConnectionMultiplier=1
+mongodb.connectionsPerHost=200
+mongodb.connectTimeout=5000
+mongodb.entityaction.dbname=action_db
+mongodb.entitycomment.dbname=comment_db
+mongodb.hostname=10.102.45.189
+mongodb.maxWaitTime=500
+mongodb.newsfeed.dbname=newsfeed_db
+mongodb.newsfeed.maxNewsFeedRowsLimit=1000
+mongodb.photometrics.dbname=photos_db
+mongodb.photostream.dbname=photos_db
+mongodb.port=27017
+mongodb.search.master.connectionsPerHost=200
+mongodb.search.master.connectTimeout=5000
+mongodb.search.master.hostname=10.102.45.189
+mongodb.search.master.maxWaitTime=500
+mongodb.search.master.port=27017
+mongodb.search.master.threadsAllowedToBlockForConnectionMultiplier=1
+mongodb.search.slave.connectionsPerHost=200
+mongodb.search.slave.connectTimeout=5000
+mongodb.search.slave.hostname=10.218.41.53
+mongodb.search.slave.maxWaitTime=500
+mongodb.search.slave.port=27017
+mongodb.search.slave.threadsAllowedToBlockForConnectionMultiplier=1
+mongodb.slave.connectionsPerHost=200
+mongodb.slave.connectTimeout=5000
+mongodb.slave.hostname=10.218.41.53
+mongodb.slave.maxWaitTime=500
+mongodb.slave.port=27017
+mongodb.slave.threadsAllowedToBlockForConnectionMultiplier=1
+mongodb.threadsAllowedToBlockForConnectionMultiplier=1
+Network=local
+Network=production
+newFriendRequestEmail.acceptLink=http://www.lockerz.com/myLocker/friend-requests
+newFriendRequestEmail.ignoreLink=http://www.lockerz.com/myLocker/friend-requests
+NotAMemberTemplateName=inviteNotAMember
+NotifyUpdateEmailTemplateName=notifyUpdateEmailRequest
+OptoutLink=http://lockerz.com/optout/
+OptoutLink=http://www.lockerz.com/optout/
+PasswordChangedTemplateName=passwordChanged
+password=Lockerz5Live
+PasswordResetLink=http://www.lockerz.com/password/
+PaymentDAO.createPayment=insert into payment (incoming, tracker_id, uid, email, order_id, title, description, amount, status, payment_provider_id, creation_date, update_date) values (?,?,?,?,?,?,?,?,?,?,now(),now())
+PaymentDAO.getPayemntFromTransaction=select * from payment where transaction_id=?
+PaymentDAO.getPaymentFromToken=select * from payment where token=?
+PaymentDAO.getPayment=select * from payment where id=?
+PaymentDAO.incrAuthorizations=update payment set authorizations=authorizations+1, update_date=now() where id=?
+PaymentDAO.setFailureReason=update payment set failure_reason=?, status=?, update_date=now() where id=?
+PaymentDAO.setPayerId=update payment set payer_id=?, update_date=now() where id=?
+PaymentDAO.setProviderId=update payment set payment_provider_id=?, update_date=now() where id=?
+PaymentDAO.setToken=update payment set token=?, update_date=now() where id=?
+PaymentDAO.setTransactionId=update payment set transaction_id=?, update_date=now() where id=?
+PaymentDAO.updatePaymentStatus=update payment set status=?, update_date=now() where id=?
+PaymentDAO.updatePayment=update payment set uid=?, email=?, order_id=?, description=?, amount=?, status=?, payment_provider_id=?, update_date=now() where id=?
+PaymentItemDAO.createPaymentItemEntry=insert into payment_item (payment_id, sku, quantity) values (?,?,?)
+PaymentItemDAO.getPaymentItemEntry=select * from payment_item where payment_id=?=======
+PaymentServiceAdapter.Endpoints=tcp -p 12800 -t 5000
+PaymentServiceAdapter.ThreadPool.Size=15
+PaymentServiceAdapter.ThreadPool.SizeMax=50
+PaymentServiceAdminAdapter.Endpoints=tcp -p 12850 -t 2000
+PaymentServiceAdminAdapter.ThreadPool.Size=5  # Give the PaymentServiceAdmin adapter its own thread pool to avoid deadlocks
+PaymentServiceAdminAdapter.ThreadPool.SizeMax=25
+PayPalBaseURL=https://www.paypal.com/cgi-bin/webscr?
+PayPalEnvironment=production
+PayPalPass=1296601412
+PayPalUser=bens_1296601393_biz_api1.lockerz.com
+photosRateLimit.address=10.104.41.207:11244
+photos_rate_limit_cache_timeout=86000
+pidToDecal.address=10.104.41.207:11234
+PodDAO.addPrivacySetting=insert into user_privacy_settings (uid, privacy_setting_key, access_level) values(?, ?, ?)
+PodDAO.addUserAboutStatement=insert into user_about_statement (uid, disp_state, statement_prefix_id, statement) values (?, ?, ?, ?)
+PodDAO.addUserDecal=insert into user_decal (uid, decal_id, display_status, created) values(?, ?, ?, now())
+PodDAO.answerDaily=insert into daily_post_answer (uid, daily_post_id, daily_post_option_id, answer, date_answered) values (?, ?, ?, ?, ?)
+PodDAO.clearPrivacySettings=delete from user_privacy_settings where uid = ?
+PodDAO.clearStalePtzCount=delete from TMP_STALE_PTZ;
+PodDAO.clearUsedPtzCount=delete from TMP_USED_PTZ;
+PodDAO.countExpPtz=select tmp_stale_ptz.uid,  tmp_stale_ptz.ptz + tmp_used_ptz.ptz from tmp_stale_ptz left join tmp_used_ptz on tmp_stale_ptz.uid=tmp_used_ptz.uid;
+PodDAO.countStalePtz=insert into TMP_STALE_PTZ (UID,PTZ) select uid, sum(ptz_value) as ptz from ptz_transaction WHERE ptz_value > 0 and date_transaction < subdate(now(), interval 3 month) group by uid;
+PodDAO.countUsedPtz=insert into TMP_USED_PTZ (UID,PTZ) select uid, sum(ptz_value) as ptz from ptz_transaction WHERE ptz_value < 0 group by uid;
+PodDAO.createDecalClicked=insert into decals_clicked values(?,?,?)
+PodDAO.createEmailSettings=insert into user_email_settings (uid, email_template, flag) values(?, ?, ?)
+PodDAO.createHallwayPost=insert into hallway_post (uid, event_type_id, event_ref_id, event_values, date_posted) values (?, ?, ?, ?, ?)
+PodDAO.createInviteForEmail=insert into invitation (invitation_type_id, sender_uid, recipient, date_sent, is_friend_request, is_sent, custom_message, sender_ip_address) values (?, ?, ?, ?, ?, ?, ?, ?)
+PodDAO.createNewEmail=insert into user_log (uid, tokenid, new_email, last_updated) values (?, ?, ?, now());
+PodDAO.createPtzTransaction=insert into ptz_transaction (uid, ptz_value, ptz_type_id, event_ref_id, ptz_active, date_transaction) values (?, ?, ?, ?, ?, ?)
+PodDAO.createUserAddress=insert into user_address (uid, address_label, address_line_1, address_line_2, city, state, country_code, postal_code, is_default_billing, is_default_shipping) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+PodDAO.createUserDecalEvent=insert into user_decal_events values(?,?,?,?,?,?,?)
+PodDAO.createUser=insert into user (id, email, status, password, created) values (?, ?, ?, ?, ?)
+PodDAO.createUserMetric=insert into user_metric (uid, num_accepted_invites, ptz_balance) values (?, ?, ?)
+PodDAO.createUserProfile=insert into user_profile (uid, tshirt_size, cellphone, birthdate, gender, first_name, last_name, timezone, language_code, country_code, registration_postal_code) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+PodDAO.createUserRoleHistory=insert into user_role_history (uid,old_role_id,new_role_id,price,payer_email,customer_name,transaction_date,payment_provider_id,transaction_id) values (?,?,?,?,?,?,?,?,?);
+PodDAO.createUserRole=insert into user_role (uid, role_id) values (?, ?)
+PodDAO.deleteDailyPostAnswerForUser=delete from daily_post_answer where uid = ?
+PodDAO.deleteHallwayPostForUser=delete from hallway_post where uid = ?
+PodDAO.deleteInvitationForUser=delete from invitation where sender_uid = ?
+PodDAO.deleteInvite=delete from invitation where id = ?
+PodDAO.deletePtzTransactionForUser=delete from ptz_transaction where uid = ?
+PodDAO.deleteUserAddress=delete from user_address where uid = ?
+PodDAO.deleteUser=delete from user where id = ?
+PodDAO.deleteUserLog=delete from user_log where uid = ?
+PodDAO.deleteUserMetric=delete from user_metric where uid = ?
+PodDAO.deleteUserProfile=delete from user_profile where uid = ?
+PodDAO.deleteUserRole=delete from user_role where uid = ?
+PodDAO.expireUserRoleHistory=update user_role_history set expiration_date=now() where uid=? and expiration_date is null;
+PodDAO.getAcceptedInviteCount=select num_accepted_invites from user_metric where uid = ?
+PodDAO.getCredential=select id,email,password,status from user where id = ?
+PodDAO.getDecalsClicked=select decal_id from decals_clicked where viewer_uid=?
+PodDAO.getEmailSettings=select * from user_email_settings where uid = ?
+PodDAO.getImageUploadCount=select image_upload_count from user_metric where uid=?
+PodDAO.getInvitationDetails=select sender_uid, invitation_type_id, recipient from invitation where id = ?
+PodDAO.getInviteeDetails=select recipient_uid,recipient, date_sent, date_clicked, date_accepted from invitation where sender_uid = ? order by date_sent desc 
+PodDAO.getInviteId=select id from invitation where sender_uid = ? and recipient = ?
+PodDAO.getMessageForInviteId=select custom_message from invitation where id = ?
+PodDAO.getMonthDailyAnswers=select * from daily_post_answer where uid = ? and daily_post_id in (**) order by daily_post_id desc 
+PodDAO.getNewEmail=select new_email from user_log where tokenid = ?
+PodDAO.getNewerDailyAnswers=select * from daily_post_answer where uid = ? and daily_post_id >= ? order by daily_post_id desc limit ?
+PodDAO.getNumAcceptedInvites=select num_accepted_invites from user_metric where uid = ?
+PodDAO.getNumClickedInvites=select count(*) from invitation where sender_uid = ? and date_clicked IS NOT NULL
+PodDAO.getNumSentInvites=select count(*) from invitation where sender_uid = ?
+PodDAO.getOlderDailyAnswers=select * from daily_post_answer where uid = ? and daily_post_id <= ? order by daily_post_id desc limit ?
+PodDAO.getOlderHallwayPosts=select * from hallway_post hp join hallway_event_type het on hp.event_type_id = het.id where uid = ? and date_posted < ? order by date_posted desc limit ?
+PodDAO.getPrivacySettings=select * from user_privacy_settings where uid = ?
+PodDAO.getUserAboutStatements=select * from user_about_statement where uid = ? order by id desc limit 3
+PodDAO.getUserAddresses=select * from user_address where uid = ?
+PodDAO.getUserDecalEvents=select * from user_decal_events where uid=?
+PodDAO.getUserDecalList=select uid, decal_id, display_status, created from user_decal where uid=?
+PodDAO.getUserLogHistory=select * from user_log where uid = ?
+PodDAO.getUserMetric=select * from user_metric where uid = ?
+PodDAO.getUserProfile=select * from user_profile, user where user_profile.uid = ? and user_profile.uid = user.id and user.status != 0
+PodDAO.getUserPtzTransactions=select * from ptz_transaction where uid = ? order by id desc limit ?,?;
+PodDAO.getUserRoleHistoryForTransaction=select * from user_role_history where transaction_id=? and payment_provider_id=?
+PodDAO.getUserRoleHistory=select * from user_role_history where uid=?
+PodDAO.getUserRole=select * from user_role where uid = ?
+PodDAO.getUserRolesToExpire=select uid, new_role_id as role_id from user_role_history where expiration_date is null and effective_date <  date_sub(curdate(), interval 1 month) limit 100;
+PodDAO.getUserRolesToWarn=select uid, new_role_id as role_id from user_role_history where expiration_date is null and warn_date is null and effective_date <  date_add(date_sub(curdate(), interval 1 month),interval 7 day) limit 100;
+PodDAO.getVideosConsumed=select content_id, watch_count from content_video_consumed  where uid = ?;
+PodDAO.removeEmailSettings=delete from user_email_settings where uid = ? 
+PodDAO.removeUserAboutStatement=delete from user_about_statement where uid = ? and id = ?
+PodDAO.searchUserLogForEmail=select distinct uid from user_log where old_email = ?
+PodDAO.updateAcceptedInviteCount=update user_metric set num_accepted_invites = num_accepted_invites + 1 where uid = ?
+PodDAO.updateAndCheckUserPendingPtzBalance=update user_metric set pending_ptz_balance = pending_ptz_balance + ? where uid = ? and pending_ptz_balance + ? >= 0
+PodDAO.updateAndCheckUserPtzBalance=update user_metric set ptz_balance = ptz_balance + ?, risked_ptz_balance = risked_ptz_balance + ? where uid = ? and ptz_balance + ? >= 0
+PodDAO.updateEmailUser=update user set email = ? where id = ?
+PodDAO.updateImageUploadCount=update user_metric set image_upload_count=? where uid=?
+PodDAO.updateInvitationAsSent=update invitation set is_sent=1 where id = ?
+PodDAO.updateInvitationAtRegistration=update invitation set recipient_uid=?, date_accepted=now(), recipient_ip_address=? where id = ?
+PodDAO.updateInviteDateClicked=update invitation set date_clicked=now() where id = ?
+PodDAO.updateInviteDateSent=update invitation set date_sent=now() where sender_uid = ? and recipient = ?
+PodDAO.updateLoginTimestamp=update user_metric set last_login=now() where uid=?
+PodDAO.updateOldEmailUserLog=update user_log set old_email = ? where tokenid = ?
+PodDAO.updatePassword=update user set password = ? where id = ?
+PodDAO.updatePrivacySetting=update user_privacy_settings set access_level = ? where uid = ? and privacy_setting_key = ?
+PodDAO.updateStatus=update user set status = ? where id = ?
+PodDAO.updateUserAboutStatement=update user_about_statement set disp_state = ?, statement_prefix_id = ?, statement = ? where uid = ? and id = ?
+PodDAO.updateUserAddress=update user_address set address_label=?, address_line_1=?, address_line_2=?, city=?, state=?, country_code=?, postal_code=?, is_default_billing=?, is_default_shipping=? where id = ? and uid = ?
+PodDAO.updateUserDecalEvent=update user_decal_events set clicked_thru_date=?, clicked_thru_ptz=?, shopped_thru_date=?, shopped_thru_ptz=? where uid=? and decal_id=? and user_decal_viewer_uid=?
+PodDAO.updateUserDecal=update user_decal set display_status=? where uid=? and decal_id=?
+PodDAO.updateUserPendingPtzBalance=update user_metric set pending_ptz_balance = pending_ptz_balance + ? where uid = ?
+PodDAO.updateUserProfile=update user_profile set tshirt_size=?, cellphone=?, birthdate=?, gender=?, first_name=?, last_name=?, timezone=?, language_code=?, country_code=?, registration_postal_code=?, profile_image_id=?, profile_image_url=? where uid = ?
+PodDAO.updateUserPtzBalance=update user_metric set ptz_balance = ptz_balance + ? where uid = ?
+PodDAO.updateUserRole=update user_role set role_id=? where uid=?
+PodDAO.videoWasConsumedAgain=update content_video_consumed set watch_count=watch_count+1, date_consumed=now()  where uid = ? and content_id = ?;
+PodDAO.videoWasConsumed=insert into content_video_consumed (uid, content_id, date_consumed) values (?, ?, ?)
+PodDAO.warnUserRoleHistory=update user_role_history set warn_date=now() where uid=? and  warn_date is null and expiration_date is null;
+PodServiceAdapter.Endpoints=tcp -p 10300 -t 5000
+PodServiceAdapter.ThreadPool.Size=15
+PodServiceAdapter.ThreadPool.SizeMax=200
+PodServiceAdminAdapter.Endpoints=tcp -p 10350 -t 2000
+PodServiceAdminAdapter.ThreadPool.Size=5  # Give the PodServiceAdmin adapter its own thread pool to avoid deadlocks
+PodServiceAdminAdapter.ThreadPool.SizeMax=25
+ProxyHost=
+ProxyPassword=
+ProxyPort=-1
+ProxyUserName=
+PtzServiceAdapter.Endpoints=tcp -p 10900 -t 5000
+PtzServiceAdapter.ThreadPool.Size=15
+PtzServiceAdapter.ThreadPool.SizeMax=200
+PtzServiceAdminAdapter.Endpoints=tcp -p 10950 -t 2000
+PtzServiceAdminAdapter.ThreadPool.Size=5  # Give the PtzServiceAdmin adapter its own thread pool to avoid deadlocks
+PtzServiceAdminAdapter.ThreadPool.SizeMax=25
+PtzServiceProxy=PtzService: tcp -h 10.210.179.192 -p 10900 -t 5000 : tcp -h 10.209.54.240 -p 10900 -t 5000
+PtzServiceProxy=PtzService: tcp -h 10.210.179.192 -p 10900 -t 5000 : tcp -h 10.209.54.240 -p 10900 -t 5000 
+PtzTypeDAO.addPtzType=insert into ptz_type (type, title, role_id, ptz_value, ptz_value_factor, ptz_subtype, use_supplied_ptz_value) values (?, ?, ?, ?, ?, ?, ?)
+PtzTypeDAO.deletePtzType=delete from ptz_type where id=?
+PtzTypeDAO.getPtzType=select id, type, title, role_id, ptz_value, ptz_value_factor, last_updated, ptz_subtype, use_supplied_ptz_value from ptz_type where id=?
+PtzTypeDAO.getPtzTypes=select id, type, title, role_id, ptz_value, ptz_value_factor, last_updated, ptz_subtype, use_supplied_ptz_value from ptz_type
+PtzTypeDAO.updatePtzType=update ptz_type set type=?, title=?, role_id=?, ptz_value=?, ptz_value_factor=?, ptz_subtype=?, use_supplied_ptz_value=? where id=?
+recentNewsCutoffDays = 30
+redirectTarget=http://www.lockerz.com/myLocker
+ReferenceDataDAO.getAllTimeZones=select * from timezone
+returnURL=http://www.lockerz.com/hermes/payment
+RolePurchaseTemplateName=rolePurchase
+searchResults.address=10.104.41.207:11245
+SearchServiceAdapter.Endpoints=tcp -p 12400 -t 5000
+SearchServiceAdapter.ThreadPool.Size=15
+SearchServiceAdapter.ThreadPool.SizeMax=50
+SearchServiceAdminAdapter.Endpoints=tcp -p 12450 -t 2000
+SearchServiceAdminAdapter.ThreadPool.Size=5  # Give the SearchServiceAdmin adapter its own thread pool to avoid deadlocks
+SearchServiceAdminAdapter.ThreadPool.SizeMax=25
+ServiceLocationDAO.createNode=insert into node (hostname,ip,name,proxy_string,scalr_farm,service_class_id) values (?,?,?,?,?,(select id from service_class where name=? and network_id=?))
+ServiceLocationDAO.deleteNode=delete from node where id = ?
+ServiceLocationDAO.getSiteConfig=select nw.*,sc.*,n.* from locator.node n join locator.service_class sc on n.service_class_id = sc.id join locator.network nw on sc.network_id = nw.id where n.enabled = 1 order by nw.id, sc.id;
+ServiceLocationDAO.updateNode=update node set hostname = ?, ip = ?, name = ?, proxy_string = ?, scalr_farm = ? where id=?
+ServiceLocationService2DAO.createService=insert into service_location (ip, port, name, network, admin, enabled) values (?, ?, ?, ?, ?,?)
+ServiceLocationService2DAO.deleteService=delete from service_location where id=?
+ServiceLocationService2DAO.getAllServices=select * from service_location;
+ServiceLocationService2DAO.updateService=update service_location set ip=?, port=?, name=?, network=?, admin=?, enabled=? where id=?
+ServiceLocationServiceAdapter.Endpoints=tcp -p 11200 -t 5000
+ServiceLocationServiceAdapter.ThreadPool.Size=15
+ServiceLocationServiceAdapter.ThreadPool.SizeMax=200
+sessionType.address=10.217.49.183:11226
+SocialServiceAdapter.Endpoints=tcp -p 11400 -t 5000
+SocialServiceAdapter.ThreadPool.Size=15
+SocialServiceAdapter.ThreadPool.SizeMax=200
+SocialServiceAdminAdapter.Endpoints=tcp -p 11450 -t 2000
+SocialServiceAdminAdapter.ThreadPool.Size=5  # Give the SocialServiceAdmin adapter its own thread pool to avoid deadlocks
+SocialServiceAdminAdapter.ThreadPool.SizeMax=25
+SocialServiceAdminProxy=SocialServiceAdmin: tcp -h 10.209.207.192 -p 11450 -t 5000: tcp -h 10.122.57.90 -p 11450 -t 5000
+SocialServiceProxy=SocialService: tcp -h 10.122.57.90 -p 11400 -t 5000 : tcp -h 10.209.207.192 -p 11400 -t 5000
+SocialServiceProxy=SocialService: tcp -h 10.209.207.192 -p 11400 -t 5000 : tcp -h 10.122.57.90 -p 11400 -t 5000
+SocialServiceProxy=SocialService: tcp -h 10.209.207.192 -p 11400 -t 5000 : tcp -h 10.122.57.90 -p 11400 -t 5000 
+solrServerBaseUrl=http://10.218.35.187:7080/solr
+solrServerConnectionTimeoutInMs=5000
+solrServerMaxConnectionsPerHost=200
+solrServerMaxRetries=1
+solrServerMaxTotalConnections=200
+solrServerSocketTimeoutInMs=5000
+systemEmailFrom=noreply@lockerz.com
+systemEmailReplyTo=noreply@lockerz.com
+tempFileLocation=/tmp/
+TemplateDAO.createTemplate=insert into template (name, content, last_updated) values(?,?,?);
+TemplateDAO.deleteTemplate=delete from template where name=?;
+TemplateDAO.getTemplateNames=select name from template
+TemplateDAO.getTemplate=select * from template where name = ?
+TemplateDAO.updateTemplate=update template set content=?, last_updated=? where name=?;
+timestampThreshold=5
+token.address=10.244.141.188:11212
+TokenDAO.createToken=insert into tokenable (token, creator_uid, reference_id, reference_type, date_expires) values (?, ?, ?, ?, ?)
+TokenDAO.expireToken=update tokenable set date_expires = now() where id = ?
+TokenDAO.getTokenById=select * from tokenable where id = ?
+TokenDAO.getTokenByTokenString=select * from tokenable where token = ?
+TokenDAO.getTokenByUidAndType=select * from tokenable where creator_uid = ? and reference_type = ? limit 1;
+TopicManager=IceStorm/TopicManager: tcp -h 10.241.98.239 -p 9600
+TopicManager=LockerzIceStorm/TopicManager -t:tcp -h 10.114.171.93 -p 9600:tcp -h 10.110.30.68 -p 9600:tcp -h 10.96.222.153 -p 9600
+UpdateInterval=2  # in seconds
+updateInterval=300 # 5 minutes
+userAuction.address=10.104.41.207:11239
+userAuctionCount.address=10.104.41.207:11238
+UserAuctionViewDAO.addAuction=insert into user_auction_view (uid, auction_id, status) values (?, ?, ?)
+UserAuctionViewDAO.declareRedemptionWinner=insert into user_auction_view (uid, auction_id, status, won_timestamp) values (?, ?, ?, ?)
+UserAuctionViewDAO.getRecentWonAuctions=select auction_id, won_timestamp from user_auction_view where uid = ? and won_timestamp is not null
+UserAuctionViewDAO.getUserAuctionsByStatus=select auction_id from user_auction_view where uid = ? and status = ?
+UserAuctionViewDAO.setDeclaredTimestamp=update user_auction_view set won_timestamp = ? where auction_id = ? and uid = ?
+UserAuctionViewDAO.updateDeclaredAuctionMany=update user_auction_view set status = ? where auction_id = ?
+UserAuctionViewDAO.updateDeclaredAuctionOne=update user_auction_view set status = ? where auction_id = ? and uid = ?
+UserDAO.addAboutStatementPrefix=insert into about_statement_prefix (prefix) values (?)
+UserDAO.clearAboutStatementPrefixes=delete from about_statement_prefix;
+UserDAO.getAboutStatementPrefixes=select * from about_statement_prefix
+UserDAO.removeAboutStatementPrefix=delete from about_statement_prefix where id = ?
+userDecal.address=10.104.41.207:11232
+userDecalEvents.address=10.104.41.207:11233
+userLookup.address=10.244.141.188:11211
+userMetric.address=10.244.141.188:11215
+username=anthony@lockerz.com
+userProfile.address=10.244.141.188:11213
+userRole.address=10.244.141.188:11214
+UserServiceAdapter.Endpoints=tcp -p 10100 -t 5000
+UserServiceAdapter.ThreadPool.Size=15
+UserServiceAdapter.ThreadPool.SizeMax=200
+UserServiceAdminAdapter.Endpoints=tcp -p 10150 -t 2000
+UserServiceAdminAdapter.ThreadPool.Size=5  # Give the UserServiceAdmin adapter its own thread pool to avoid deadlocks
+UserServiceAdminAdapter.ThreadPool.SizeMax=25
+UserServiceProxy=UserService: tcp -h 10.211.146.111 -p 10100 -t 5000 : tcp -h 10.248.55.191 -p 10100 -t 5000 : tcp -h 10.242.198.176 -p 10100 -t 5000 : tcp -h 10.211.50.159 -p 10100 -t 5000
+userSocialNetwork.address=10.244.141.188:11213
+useSolrAsSearchProvider=true
+videoContentConsumed.address=10.244.141.188:11221
+videoURIPrefix=http://www.lockerz.com/p/watch/
+ViewMyLockerLink=http://www.lockerz.com/profile/
+ZlisterIconLink=http://www.lockerz.com/img/zlist-icon-28x28.png
+
+friendTopic=friendTopic<%= @jsonUserData["nodeInt"].to_i() + 1 %>
+photoTopic=photoTopic<%= @jsonUserData["nodeInt"].to_i() + 1 %>
+playTopic=playTopic<%= @jsonUserData["nodeInt"].to_i() + 1 %>
+decalTopic=decalTopic<%= @jsonUserData["nodeInt"].to_i() + 1 %>
+userTopic=userTopic1

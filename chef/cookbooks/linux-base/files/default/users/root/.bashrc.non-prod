@@ -1,0 +1,28 @@
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+if [ "$BASH" ]; then
+	#PS1='[\u@\h:\w]# '
+	PS1="\[\033[1;30m\][\[\033[0;37m\]\u\[\033[1;30m\]@\[\033[0;33m\]\H\[\033[1;30m\]] \[\033[1;36m\]\W \[\033[1;30m\]\$\[\033[0m\] "
+fi
+
+alias cfeoff='service cfexecd stop; service cfservd stop; service cfenvd stop'
+alias cfeon='service cfexecd start; service cfenvd start'
+alias lboff='/usr/local/f5_ltm/switchNodeStatus2.pl 0'
+alias lbon='/usr/local/f5_ltm/switchNodeStatus2.pl 1'
+
+[ -f ~/.sgerc ] && . ~/.sgerc
+
+set -o vi
+unset LS_COLORS
+
+return 0
+

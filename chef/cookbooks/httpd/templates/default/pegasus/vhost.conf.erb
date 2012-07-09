@@ -1,0 +1,38 @@
+##
+# Virtual host configuration for the pegasus stack.
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+#
+Listen <%= @listenPort %>
+<VirtualHost *:<%= @listenPort %>>
+	ServerName <%= @domain %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot /var/www/lockerz.com/pegasus/current/web
+
+	LogLevel warn
+	ErrorLog /mnt/local/lockerz.com/logs/httpd/pegasus/error.log
+        # Mark requests from robots (the good robots that make their presence known)
+        SetEnvIf User-Agent ".*(facebook|bot|Bot|Slurp|MaxPointCrawler|KSCrawler)" robot
+        # Mark requests for the robots.txt file
+        SetEnvIf Request_URI "^/robots\.txt$" robot
+        CustomLog /mnt/local/lockerz.com/logs/httpd/pegasus/access.log lockerz env=!robot
+        CustomLog /mnt/local/lockerz.com/logs/httpd/pegasus/robot_access.log lockerz env=robot
+
+	<% if( @listenPort == 80 ) %>
+	 <Directory /var/www/lockerz.com/pegasus/current/web>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	 </Directory>
+	<% else %>
+	 <Directory /var/www/lockerz.com/pegasus/current/web>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	 </Directory>
+	<% end %>
+
+</VirtualHost>
+

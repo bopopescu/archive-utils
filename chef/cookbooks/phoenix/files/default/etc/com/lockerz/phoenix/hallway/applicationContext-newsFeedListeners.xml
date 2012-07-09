@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging.xml" />
+	<!-- message listener containers -->
+	
+	<bean id="communicator" class="Ice.Util" factory-method="initialize" />
+	
+	<bean id="config" class="com.lockerz.phoenix.common.config.Config" >
+		<constructor-arg value="classpath:proxies.json" />
+	</bean>
+
+    <bean id="postProcessor" class="com.lockerz.phoenix.common.ice.IceProxyPostProcessor">
+        <constructor-arg ref="communicator" />
+        <constructor-arg ref="config" />
+        <property name="checkProxies" value="false" />
+    </bean>
+
+    <!--  service injections -->
+    <bean id="userServicePrx" class="com.lockerz.phoenix.slice.UserServicePrx" />
+    <bean id="followClientImpl" class="com.lockerz.service.follow.client.FollowClientPhoenixImpl">
+    	<property name="host">
+        	<value>${follow.api.host}</value>
+    	</property>
+    </bean>
+    
+<!--  PhotoLikedMessage container / processor pair  -->
+
+	<bean name="photoLikedMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.PhotoLikedMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="photoLikedListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="omqConnectionFactory"/>
+        <property name="destination" ref="photoTopic"/>
+        <property name="messageListener" ref="photoLikedMessageProcessor" />
+    </bean>
+    
+<!--  PhotoUploadMessage container / processor pair  -->
+
+	<bean name="photoUploadedMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.PhotoUploadedMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="photoUploadedListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="omqConnectionFactory"/>
+        <property name="destination" ref="photoTopic"/>
+        <property name="messageListener" ref="photoUploadedMessageProcessor" />
+    </bean>
+
+<!--   UserProfilePhotoUpdatedMessage / processor pair  -->
+
+	<bean name="userProfilePhotoUpdatedMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.UserProfilePhotoUpdatedMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="UserProfilePhotoUpdatedContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="omqConnectionFactory"/>
+        <property name="destination" ref="photoTopic"/>
+        <property name="messageListener" ref="userProfilePhotoUpdatedMessageProcessor" />
+    </bean>
+    
+<!--  DecalCurate message container / processor pair  -->
+
+	<bean name="decalCurateMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.DecalCurateMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="decalCurateListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="omqConnectionFactory"/>
+        <property name="destination" ref="decalTopic"/>
+        <property name="messageListener" ref="decalCurateMessageProcessor" />
+    </bean> 
+
+<!--  DecalRepost message container / processor pair  -->
+
+	<bean name="decalRepostMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.DecalRepostMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="decalRepostListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="omqConnectionFactory"/>
+		<property name="destination" ref="decalTopic"/>
+		<property name="messageListener" ref="decalRepostMessageProcessor" />
+	</bean> 
+
+<!--  PurchaseViaDecal message container / processor pair  -->
+
+	<bean name="purchaseViaDecalMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.PurchaseViaDecalMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+	</bean>
+
+ 	<bean id="purchaseViaDecalListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="omqConnectionFactory"/>
+		<property name="destination" ref="decalTopic"/>
+		<property name="messageListener" ref="purchaseViaDecalMessageProcessor" />
+	</bean> 
+	
+<!--  Follows Collection message container / processor pair  -->
+
+	<bean name="followsCollectionMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.FollowsCollectionMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+		<property name="followClient" ref="followClientImpl" />
+		<property name="followApiKey" value="${follow.api.phoenix.key}"/>
+	</bean>
+
+ 	<bean id="followsCollectionListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="omqConnectionFactory"/>
+		<property name="destination" ref="decalTopic"/>
+		<property name="messageListener" ref="followsCollectionMessageProcessor" />
+	</bean>
+
+<!--  Follow Topic -->
+
+	<bean id="followTopic" class="com.sun.messaging.Topic">
+	     <constructor-arg type="java.lang.String" value="${followTopic}"/>
+	</bean>	
+<!--  Follows User message container / processor pair  -->
+
+	<bean name="followsUserMessageProcessor" class="com.lockerz.phoenix.hallway.processor.impl.FollowsUserMessageProcessor" >
+		<property name="userService" ref="userServicePrx" />
+		<property name="newsFeedDAO" ref="masterNewsFeedDAO" />
+	</bean>
+
+ 	<bean id="followsUserListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="omqConnectionFactory"/>
+		<property name="destination" ref="followTopic"/>
+		<property name="messageListener" ref="followsUserMessageProcessor" />
+	</bean>
+</beans>
+

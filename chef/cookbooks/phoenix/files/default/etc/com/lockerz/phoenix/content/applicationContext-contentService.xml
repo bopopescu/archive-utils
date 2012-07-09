@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import resource="classpath:com/lockerz/phoenix/content/applicationContext-contentService-dao.xml" />
+
+	<bean id="contentService" class="com.lockerz.phoenix.content.ContentService">
+		<property name="contentServiceServant" ref="contentServiceServant" />
+		<property name="contentServiceAdminServant" ref="contentServiceAdminServant" />
+	</bean>
+
+    <bean id="videoCategorizer" class="com.lockerz.phoenix.content.VideoCategorizer">
+        <property name="contentDAO" ref="contentDAO" />
+    </bean>
+
+	<bean id="contentServiceServant" class="com.lockerz.phoenix.content.ContentServiceI">
+		<property name="contentDAO" ref="contentDAO" />
+        <property name="videoCategorizer" ref="videoCategorizer"/>
+	</bean>
+
+	<bean id="contentServiceAdminServant" class="com.lockerz.phoenix.content.ContentServiceAdminI">
+		<constructor-arg>
+			<ref bean="contentServiceServant"/>
+		</constructor-arg>
+	</bean>
+</beans>

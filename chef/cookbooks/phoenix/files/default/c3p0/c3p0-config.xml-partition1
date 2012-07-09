@@ -1,0 +1,55 @@
+<c3p0-config>
+        <default-config>
+                <property name="acquireIncrement">1</property>
+                <property name="acquireRetryAttempts">0</property> <!-- 0 means retry indefinitely -->
+                <property name="acquireRetryDelay">1000</property>
+                <property name="breakAfterAcquireFailure">false</property>
+                <property name="checkoutTimeout">30000</property>
+                <property name="driverClass">com.mysql.jdbc.Driver</property>
+                <property name="idleConnectionTestPeriod">30</property>
+                <property name="initialPoolSize">10</property>
+                <property name="maxIdleTime">300</property>
+                <property name="maxPoolSize">50</property>
+                <property name="minPoolSize">1</property>
+                <property name="maxStatements">200</property>
+                <property name="preferredTestQuery">select 1</property>
+                <property name="testConnectionOnCheckout">true</property>
+        </default-config>  <!-- This app is massive! -->
+
+	<named-config name="auctionMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.104.67.225/auction</property>
+		<property name="user">auction</property>
+		<property name="password">hVbUWwHdp30m5LUHlBPw</property>
+	</named-config>
+
+	<named-config name="auctionSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.104.67.225/auction</property>
+		<property name="user">auction</property>
+		<property name="password">hVbUWwHdp30m5LUHlBPw</property>
+	</named-config>
+
+	<named-config name="userAuctionMaster">
+		<property name="jdbcUrl">jdbc:mysql://10.102.9.172/user_auction</property>
+		<property name="user">uauction</property>
+		<property name="password">hjkltrew</property>
+	</named-config>
+
+	<named-config name="userAuctionSlave">
+		<property name="jdbcUrl">jdbc:mysql://10.102.9.172/user_auction</property>
+		<property name="user">uauction</property>
+		<property name="password">hjkltrew</property>
+	</named-config>
+
+        <named-config name="auctionPaymentMaster">
+                <property name="jdbcUrl">jdbc:mysql://10.102.9.172/auction_payments</property>
+                <property name="user">uauction</property>
+                <property name="password">hjkltrew</property>
+        </named-config>
+
+        <named-config name="auctionPaymentSlave">
+                <property name="jdbcUrl">jdbc:mysql://10.102.9.172/auction_payments</property>
+                <property name="user">uauction</property>
+                <property name="password">hjkltrew</property>
+        </named-config>
+
+</c3p0-config>

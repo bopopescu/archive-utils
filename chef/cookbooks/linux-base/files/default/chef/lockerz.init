@@ -1,0 +1,47 @@
+#!/usr/local/bin/ruby
+#
+# lockerz.com startup script
+### BEGIN INIT INFO
+# Provides: lockerz
+# Required-Start: $local_fs $network $syslog
+# Required-Stop: $local_fs $syslog
+# Should-Start: $syslog
+# Should-Stop: $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start the lockerz stack
+# Description:       Start the lockerz stack
+### END INIT INFO
+require "rubygems"
+require "json"
+require "dynect_rest"
+
+externalIp = `curl -s http://169.254.169.254/2011-01-01/meta-data/public-ipv4/`.chomp()
+#puts externalIp
+
+jsonUserData = JSON.parse( `curl -s http://169.254.169.254/2011-01-01/user-data/` )
+#jsonUserData = JSON.parse( '{"roleName":"webfe","stackName":"ptzplace","hostname":"webfe5.ptzplace.prod.lockerz.us","envName":"prod"}' )
+#puts jsonUserData.inspect
+
+envName = jsonUserData["envName"]
+roleName = jsonUserData["roleName"]
+hostname = jsonUserData["hostname"]
+stackName = jsonUserData["stackName"]
+
+system( "hostname %s" % hostname )
+
+system( "cp /root/bin/resolv.conf /etc/" )
+
+## Chef
+system( "rm -rf /etc/chef/client.pem" )
+system( "chef-client -N %s" % hostname )
+
+## This dependant on /mnt being correct.
+system( "knife node run_list add %s \"role[system]\"" % hostname )
+
+## Dynect
+dynect = DynectRest.new( 'lockerz','drone','oa@f2Vo0ah','lockerz.us' )
+dynect.a.fqdn( hostname ).ttl( 3600 ).address( externalIp ).save
+dynect.publish()
+
+system( "chef-client" ) 

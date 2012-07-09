@@ -1,0 +1,133 @@
+#!/bin/bash
+#
+# Rebuild EBS mysql instance from EBS snapshot
+#
+#-----------------------------------------
+#       KEY THINGS to known before start        
+# # THIS SCRIPT should be run on production DB HOST LOCALLY
+# # Pre-requisite:
+#       ec2keys
+#       DESC=LOC-Feb_25_06AM
+#       availzone=us-east-1a
+#
+#  Usage:  $0 DESC
+#  For example:  $0 POD5-Mar_25_05PM
+#
+#-----------------------------------------
+
+#-----------------------------------------
+#       Setup EC2 ENV
+#-----------------------------------------
+
+OLDPWD=/etc/aws/keys
+EC2_HOME=/usr/local/aws/ec2-api-tools
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/var/lib/gems/1.8/bin:/usr/local/aws/ec2-api-tools/bin:/usr/local/aws/bin
+JAVA_HOME=/usr/lib/jvm/java-6-sun
+EC2_PRIVATE_KEY=/etc/aws/keys/pk.pem
+EC2_CERT=/etc/aws/keys/cert.pem
+
+#-----------------------------------------
+#       Setup AWS Key 
+#-----------------------------------------
+
+# From newvault: scp over the keys
+# ssh -i ~/.ssh/hydra-savior.pem root@204.236.192.41  "mkdir -p /etc/aws/keys"
+# scp -i ~/.ssh/hydra-savior.pem  ~/ec2keys/*   root@204.236.192.41:/etc/aws/keys/
+
+DESC=LOCATOR-Mar_29_05AM
+availzone=us-east-1a
+
+echo  Restore on `hostname` from snapshot $DESC in Availzone $availzone
+echo "CONTINUE ??  yes/no";  read CHOICE;
+
+#-----------------------------------------
+#       Check for Available Snapshot
+#-----------------------------------------
+
+ec2dsnap | grep $DESC 
+ec2dsnap | grep $DESC  | wc -l
+
+THIS_INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
+echo "Instance ID is $THIS_INSTANCE_ID"
+
+#-----------------------------------------
+#       Add Snapshot as Volume and Attache it   
+#-----------------------------------------
+
+THIS_INSTANCE_ID=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
+echo "Instance ID is $THIS_INSTANCE_ID"
+
+# find availzone by ec2din | grep $THIS_INSTANCE_ID
+
+# for DEVSD in /dev/sdh /dev/sdi /dev/sdj /dev/sdk /dev/sdl /dev/sdm /dev/sdn /dev/sdo /dev/sdp /dev/sdq /dev/sdr /dev/sds; 
+for DEVSD in sdh sdi sdj sdk sdl sdm sdn sdo sdp sdq sdr sds;
+do
+        MYSNAP=`ec2dsnap | grep "$DEVSD-$DESC" | awk '{print $2}'`
+        echo  Continue Add Snapshot $DEVSD-$DESC with SNAPSHOT_ID = $MYSNAP 
+        echo "CONTINUE ??  yes/no";  read CHOICE;
+        VOLUME=`ec2addvol --snapshot $MYSNAP -z $availzone | awk '{print $2}'`
+        ec2attvol $VOLUME -i $THIS_INSTANCE_ID -d /dev/${DEVSD}
+done
+
+VOLUMES=`$EC2_HOME/bin/ec2-describe-volumes | grep "attached" | grep "$THIS_INSTANCE_ID"`
+
+exit
+
+###########################################################################################
+
+step from history
+
+This is to build a locator from a brand new instance using snapshot
+
+make sure mysql is down
+    4  ps -ef | grep mysql
+if not, mysqladmin shutdown
+    7  ec2ver
+    9  cd aws/ec2-api-tools/scripts/
+   15  ./upgrade-ec2-tools.sh 
+   16  ec2ver
+   17  curl -s http://169.254.169.254/latest/meta-data/instance-id
+   18  mysqladmin shutdown
+set up env
+   34  OLDPWD=/etc/aws/keys
+   35  EC2_HOME=/usr/local/aws/ec2-api-tools
+   36  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/var/lib/gems/1.8/bin:/usr/local/aws/ec2-api-tools/bin:/usr/local/aws/bin
+   37  JAVA_HOME=/usr/lib/jvm/java-6-sun
+   38  EC2_PRIVATE_KEY=/etc/aws/keys/pk.pem
+   39  EC2_CERT=/etc/aws/keys/cert.pem
+check instance 
+   40  curl -s http://169.254.169.254/latest/meta-data/instance-id
+make sure all new volume have been attached
+   41  $EC2_HOME/bin/ec2-describe-volumes | grep "attached" | grep i-07ee6a6c
+setup md
+   44  apt-get install mdadm
+   45  mdadm --assemble /dev/md2 /dev/sdn /dev/sdo /dev/sdp /dev/sdq /dev/sdr /dev/sds
+   48  mdadm --assemble /dev/md1 /dev/sdh /dev/sdi /dev/sdj /dev/sdk /dev/sdl /dev/sdm
+   46  cat /proc/mdstat 
+   47  cat /etc/fstab
+   50  vi  /etc/fstab
+
+/dev/md1 /ebs/mysql-data xfs defaults 0 0
+/dev/md2 /ebs/mysql-misc xfs defaults 0 0
+   53  mkdir -p /ebs/mysql-data
+   54  mkdir -p /ebs/mysql-misc
+   58  mount -a
+   72  vi /etc/my.cnf/conf.d/farm-replication.cnf 
+   78  cp my.cnf.50hy my.cnf
+
+exit
+
+###########################################################################################
+
+
+#add the following to /etc/fstab
+/dev/md1 /ebs/mysql-data xfs defaults 0 0
+/dev/md2 /ebs/mysql-misc xfs defaults 0 0
+
+mount -a
+df -m
+/etc/init.d/mysql start
+mysql> show slave status \G
+mysql> start slave;
+mysql> show slave status \G
+

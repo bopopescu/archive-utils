@@ -1,0 +1,3 @@
+[default]
+host = <%= @node[:fqdn] %>
+_meta = lz_env::<%= @node.chef_environment %> lz_stack::<%= @stackName %> lz_role::<%= @roleName %>

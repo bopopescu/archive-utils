@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml" />
+	<import
+		resource="classpath:com/lockerz/phoenix/auction/applicationContext-auctionService-dao.xml" />
+
+	<bean id="auctionService" class="com.lockerz.phoenix.auction.AuctionService">
+		<property name="auctionServiceServant" ref="auctionServiceServant" />
+		<property name="auctionServiceAdminServant" ref="auctionServiceAdminServant" />
+	</bean>
+
+	<bean id="auctionServiceServant" class="com.lockerz.phoenix.auction.DistributedAuctionServiceI">
+		<property name="auctionDAO" ref="auctionDAO" />
+		<property name="userAuctionViewDAO" ref="userAuctionViewDAO" />
+		<property name="paymentDAO" ref="auctionPaymentDAO" />
+		<property name="auctionManager" ref="auctionManager"/>
+		<property name="bidManager" ref="bidManager" />
+		<property name="redemptionManager" ref="redemptionManager" />
+		<property name="scheduledTaskProcessor" ref="scheduledTaskProcessor" />
+		<property name="emailScheduledTaskProcessor" ref="emailScheduledTaskProcessor" />
+		<property name="ruleProcessor" ref="ruleProcessor"/>
+	</bean>
+
+	<bean id="auctionServiceAdminServant" class="com.lockerz.phoenix.auction.AuctionServiceAdminI">
+        <property name="auctionService" ref="auctionServiceServant"/>
+	</bean>
+
+	<bean id="auctionManager" class="com.lockerz.phoenix.auction.manager.HazelcastEnglishAuctionManager">
+		<property name="bidDAO" ref="bidDAO"/>
+		<property name="userAuctionViewDAO" ref="userAuctionViewDAO" />
+		<property name="auctionDAO" ref="auctionDAO" />
+	</bean>
+	
+	<bean id="bidManager" class="com.lockerz.phoenix.auction.manager.EnglishAuctionBidManager">
+		<property name="bidDAO" ref="bidDAO"/>
+		<property name="userAuctionViewDAO" ref="userAuctionViewDAO" />
+		<property name="emailScheduledTaskProcessor" ref="emailScheduledTaskProcessor" />
+		<property name="bidProcessor" ref="englishAuctionBidProcessor"/>
+		<property name="auctionManager" ref="auctionManager"/>
+	</bean>
+
+	<bean id="redemptionManager" class="com.lockerz.phoenix.auction.manager.HazelcastRedemptionManager">
+		<property name="auctionManager" ref="auctionManager"/>
+	</bean>
+
+	<bean id="ruleProcessor" class="com.lockerz.phoenix.auction.bid.rule.RuleProcessor">
+		<constructor-arg><ref bean="auctionManager"/></constructor-arg>
+	</bean>
+	
+	<bean id="scheduledTaskProcessor" class="com.lockerz.phoenix.auction.task.AuctionScheduledTaskProcessor">
+		<property name="bidDAO" ref="bidDAO"/>
+		<property name="auctionDAO" ref="auctionDAO"/>
+		<property name="userAuctionViewDAO" ref="userAuctionViewDAO" />
+		<property name="auctionManager" ref="auctionManager"/>
+		<property name="bidManager" ref="bidManager" />
+		<property name="redemptionManager" ref="redemptionManager" />
+		<property name="emailScheduledTaskProcessor" ref="emailScheduledTaskProcessor" />
+		<property name="ruleProcessor" ref="ruleProcessor"/>
+	</bean>
+	
+	<bean id="emailScheduledTaskProcessor" class="com.lockerz.phoenix.auction.task.EmailScheduledTaskProcessor">
+	</bean>
+	
+	<bean id="englishAuctionBidProcessor" class="com.lockerz.phoenix.auction.EnglishAuctionBidProcessor">
+	</bean>
+
+	<bean id="proxyBiddingBidProcessor" class="com.lockerz.phoenix.auction.ProxyBiddingBidProcessor">
+	</bean>
+</beans>

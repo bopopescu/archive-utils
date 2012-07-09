@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Pruning pts0"
+cd /mnt/local/logmanager/pts0.dba.prod.lockerz.us/pts_add2any ; time find ./ -mtime +10 -exec mv {} /mnt/archive/logmanager/pts0.dba.prod.lockerz.us/pts_add2any/ \;
+echo "Compressing pts0"
+cd /mnt/archive/logmanager/pts0.dba.prod.lockerz.us/pts_add2any ; time find ./ -name "*.lm" -exec gzip -f {} \;
+
+echo "Pruning pts1"
+cd /mnt/local/logmanager/pts1.dba.prod.lockerz.us/pts_add2any ; time find ./ -mtime +10 -exec mv {} /mnt/archive/logmanager/pts1.dba.prod.lockerz.us/pts_add2any/ \;
+echo "Compressing pts1"
+cd /mnt/archive/logmanager/pts1.dba.prod.lockerz.us/pts_add2any ; time find ./ -name "*.lm" -exec gzip -f {} \;
+
+echo "Pruning pts2"
+cd /mnt/local/logmanager/pts2.dba.prod.lockerz.us/pts_add2any ; time find ./ -mtime +10  -exec mv {} /mnt/archive/logmanager/pts2.dba.prod.lockerz.us/pts_add2any/ \;
+echo "Compressing pts2"
+cd /mnt/archive/logmanager/pts2.dba.prod.lockerz.us/pts_add2any ; time find ./ -name "*.lm" -exec gzip -f {} \;
+

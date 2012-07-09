@@ -1,0 +1,80 @@
+#######################################################################
+# Global Directives:
+include		/etc/openldap/schema/core.schema
+include		/etc/openldap/schema/cosine.schema
+include		/etc/openldap/schema/autofs.schema
+include		/etc/openldap/schema/nis.schema
+include		/etc/openldap/schema/inetorgperson.schema
+
+pidfile		/var/run/openldap/slapd.pid
+argsfile	/var/run/openldap/slapd.args
+
+loglevel	sync
+
+sizelimit 500
+tool-threads 1
+
+## TLSCipherSuite HIGH:MEDIUM:-SSLv2
+TLSCACertificateFile /etc/openldap/ssl/server.pem
+TLSCertificateFile /etc/openldap/ssl/server.pem
+TLSCertificateKeyFile /etc/openldap/ssl/server.pem
+sasl-secprops none,noplain,noactive                                             
+authz-regexp uid=([^,]*),cn=[^,]*,cn=auth uid=$1,ou=People,dc=lockerz,dc=com
+
+backend		hdb
+database	hdb
+
+suffix		"dc=lockerz,dc=com"
+
+rootdn		"cn=admin,dc=lockerz,dc=com"
+rootpw		{SSHA}zOK1G7ZXN38St3EiBrPW4JNRr+7vZ+rj
+
+directory	"/mnt/ebs/ldap"
+
+index objectClass                       eq,pres
+index ou,cn,mail,surname,givenname      eq,pres,sub
+index uidNumber,gidNumber,loginShell    eq,pres
+index uid,memberUid                     eq,pres,sub
+index nisMapName,nisMapEntry            eq,pres,sub
+index entryCSN,entryUUID	eq
+overlay syncprov
+syncprov-checkpoint 100 10
+syncprov-sessionlog 100
+
+dbconfig set_cachesize 0 2097152 0
+dbconfig set_lk_max_objects 1500
+dbconfig set_lk_max_locks 1500
+dbconfig set_lk_max_lockers 1500
+lastmod         on
+checkpoint      512 30
+
+replogfile	/mnt/ebs/ldap/replog
+
+<% @replicaNodes.each do |node| %>
+replica		uri=ldaps://<%= node.ipaddress %>:636
+				binddn="uid=replicator,ou=System,dc=lockerz,dc=com"
+				bindmethod=simple credentials=orange1
+<% end %>
+
+access to attrs=userPassword,shadowLastChange
+        by dn="cn=admin,dc=lockerz,dc=com" write
+		by dn="uid=replicator,ou=System,dc=lockerz,dc=com" read
+		<% @admins.each do |adminUsername| %>
+        by dn="uid=<%= adminUsername.split( "@" )[0] %>,ou=people,dc=lockerz,dc=com" write
+		<% end %>
+        by anonymous auth
+        by self write
+        by * none
+
+access to dn.base="" by * read
+
+access to dn.subtree="ou=jiragroups,dc=lockerz,dc=com" by dn="userid=jira,ou=System,dc=lockerz,dc=com" write
+
+access to *
+		by dn="cn=admin,dc=lockerz,dc=com" write
+		<% @admins.each do |adminUsername| %>
+        by dn="uid=<%= adminUsername.split( "@" )[0] %>,ou=people,dc=lockerz,dc=com" write
+		<% end %>
+        by * read
+
+

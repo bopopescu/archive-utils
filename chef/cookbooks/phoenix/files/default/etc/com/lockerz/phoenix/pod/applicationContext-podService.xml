@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml"/>
+ 	<import resource="classpath:com/lockerz/phoenix/pod/applicationContext-podService-dao.xml"/> 
+	<import resource="classpath:com/lockerz/phoenix/jms/applicationContext-jmsMessaging.xml" />
+
+	<bean id="podService" class="com.lockerz.phoenix.pod.PodService">
+		<property name="podServiceServant" ref="podServiceServant"/>
+	</bean>
+	
+	<bean id="podServiceServant" class="com.lockerz.phoenix.pod.PodServiceI">
+		<property name="podDAO" ref="podDAO"/>
+	</bean>
+	
+	<bean id="expireRolePurchases"
+		class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+		<property name="targetObject" ref="podServiceServant" />
+		<property name="targetMethod" value="expireRolePurchases" />
+	</bean>
+	<bean id="expireRolePurchasesTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="delay" value="50" />  <!-- delay 50 ms -->
+		<!-- property name="period" value="3600000" /--> <!-- once every hour-->
+		<property name="period" value="10000" /> <!-- once 10 seconds-->
+		<property name="timerTask" ref="expireRolePurchases" />
+	</bean>
+	
+	<bean id="warnRolePurchases"
+		class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+		<property name="targetObject" ref="podServiceServant" />
+		<property name="targetMethod" value="warnRolePurchases" />
+	</bean>
+	<bean id="warnRolePurchasesTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="delay" value="50" />  <!-- delay 50 ms -->
+		<!-- property name="period" value="3600000" /--> <!-- once every hour-->
+		<property name="period" value="10000" /> <!-- once 10 seconds-->
+		<property name="timerTask" ref="warnRolePurchases" />
+	</bean>	
+	
+	<bean id="timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="expireRolePurchasesTask" />
+				<ref bean="warnRolePurchasesTask" />
+			</list>
+		</property>
+	</bean>
+</beans>

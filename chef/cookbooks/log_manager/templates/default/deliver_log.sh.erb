@@ -1,0 +1,44 @@
+#!/bin/bash
+##
+# Deliver a group of log files to a destination.
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+PID="/var/run/logmanager/deliver_<%= @basename %>.pid"
+
+if [ -f ${PID} ]
+then
+	exit
+fi
+
+touch ${PID}
+
+for file in `ls <%= @path %>/<%= @basename %>*.lm`
+do
+	## Create the checksum.
+	echo `md5sum ${file}` > /tmp/`basename ${file}`.checksum
+
+	SOURCE=`hostname`
+	BASENAME=`basename ${file}`
+
+	## Ensure that the target container will exist.
+	ssh <%= @targetHostname %> "mkdir -p <%= @targetContainer %>"
+
+	## Push the archive over.
+	scp $file <%= @targetHostname %>:<%= @targetContainer %>
+
+	## Push the checksum over.
+	scp /tmp/`basename ${file}`.checksum <%= @targetHostname %>:<%= @targetContainer %>
+
+	## Validate that the checksum for the remote file matches the checksum generated locally.
+	#ssh <%= @targetHostname %> "/usr/bin/md5sum ${file}"
+
+	## Move the archive file into the archive container
+	mkdir <%= @path %>/archive/
+	sudo mv ${file} <%= @path %>/archive/
+
+	#wget -O /dev/null -q --http-user=drone --http-password=orange1 --no-check-certificate "https://opz.prod.lockerz.int:9092/rq/jobs/logmanager/process_log/<%= @logName %>?source=${SOURCE}&fileName=${BASENAME}&target=<%= @targetHostname %>"
+done
+
+rm -rf ${PID}

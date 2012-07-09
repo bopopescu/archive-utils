@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+    <bean id="slaveMongoServer" class="com.mongodb.ServerAddress">
+        <constructor-arg type="java.lang.String" value="${mongodb.search.slave.hostname}" />
+        <constructor-arg type="int" value="${mongodb.search.slave.port}" />
+    </bean>
+    
+    <bean id="mongoSlaveOptions" class="com.lockerz.phoenix.common.mongo.MongoOptionsBean">
+        <property name="connectionsPerHost" value="${mongodb.search.slave.connectionsPerHost}" />
+        <property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongodb.search.slave.threadsAllowedToBlockForConnectionMultiplier}" />
+        <property name="connectTimeout" value="${mongodb.search.slave.connectTimeout}" />
+        <property name="maxWaitTime" value="${mongodb.search.slave.maxWaitTime}" />
+    </bean>
+    
+    <bean id="masterMongoServer" class="com.mongodb.ServerAddress">
+        <constructor-arg type="java.lang.String" value="${mongodb.search.master.hostname}" />
+        <constructor-arg type="int" value="${mongodb.search.master.port}" />
+    </bean>
+    
+    <bean id="mongoMasterOptions" class="com.lockerz.phoenix.common.mongo.MongoOptionsBean">
+        <property name="connectionsPerHost" value="${mongodb.search.master.connectionsPerHost}" />
+        <property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongodb.search.master.threadsAllowedToBlockForConnectionMultiplier}" />
+        <property name="connectTimeout" value="${mongodb.search.master.connectTimeout}" />
+        <property name="maxWaitTime" value="${mongodb.search.master.maxWaitTime}" />
+    </bean>
+    
+    <bean id="slaveSearchDAO" class="com.mongodb.Mongo">
+        <constructor-arg ref="slaveMongoServer" />
+        <constructor-arg ref="mongoSlaveOptions" />
+    </bean>
+    
+    <bean id="masterSearchDAO" class="com.mongodb.Mongo">
+        <constructor-arg ref="masterMongoServer" />
+        <constructor-arg ref="mongoMasterOptions" />
+    </bean>
+    
+</beans>

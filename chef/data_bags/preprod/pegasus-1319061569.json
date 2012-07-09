@@ -1,0 +1,1 @@
+{"resources":{"preprod":{"webfe":["10.116.222.155"]}},"id":"pegasus","defaults":{"instanceType":"m1.large","ami":"ami-086d9661"},"roles":{"webfe":{"max":2,"min":1,"ports":["preprod","preprod-pegasus","preprod-pegasus-webfe"]}}}

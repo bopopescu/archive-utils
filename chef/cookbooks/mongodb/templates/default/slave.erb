@@ -1,0 +1,14 @@
+##
+# MongoDB slave configuration.
+
+fork = true
+dbpath = /mnt/ebs/lockerz.com/data/mongodb/
+logpath = /mnt/local/lockerz.com/logs/mongodb/server.log
+maxConns = 3000
+logappend = true
+nohttpinterface = true
+
+## Slave specific options
+slave = true
+source = <%= @source %>
+

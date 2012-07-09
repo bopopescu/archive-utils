@@ -1,0 +1,10 @@
+#!/bin/bash
+
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-PtzServiceGroupAdmin"
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI"
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI-0"
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI-1"
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-com.lockerz.phoenix.auctionProxy.AuctionProxyServiceGroupAdminI"
+/usr/local/Ice/bin/icestormadmin --Ice.Config=/usr/phoenix/etc/icestorm.config.admin -e "create wit-com.lockerz.phoenix.ptz.PtzServiceGroupAdminI"
+
+

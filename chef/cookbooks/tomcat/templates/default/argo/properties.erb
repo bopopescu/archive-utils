@@ -1,0 +1,52 @@
+
+proxy.accessControlServicePrx=AccessControlService: tcp -h acl0.phoenix.<%= @envName %>.lockerz.int -p 11900 -t 5000: tcp -h decal0.phoenix.<%= @envName %>.lockerz.int -p 11900 -t 5000
+proxy.authenticationServicePrx=AuthenticationService: tcp -h authentication1.phoenix.<%= @envName %>.lockerz.int -p 10200 -t 5000: tcp -h authentication0.phoenix.<%= @envName %>.lockerz.int -p 10200 -t 5000
+proxy.contentServicePrx=ContentService: tcp -h content0.phoenix.<%= @envName %>.lockerz.int -p 11000 -t 5000: tcp -h content1.phoenix.<%= @envName %>.lockerz.int -p 11000 -t 5000
+proxy.contentServiceAdminPrx=ContentServiceAdmin: tcp -h content0.phoenix.<%= @envName %>.lockerz.int -p 11050 -t 5000: tcp -h content1.phoenix.<%= @envName %>.lockerz.int -p 11050 -t 5000
+proxy.decalServiceAdminPrx=DecalServiceAdmin: tcp -h decal0.phoenix.<%= @envName %>.lockerz.int -p 11850 -t 5000: tcp -h decal1.phoenix.<%= @envName %>.lockerz.int -p 11850 -t 5000
+proxy.decalServicePrx=DecalService: tcp -h decal0.phoenix.<%= @envName %>.lockerz.int -p 11800 -t 5000: tcp -h decal1.phoenix.<%= @envName %>.lockerz.int -p 11800 -t 5000
+proxy.emailServicePrx=EmailService: tcp -h email0.phoenix.<%= @envName %>.lockerz.int -p 10400 -t 5000: tcp -h email1.phoenix.<%= @envName %>.lockerz.int -p 10400 -t 5000
+proxy.hallwayServicePrx=HallwayService: tcp -h hallway0.phoenix.<%= @envName %>.lockerz.int -p 10800 -t 5000: tcp -h hallway1.phoenix.<%= @envName %>.lockerz.int -p 10800 -t 5000
+proxy.imageProcessingServicePrx=ImageProcessingService: tcp -h media0.phoenix.<%= @envName %>.lockerz.int -p 11700 -t 5000: tcp -h media1.phoenix.<%= @envName %>.lockerz.int -p 11700 -t 5000
+proxy.invitationServicePrx=InvitationService: tcp -h invitation0.phoenix.<%= @envName %>.lockerz.int -p 10500 -t 5000: tcp -h invitation1.phoenix.<%= @envName %>.lockerz.int -p 10500 -t 5000
+proxy.locatorServicePrx=LocatorService: tcp -h locator0.phoenix.<%= @envName %>.lockerz.int -p 10000 -t 5000: tcp -h locator1.phoenix.<%= @envName %>.lockerz.int -p 10000 -t 5000
+proxy.mediaServicePrx=MediaService: tcp -h media0.phoenix.<%= @envName %>.lockerz.int -p 11600 -t 5000: tcp -h media1.phoenix.<%= @envName %>.lockerz.int -p 11600 -t 5000
+proxy.ptzServicePrx=PtzService: tcp -h ptz1.phoenix.<%= @envName %>.lockerz.int -p 10900 -t 5000: tcp -h ptz0.phoenix.<%= @envName %>.lockerz.int -p 10900 -t 5000
+proxy.socialServiceAdminPrx=SocialServiceAdmin: tcp -h social0.phoenix.<%= @envName %>.lockerz.int -p 11450 -t 5000: tcp -h social2.phoenix.<%= @envName %>.lockerz.int -p 11450 -t 5000
+proxy.socialServicePrx=SocialService: tcp -h social0.phoenix.<%= @envName %>.lockerz.int -p 11400 -t 5000: tcp -h social2.phoenix.<%= @envName %>.lockerz.int -p 11400 -t 5000
+proxy.dailiesServicePrx=DailiesService: tcp -h dailies0.phoenix.<%= @envName %>.lockerz.int -p 10700 -t 10000: tcp -h dailies1.phoenix.<%= @envName %>.lockerz.int -p 10700 -t 10000
+proxy.userServicePrx=UserService: tcp -h user0.phoenix.<%= @envName %>.lockerz.int -p 10100 -t 5000: tcp -h user1.phoenix.<%= @envName %>.lockerz.int -p 10100 -t 5000: tcp -h user2.phoenix.<%= @envName %>.lockerz.int -p 10100 -t 5000: tcp -h user3.phoenix.<%= @envName %>.lockerz.int -p 10100 -t 5000
+proxy.fwbPhotoServicePrx=FwbPhotoService:tcp -h media0.phoenix.<%= @envName %>.lockerz.int -p 12500 -t 10000 : tcp -h media1.phoenix.<%= @envName %>.lockerz.int -p 12500 -t 10000
+proxy.searchServicePrx=SearchService:tcp -h search0.phoenix.<%= @envName %>.lockerz.int -p 12400 -t 10000 : tcp -h media1.phoenix.<%= @envName %>.lockerz.int -p 12400 -t 10000
+
+key.<%= @envName != "prod" ? "%s." % @envName : nil %>website=<%= @apiKey %>
+key.mobileWebsite=4409bcb0-1209-4d7a-8ca3-739025c5c4d0
+key.iPhoneApp=925be218-ef90-4219-b723-d33cefeac089
+key.apiPlixi=6b100c9d-fca4-4697-8e78-e7be4f409476
+key.devApiPlixi=e2db9a6a-1677-4069-b9ae-723202876f8f
+
+<% if( @envName == "prod" ) %>
+jdbc.comm.url.master.url=jdbc:mysql://10.104.7.183:3306/msg
+jdbc.comm.url.slave.url=jdbc:mysql://10.104.7.183:3306/msg
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.comm.username=msguser
+jdbc.comm.password=dfgjkfrd
+
+<% elsif( @envName == "wit" ) %>
+
+jdbc.comm.url.master.url=jdbc:mysql://mysql-master0.dba.wit.lockerz.int:3306/bits
+jdbc.comm.url.slave.url=jdbc:mysql://mysql-slave0.dba.wit.lockerz.int:3306/bits
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.comm.username=awsuser
+jdbc.comm.password=8RUwdO4Khk3HIF
+
+<% else -%>
+
+jdbc.comm.url.master.url=jdbc:mysql://10.218.57.141:3306/bits
+jdbc.comm.url.slave.url=jdbc:mysql://10.218.57.141:3306/bits
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.comm.username=bits
+jdbc.comm.password=idle912giro
+
+<% end -%>
+

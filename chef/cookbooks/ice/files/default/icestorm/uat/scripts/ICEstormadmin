@@ -1,0 +1,4 @@
+#!/bin/bash
+# this command is hard to remember
+icestormadmin --Ice.Config=/etc/icestorm/icestorm.config.admin 
+

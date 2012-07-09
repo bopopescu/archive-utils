@@ -1,0 +1,9 @@
+##
+# Site upstream
+##
+upstream site_prod_upstream {
+	<% @nodes.each do |host| %>
+		server <%= host %>;
+	<% end %>
+}
+

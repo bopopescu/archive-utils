@@ -1,0 +1,107 @@
+--
+-- Table structure for table `disabled_user_ids`
+--
+
+DROP TABLE IF EXISTS `disabled_user_ids`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `disabled_user_ids` (
+  `uid` int(10) unsigned NOT NULL,
+  UNIQUE KEY `disabled_user_id_idx` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `disabled_user_ids`
+--
+
+LOCK TABLES `disabled_user_ids` WRITE;
+/*!40000 ALTER TABLE `disabled_user_ids` DISABLE KEYS */;
+/*!40000 ALTER TABLE `disabled_user_ids` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friend_list`
+--
+
+DROP TABLE IF EXISTS `friend_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `friend_list` (
+  `uid` int(10) unsigned NOT NULL,
+  `friend_uid` int(10) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`uid`,`friend_uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friend_list`
+--
+
+LOCK TABLES `friend_list` WRITE;
+/*!40000 ALTER TABLE `friend_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `friend_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `friend_list_sort_keys`
+--
+
+DROP TABLE IF EXISTS `friend_list_sort_keys`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `friend_list_sort_keys` (
+  `friend_uid` int(10) unsigned NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `profile_image_url` varchar(256) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `state` varchar(50) DEFAULT NULL,
+  `ptz_balance` int(11) DEFAULT NULL,
+  `followers` int(10) NOT NULL DEFAULT '0',
+  `followees` int(10) NOT NULL DEFAULT '0',
+  `fwbs` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`friend_uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `friend_list_sort_keys`
+--
+
+LOCK TABLES `friend_list_sort_keys` WRITE;
+/*!40000 ALTER TABLE `friend_list_sort_keys` DISABLE KEYS */;
+/*!40000 ALTER TABLE `friend_list_sort_keys` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `people_follow`
+--
+
+DROP TABLE IF EXISTS `people_follow`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `people_follow` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `follower_uid` int(10) unsigned NOT NULL,
+  `followee_uid` int(10) unsigned NOT NULL,
+  `status` tinyint(3) NOT NULL DEFAULT '1',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `follower_uid` (`follower_uid`),
+  KEY `followee_uid` (`followee_uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `people_follow`
+--
+
+LOCK TABLES `people_follow` WRITE;
+/*!40000 ALTER TABLE `people_follow` DISABLE KEYS */;
+/*!40000 ALTER TABLE `people_follow` ENABLE KEYS */;
+UNLOCK TABLES;

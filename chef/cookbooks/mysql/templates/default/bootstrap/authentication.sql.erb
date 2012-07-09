@@ -1,0 +1,137 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 3408
+#
+# http://www.sequelpro.com/
+# http://code.google.com/p/sequel-pro/
+#
+# Host: 127.0.0.1 (MySQL 5.5.9)
+# Database: authentication
+# Generation Time: 2011-11-06 13:58:55 -0800
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table app
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `app`;
+
+CREATE TABLE `app` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `app_name` varchar(100) NOT NULL,
+  `api_key` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `app` WRITE;
+/*!40000 ALTER TABLE `app` DISABLE KEYS */;
+
+INSERT INTO `app` (`id`, `app_name`, `api_key`)
+VALUES
+	(1,'Pegasus','A1234567890B'),
+	(2,'Mobile','A1234567890C'),
+	(3,'iPhone','A1234567890D');
+
+/*!40000 ALTER TABLE `app` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table spoke_auth
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `spoke_auth`;
+
+CREATE TABLE `spoke_auth` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `spoke_id` int(11) NOT NULL,
+  `spoke_user_id` varchar(200) NOT NULL DEFAULT '',
+  `_key` varchar(400) NOT NULL DEFAULT '',
+  `secret` varchar(400) NOT NULL DEFAULT '',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `spoke_id_spoke_user_id` (`spoke_id`,`spoke_user_id`),
+  KEY `spoke_id_user_id` (`spoke_id`,`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="" */;;
+/*!50003 CREATE */ /*!50017 DEFINER=`root`@`localhost` */ /*!50003 TRIGGER `spoke_auth_created` BEFORE INSERT ON `spoke_auth` FOR EACH ROW SET NEW.created = now() */;;
+DELIMITER ;
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
+
+
+# Dump of table spokes
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `spokes`;
+
+CREATE TABLE `spokes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL DEFAULT '',
+  `disabled` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+LOCK TABLES `spokes` WRITE;
+/*!40000 ALTER TABLE `spokes` DISABLE KEYS */;
+
+INSERT INTO `spokes` (`id`, `name`, `disabled`)
+VALUES
+	(1,'Facebook',b'0');
+
+/*!40000 ALTER TABLE `spokes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table token_auth
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `token_auth`;
+
+CREATE TABLE `token_auth` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
+  `app_id` int(10) unsigned NOT NULL,
+  `token` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uid` (`uid`,`app_id`),
+  UNIQUE KEY `token` (`token`),
+  KEY `FK_app_id` (`app_id`),
+  CONSTRAINT `FK_app_id` FOREIGN KEY (`app_id`) REFERENCES `app` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `token_auth` WRITE;
+/*!40000 ALTER TABLE `token_auth` DISABLE KEYS */;
+
+INSERT INTO `token_auth` (`id`, `uid`, `app_id`, `token`)
+VALUES
+	(4,246950,1,'ee123mTQQtiIQD960plTwgUp'),
+	(5,246951,1,'ff689mTQQtiIQD960plgibup'),
+	(6,246952,1,'gghihmMMMtiIQD960plbigow'),
+	(7,246953,1,'baba23imhoU2LmaOTTYLsOscuL8r'),
+	(9,246954,1,'mTQQtiIQD9602RHaih6B2C05zYv3KplTwgUpqQyH');
+
+/*!40000 ALTER TABLE `token_auth` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

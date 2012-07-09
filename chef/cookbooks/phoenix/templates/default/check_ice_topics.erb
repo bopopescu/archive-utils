@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+envName = '<%= @envName %>'
+
+RequiredTopics = [
+	"%s-PtzServiceGroupAdmin" % envName,
+	"%s-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI" % envName,
+	"%s-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI-0" % envName,
+	"%s-com.lockerz.phoenix.auction.AuctionServiceGroupAdminI-1" % envName,
+	"%s-com.lockerz.phoenix.auctionProxy.AuctionProxyServiceGroupAdminI" % envName,
+	"%s-com.lockerz.phoenix.ptz.PtzServiceGroupAdminI" % envName
+]
+
+IceStormAdminBin = "/usr/local/Ice/bin/icestormadmin"
+IceStormConfig = "--Ice.Config=/usr/phoenix/etc/icestorm.config.admin"
+
+cmdGetTopics = "%s %s -e topics"
+topics = `#{cmdGetTopics}`.split( /\n/ )
+
+RequiredTopics.each do |topicName|
+	if(!topics.include?( topicName ))
+		cmdCreateTopic = "%s %s -e 'create %s'" % [IceStormAdminBin,IceStormConfig,topicName]
+		system( cmdCreateTopic )
+	end
+end
+

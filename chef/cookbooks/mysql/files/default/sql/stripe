@@ -1,0 +1,62 @@
+#!/bin/bash
+
+echo "/dev/sdj
+/dev/sdk
+/dev/sdl
+/dev/sdm
+/dev/sdn
+/dev/sdo
+/dev/sdp
+/dev/sdq
+/dev/sdr
+/dev/sds
+/dev/sdt
+/dev/sdu" > /tmp/sfdiskdevices
+
+DEVICELIST=`cat /tmp/sfdiskdevices`
+
+# Make our partition Linux Raid Autodetect
+for VOL in $DEVICELIST
+	do
+sfdisk $VOL << EOF
+,,fd
+EOF
+	done
+	
+# Install tools
+apt-get install -y xfsdump mdadm
+
+# Create stripes
+#mdadm --create --verbose /dev/md0 --level=raid0 --raid-devices=6 \
+#/dev/sdd1 /dev/sde1 /dev/sdf1 /dev/sdg1 /dev/sdh1 /dev/sdi1
+
+mdadm --create --verbose /dev/md1 --level=raid0 --raid-devices=6 \
+/dev/sdj1 /dev/sdk1 /dev/sdl1 /dev/sdm1 /dev/sdn1 /dev/sdo1
+
+mdadm --create --verbose /dev/md2 --level=raid0 --raid-devices=6 \
+/dev/sdp1 /dev/sdq1 /dev/sdr1 /dev/sds1 /dev/sdt1 /dev/sdu1
+
+# Format stripes
+mkfs.xfs -f /dev/md1
+mkfs.xfs -f /dev/md2
+
+# Create mountpoints
+#mkdir -p /mnt/mysql-data
+#mkdir -p /mnt/mysql-data
+mkdir -p /ebs/mysql-data
+mkdir -p /ebs/mysql-misc
+
+# Write out new fstab
+echo "# Default lockerz.com MySQL /etc/fstab
+/dev/sda1	/	ext3	defaults	1	1
+none	/proc   proc    defaults	0	0
+none	/sys    sysfs   defaults	0	0
+#/dev/STORAGE/lvol0	/mnt/mysql-data	ext3	defaults	0	0
+#/dev/STORAGE/lvol1	/mnt/mysql-misc	ext3	defaults	0	0
+/dev/md0	/mnt	xfs	defaults	0	0
+/dev/md1	/ebs/mysql-data	xfs	defaults	0	0
+/dev/md2	/ebs/mysql-misc	xfs	defaults	0	0" > /etc/fstab
+
+# Mount stripes
+mount -a
+

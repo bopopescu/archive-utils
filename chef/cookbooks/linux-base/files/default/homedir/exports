@@ -1,0 +1,3 @@
+
+/mnt/ebs/home	10.0.0.0/8(rw,sync,root_squash) auth0.opz.prod.lockerz.int(rw,no_root_squash,sync)
+

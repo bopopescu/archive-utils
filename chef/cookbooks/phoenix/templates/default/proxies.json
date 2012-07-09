@@ -1,0 +1,21 @@
+{
+	Proxies:
+	{
+        accessControlServicePrx: "AccessControlService: tcp -h 10.68.74.172 -p 11900 -t 5000: tcp -h 10.122.251.227 -p 11900 -t 5000",
+        authenticationServicePrx: "AuthenticationService: tcp -h 10.46.245.209 -p 10200 -t 5000: tcp -h 10.212.71.175 -p 10200 -t 5000",
+        contentServiceAdminPrx: "ContentServiceAdmin: tcp -h 10.214.247.160 -p 11050 -t 5000: tcp -h 10.211.169.140 -p 11050 -t 5000",
+        decalServiceAdminPrx: "DecalServiceAdmin: tcp -h 10.122.251.227 -p 11850 -t 5000: tcp -h 10.68.74.172 -p 11850 -t 5000",
+        decalServicePrx: "DecalService: tcp -h 10.122.251.227 -p 11800 -t 5000: tcp -h 10.68.74.172 -p 11800 -t 5000",
+        emailServicePrx: "EmailService: tcp -h 10.249.106.48 -p 10400 -t 5000: tcp -h 10.254.41.220 -p 10400 -t 5000",
+        hallwayServicePrx: "HallwayService: tcp -h 10.209.194.112 -p 10800 -t 5000: tcp -h 10.210.49.172 -p 10800 -t 5000",
+        imageProcessingServicePrx: "ImageProcessingService: tcp -h 10.220.166.224 -p 11700 -t 5000: tcp -h 10.249.182.207 -p 11700 -t 5000",
+        invitationServicePrx: "InvitationService: tcp -h 10.212.114.111 -p 10500 -t 5000: tcp -h 10.204.246.144 -p 10500 -t 5000",
+        locatorServicePrx: "LocatorService: tcp -h 10.248.31.223 -p 10000 -t 5000: tcp -h 10.210.38.207 -p 10000 -t 5000",
+        mediaServicePrx: "MediaService: tcp -h 10.220.166.224 -p 11600 -t 5000: tcp -h 10.249.182.207 -p 11600 -t 5000",
+        ptzServicePrx: "PtzService: tcp -h 10.210.179.192 -p 10900 -t 5000: tcp -h 10.209.54.240 -p 10900 -t 5000",
+        socialServiceAdminPrx: "SocialServiceAdmin: tcp -h 10.209.207.192 -p 11450 -t 5000: tcp -h 10.122.57.90 -p 11450 -t 5000",
+        socialServicePrx: "SocialService: tcp -h 10.209.207.192 -p 11400 -t 5000: tcp -h 10.122.57.90 -p 11400 -t 5000",
+        userServicePrx: "UserService: tcp -h 10.211.146.111 -p 10100 -t 5000: tcp -h 10.248.55.191 -p 10100 -t 5000: tcp -h 10.242.198.176 -p 10100 -t 5000: tcp -h 10.211.50.159 -p 10100 -t 5000"
+    }
+}
+

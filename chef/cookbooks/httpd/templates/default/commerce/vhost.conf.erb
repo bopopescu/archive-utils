@@ -1,0 +1,62 @@
+##
+# Virtual host configuration for the commerce stack.
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+Listen 80
+Listen 443
+LoadModule ssl_module modules/mod_ssl.so
+
+<VirtualHost *:80>
+	ServerName shop.<%= @domain %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot <%= node[:fsDocRoot] %>/commerce/current/magento
+
+	LogLevel debug
+        # Mark requests from robots (the good robots that make their presence known)
+        SetEnvIf User-Agent ".*(facebook|bot|Bot|Slurp|MaxPointCrawler|KSCrawler)" robot
+        # Mark requests for the robots.txt file
+        SetEnvIf Request_URI "^/robots\.txt$" robot
+	ErrorLog <%= node[:fsLogRoot] %>/commerce/error.log
+	CustomLog <%= node[:fsLogRoot] %>/commerce/access.log lockerz env=!robot
+	CustomLog <%= node[:fsLogRoot] %>/commerce/robot_access.log lockerz env=robot
+
+	SetEnv LOCKERZ_ENV production
+
+	<Directory <%= node[:fsDocRoot] %>/commerce/current/magento>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName shop.<%= @domain %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot <%= node[:fsDocRoot] %>/commerce/current/magento
+
+	LogLevel debug
+        # Mark requests from robots (the good robots that make their presence known)
+        SetEnvIf User-Agent ".*(facebook|bot|Bot|Slurp|MaxPointCrawler|KSCrawler)" robot
+        # Mark requests for the robots.txt file
+        SetEnvIf Request_URI "^/robots\.txt$" robot
+
+	ErrorLog <%= node[:fsLogRoot] %>/commerce/ssl-error.log
+	CustomLog <%= node[:fsLogRoot] %>/commerce/ssl-access.log lockerz env=!robot
+	CustomLog <%= node[:fsLogRoot] %>/commerce/ssl-robot_access.log lockerz env=robot
+
+	SSLEngine On
+	SSLCertificateFile /etc/httpd/ssl/server.crt
+	SSLCertificateKeyFile /etc/httpd/ssl/server.key
+
+	SetEnv LOCKERZ_ENV production
+
+	<Directory <%= node[:fsDocRoot] %>/commerce/current/magento>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+</VirtualHost>
+

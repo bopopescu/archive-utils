@@ -1,0 +1,37 @@
+##
+# Virtual host configuration for the video admin tool
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+LDAPVerifyServerCert Off
+Listen 443
+LoadModule ssl_module modules/mod_ssl.so
+<VirtualHost *:443>
+	ServerName pim.<%= @domain %>
+	ServerAdmin ops@lockerz.com
+
+	ErrorLog /mnt/local/lockerz.com/logs/httpd/pim.error.log
+	CustomLog /mnt/local/lockerz.com/logs/httpd/pim.access.log lockerz
+
+	SSLEngine On
+	SSLCertificateFile /etc/httpd/ssl/server.crt
+	SSLCertificateKeyFile /etc/httpd/ssl/server.key
+
+	SetEnv APPLICATION_ENV "production"
+
+	DocumentRoot /var/www/lockerz.com/pim/current/public
+	<Directory /var/www/lockerz.com/pim/current/public>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride all
+	</Directory>
+
+	<Location />
+		AuthType Basic
+		AuthName "Videoadmin"
+		AuthBasicProvider ldap
+		AuthLDAPURL "ldaps://auth0.opz.prod.lockerz.int:636/dc=lockerz,dc=com?uid?sub?(objectClass=*)"
+		AuthLDAPBindDN "cn=admin,dc=lockerz,dc=com"
+		AuthLDAPBindPassword "lat8-towards"
+		require valid-user
+	</Location>
+</VirtualHost>

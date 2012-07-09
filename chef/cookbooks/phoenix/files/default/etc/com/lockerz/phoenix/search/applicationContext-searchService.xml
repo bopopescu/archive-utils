@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+        <import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml" />
+        <import resource="classpath:com/lockerz/phoenix/search/applicationContext-searchService-dao.xml" />
+
+	<bean id="searchService" class="com.lockerz.phoenix.search.SearchService">
+		<property name="searchServiceServant" ref="searchServiceServant" />
+		<property name="searchServiceAdminServant" ref="searchServiceAdminServant" />
+		<property name="jmsMessageListener" ref="jmsMessageListener"/>
+	</bean>
+
+	<bean id="jmsMessageListener" class="com.lockerz.phoenix.jms.consumer.JmsMessageListener" />
+
+	<bean id="searchServiceServant" class="com.lockerz.phoenix.search.SearchServiceI">
+             <property name="masterMongoDAO" ref="masterSearchDAO" />
+             <property name="slaveMongoDAO" ref="slaveSearchDAO" />
+        </bean>
+
+	<bean id="searchServiceAdminServant" class="com.lockerz.phoenix.search.SearchServiceAdminI">
+		<constructor-arg>
+			<ref bean="searchServiceServant" />
+		</constructor-arg>
+	</bean>
+
+</beans>

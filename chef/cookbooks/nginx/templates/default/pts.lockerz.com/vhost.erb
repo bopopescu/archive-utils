@@ -1,0 +1,44 @@
+##
+# <%= @envName %>.lockerz.us
+
+server {
+	listen	<%= (@ssl == true ? 443 : 80) %>;
+	<% if(@ssl == true) %>
+	ssl on;
+	ssl_certificate     /etc/nginx/ssl/server.crt;
+	ssl_certificate_key /etc/nginx/ssl/server.key;
+	<% end %>
+
+	server_name pts.<%= @serverName %>;
+
+	log_format lockerz
+		'$remote_addr\t'
+		'$http_x_forwarded_for\t'
+		'$status\t'
+		'$request_length\t'
+		'$request_time\t'
+		'$msec\t'
+		'$time_local\t'
+		'$request\t'
+		'$args\t'
+		'$http_referer\t'
+		'$http_user_agent\t';
+
+	error_log <%= @fsLogRoot %>pts/error.log	info;
+	access_log <%= @fsLogRoot %>pts/access.log	lockerz;
+
+	#limit_req   zone=LockerzCom	burst=20	nodelay;
+	#limit_conn	LockerzComLimitConn	5;
+
+	location / {
+		root /var/www/lockerz.com/pts;
+		add_header 'Access-Control-Allow-Origin' '*';
+	}
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+}

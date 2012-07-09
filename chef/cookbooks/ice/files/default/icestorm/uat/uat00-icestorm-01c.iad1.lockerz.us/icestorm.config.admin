@@ -1,0 +1,1 @@
+IceStormAdmin.TopicManager.Lockerz=LockerzUAT00IceStorm/TopicManager -t:tcp -h i-uat00-icestorm-01a.iad1.lockerz.us -p 9600:tcp -h i-uat00-icestorm-01b.iad1.lockerz.us -p 9600:tcp -h i-uat00-icestorm-01c.iad1.lockerz.us -p 9600

@@ -1,0 +1,25 @@
+export APP_USER=tomcat
+export APP_UID=`id -u $APP_USER`
+export APP_NAME="argo"
+export CATALINA_DATE=`date +%Y%m%d_%H%M%S`
+export TOMCAT_DIR=/usr/local/tomcat
+export CATALINA_BASE="$TOMCAT_DIR"
+export CATALINA_HOME="$TOMCAT_DIR"
+export CATALINA_SCRIPT="/usr/local/tomcat/bin/catalina.sh"
+export BASEDIR="$TOMCAT_DIR"
+export CATALINA_PID="/var/run/tomcat6/catalina.pid"
+export CATALINA_CLASSPATH="${TOMCAT_DIR}/bin/setclasspath.sh"
+export CATALINA_TMPDIR="/mnt/tomcat6/tmp/${APP_NAME}"
+export CATALINA_WORK_DIR="/mnt/tomcat6/work/${APP_NAME}"
+export CATALINA_OUT_DIR="/mnt/logs/tomcat6"
+export CATALINA_OUT="${CATALINA_OUT_DIR}/tomcat_${APP_NAME}_stdout.${CATALINA_DATE}.log"
+export GC_LOG="${CATALINA_OUT_DIR}/${APP_NAME}-gc_${CATALINA_DATE}.log"
+export LTM_STATUS_SCRIPT="/usr/local/f5_ltm/switchNodeStatus2.pl"
+export USE_LTM_STATUS_SCRIPT="NO"
+export USE_LTM_STATUS_SCRIPT_READ_ONLY="NO"
+export DELETE_WORKDIR_ON_SHUTDOWN="NO"
+export CATALINA_ADMIN_PORT="8005" 
+export SPLUNK_LOGDIR="/var/xxx/splunklogs"
+export INIT_SCRIPT="/etc/init.d/tomcat6"
+
+export CATALINA_OPTS="-Xms1200m -Xmx1200m -server -XX:+UseParallelGC -XX:HeapDumpPath=/mnt/tomcat6/dumps -XX:+HeapDumpOnOutOfMemoryError -Xloggc:${GC_LOG}" 

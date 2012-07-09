@@ -1,0 +1,13 @@
+##
+# MongoDB routing config
+
+fork = true
+port = 27017
+pidfilepath = /mnt/ebs/lockerz.com/data/mongodb/mongod.lock
+logpath = /mnt/local/lockerz.com/logs/mongodb/router.log
+maxConns = 3000
+logappend = true
+#bind_ip = 127.0.0.1
+
+## Routing specific
+configdb = <%= @source %>

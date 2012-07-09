@@ -1,0 +1,22 @@
+##
+# Virtual host configuration for the add2any stack.
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+#
+Listen <%= @listenPort %>
+<VirtualHost *:<%= @listenPort %>>
+	ServerName <%= @domain %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot <%= @fsDocRoot %>
+
+	LogLevel warn
+	ErrorLog <%= @fsLogRoot %>/error.log
+	CustomLog <%= @fsLogRoot %>/access.log lockerz
+
+	<Directory <%= @fsDocRoot %>>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+</VirtualHost>

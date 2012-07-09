@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+        <bean id="queryPropertiesFactoryBean"  class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="locations">
+                        <list>
+                                <value>classpath:queries.properties</value>
+                        </list>
+                </property>
+        </bean>
+        
+        <bean id="externalizedQueries" class="com.lockerz.phoenix.common.ExternalizedQueriesProperties">
+                <property name="queries" ref="queryPropertiesFactoryBean"/>
+        </bean>
+
+        <bean id="basicDAO" abstract="true" lazy-init="true">
+                <property name="queries" ref="externalizedQueries"/>
+        </bean>
+
+        <bean id="masterDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+                <constructor-arg value="bitsMaster"/>
+        </bean>
+        
+        <bean id="slaveDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+                <constructor-arg value="bitsSlave"/>
+        </bean>
+        
+        
+        <bean id="decalDAO" class="com.lockerz.phoenix.decal.dao.impl.DecalDAOJDBC" parent="basicDAO">
+                <property name="dataSource" ref="slaveDataSource" />
+                <property name="masterDataSource" ref="masterDataSource"/>
+        </bean>
+
+	<bean id="decalBundleDAO" class="com.lockerz.phoenix.decal.dao.impl.DecalBundleDAOJDBC">
+		<property name="queries" ref="externalizedQueries"/>
+        <property name="dataSource" ref="slaveDataSource" />
+        <property name="masterDataSource" ref="masterDataSource"/>
+	</bean>
+
+</beans>

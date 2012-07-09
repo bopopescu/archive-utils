@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+           
+	<import resource="classpath:com/lockerz/phoenix/applicationContext-phoenix.xml"/>
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-dao.xml"/>
+ 	<import resource="classpath:com/lockerz/phoenix/locator/applicationContext-locatorService-dao.xml"/> 
+
+	<bean id="locatorService" class="com.lockerz.phoenix.locator.LocatorService">
+		<property name="locatorServiceServant" ref="locatorServiceServant"/>
+	</bean>
+	
+	<bean id="locatorServiceServant" class="com.lockerz.phoenix.locator.LocatorServiceI">
+		<property name="locatorDAO" ref="locatorDAO"/>
+		<property name="tokenDAO" ref="tokenDAO"/>
+	</bean>
+</beans>

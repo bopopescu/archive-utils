@@ -1,0 +1,22 @@
+// lockerz forward lookups in lockerz.int zone
+
+zone "lockerz.int" IN {
+        type master;
+        file "lockerz.int.zone";
+};
+
+// lockerz reverse lookups in 10.in-addr.arpa  zone
+zone "10.in-addr.arpa" IN {
+        type master;
+        file "10.in-addr.arpa.zone";
+};
+
+// lockerz forward lookups in old lockerz TLD
+// Added by bernard@sprybts.com 2011-05-09
+// This is intended to make old internal DNS names visible to new
+// world systems
+zone lockerz in {
+        type forward;
+        forwarders { 174.129.222.253; };
+};
+

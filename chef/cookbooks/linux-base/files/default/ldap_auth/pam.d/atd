@@ -1,0 +1,15 @@
+#
+# The PAM configuration file for the at daemon
+#
+#
+auth	sufficient	pam_rootok.so
+auth	required  	pam_env.so
+auth	include		system-auth
+account	include  	system-auth
+session	include  	system-auth
+session	required  	pam_loginuid.so
+#
+# To enable PAM user limits for atd, please uncomment the 
+# following line and configure /etc/security/limits.conf:
+# session    required   pam_limits.so
+#

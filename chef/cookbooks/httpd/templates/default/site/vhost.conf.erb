@@ -1,0 +1,35 @@
+##
+# Virtual host configuration for the site stack.
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+Listen 80
+<VirtualHost *:80>
+	ServerName <%= @domain %>
+	ServerAdmin ops@lockerz.com
+	DocumentRoot <%= @documentRoot %>
+
+	LogLevel warn
+	ErrorLog <%= @logRoot %>/error.log
+	CustomLog <%= @logRoot %>/access.log lockerz
+
+	SetEnv LOCKERZ_ENV <%= (@envName == "prod" ? "production" : "test") %>
+
+	Alias /vshop <%= @vShopDocumentRoot %>
+	Alias /vShop <%= @vShopDocumentRoot %>
+
+	<Directory <%= @documentRoot %>>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	<Directory <%= @vShopDocumentRoot %>>
+		Options -Indexes -MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+</VirtualHost>
+

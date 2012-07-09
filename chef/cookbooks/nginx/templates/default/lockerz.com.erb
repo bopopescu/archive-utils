@@ -1,0 +1,89 @@
+##
+# Main lockerz.com domain template
+#
+# <%= @envName %>.lockerz.us
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+#limit_req_zone  $binary_remote_addr  zone=LockerzCom:10m   rate=1r/s;
+
+server {
+	listen	<%= (@ssl == true ? 443 : 80) %>;
+
+	<% if(@ssl == true) # Build ssh options if required %>
+	ssl on;
+	ssl_certificate     /etc/nginx/ssl/lockerz.crt;
+	ssl_certificate_key /etc/nginx/ssl/lockerz.key;
+	<% end %>
+
+	server_name <%= @serverName %>;
+	server_name www.<%= @serverName %>;
+	server_name plixi.com;
+	server_name tweetphoto.com;
+
+	error_log <%= @fsLogRoot %>lockerz<%= (@ssl == true ? "-ssl" : "" ) %>.error.log	info;
+	access_log <%= @fsLogRoot %>lockerz<%= (@ssl == true ? "-ssl" : "" ) %>.access.log	lockerz;
+
+	## Rate limiting
+	#limit_req   zone=LockerzCom	burst=20	nodelay;
+	#limit_conn	LockerzComLimitConn	15;
+
+	<% if(@staticFailover == true) ## Gone fishing pages %>
+		location ~ \.png$ { root /var/www/lockerz.com/outage/; }
+		location = /index.html { root /var/www/lockerz.com/outage/; }
+		location ~ ^/ { rewrite ^/(.*)$ /index.html last; }
+
+	<% else ## Normal site operations %>
+
+		# Proxy options
+		proxy_set_header	Host			$host;
+		proxy_set_header	X-Real-IP		$remote_addr;
+		proxy_set_header	X-Forwarded-For	$proxy_add_x_forwarded_for;
+		proxy_buffering		on;
+		proxy_intercept_errors	off;
+
+		<% if(@ssl == true) ## If we're on ssl, let's make sure we're kicking back the correct headers %>
+	 	 proxy_set_header        X-Forwarded-Port        443;
+	 	 proxy_set_header        X-Forwarded-Proto       "https";
+		<% end %>
+
+		# Error pages
+		error_page   500 = /500.html;
+		error_page   404 = /400.html;
+
+		location /500.html { root /var/www/lockerz.com/errors/; }
+		location /400.html { root /var/www/lockerz.com/errors/; }
+
+		# Legacy URL rewrites
+		rewrite ^/redeem		/dealz	permanent;
+		rewrite ^/auction		/dealz	permanent;
+		rewrite ^/ultimateWallpaper	/dealz	permanent;
+
+		# Rewrite /forum[s] 
+		rewrite ^/forum		http://lockerz.zendesk.com/categories/20000622-community permanent;
+		rewrite ^/forums	http://lockerz.zendesk.com/categories/20000622-community permanent;
+
+		#location ~ ^/shopping.* { proxy_pass http://site_<%= @envName %>_upstream; }
+
+		# OPZ-603
+		location /gallery/1625046 { rewrite . http://lockerz.com/ redirect; }
+		location = /s/156878622 { rewrite . http://lockerz.com/ redirect; }
+
+		location ~ ^/shop/.* { rewrite	^/shop/(.*)	http://shop.<%= @serverName %>/$1	permanent; }
+		location ~ ^/shop { rewrite	^/shop	http://shop.<%= @serverName %>/	permanent; }
+
+ 		location / { proxy_pass http://pegasus-webfe_<%= @envName %>_upstream; }
+
+		# Uploads to the java backend
+		location /upload/image { proxy_pass http://media-upload_<%= @envName %>_upstream; }
+
+	<% end ## End static failover catch %>
+
+	location /LOCKERZ-Status {
+		stub_status on;
+		access_log off;
+		allow 10.0.0.0/8;
+		deny all;
+	}
+}

@@ -1,0 +1,44 @@
+--- %YAML:1.0
+"base_url": "http://lockerz.com/"
+"redemption_url": "http://ptzplace.lockerz.com/"
+
+## Asset Hosts - Though we don't need it right out the door, you can specify 
+## multiple CDN's per host group if there were a need.
+##
+## The "general" host pulls down things like Dailies, Product Images,
+## or avatars.  While the "versioned" group pulls down things that 
+## change more frequently like site specific images, icons, etc.
+"asset_hosts": 
+  "general": ["http://static.lockerz.com/"]
+  "versioned": ["http://static.lockerz.com/4.2.0/"]
+
+# Developer Tools
+"enable_profiler": false
+
+# Google Analytics
+"enable_google_analytics": true
+"google_analytics_key_mobile": "UA-8356268-6"
+"google_analytics_key": "UA-8356268-1"
+"google_verification_key" : "QoQH993vi3WTOVxwuN65mRKPAIouKjyPypKO0AIypYQ"
+
+# Plixi Integration
+"plixi": {
+    "endpoint": "https://api.plixi.com/api/tpapi.svc/json/",
+    "service_name": "Lockerz",
+    "api_key": "eadabad1-af1a-4470-ab10-9f9e2ead2ebf",
+    "static_feed_uid": 17691566 }
+
+# Cookies 
+"cookie_prefix": ""
+"cookie_domain": ".lockerz.com"
+"cookie_path": "/"
+
+# URLs
+"urls":
+    "commerce": "http://shop.lockerz.com/"
+
+# Paypal Authentication token for PDT
+'paypal': 
+    'auth_token': 'GJ0j-JlV4OIL_NReV6mxpA-kXnYkU3r3bg7X-4__aILJ9WfGFTueZskz6SC'
+    'email': 'paypalcommerce@lockerz.com'
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:com/lockerz/phoenix/dao/applicationContext-mongo-dao.xml"/>
+   	
+   	<!--  photoMetricsDaos -->
+   	<bean id="photoMetricsMasterDao" class="com.lockerz.phoenix.photos.dao.impl.MongoPhotoMetricsDAOImpl">
+    	<constructor-arg ref="mongoMasterServer"/>
+    	<constructor-arg value="${mongodb.photometrics.dbname}"/>
+    </bean>       
+	<bean id="photoMetricsSlaveDao" class="com.lockerz.phoenix.photos.dao.impl.MongoPhotoMetricsDAOImpl">
+    	<constructor-arg ref="mongoSlaveServer"/>
+    	<constructor-arg value="${mongodb.photometrics.dbname}"/>
+    </bean>   
+	<!--  photoStreamDaos -->
+
+    <bean id="photoStreamMasterDao" class="com.lockerz.phoenix.photos.dao.impl.MongoFwbPhotoStreamDAOImpl">
+    	<constructor-arg ref="mongoMasterServer"/>
+    	<constructor-arg value="${mongodb.photostream.dbname}"/>
+    </bean> 
+    
+    <bean id="photoStreamSlaveDao" class="com.lockerz.phoenix.photos.dao.impl.MongoFwbPhotoStreamDAOImpl">
+    	<constructor-arg ref="mongoSlaveServer"/>
+    	<constructor-arg value="${mongodb.photostream.dbname}"/>
+    </bean>        
+</beans>
