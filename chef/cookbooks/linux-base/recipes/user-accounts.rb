@@ -107,10 +107,10 @@ opzUsers.each do |email|
 
 	username = email.gsub( /@.*$/,'' )
 
-	user username do
-		comment username
-		shell "/bin/bash"
-	end
+	#user username do
+	#	comment username
+	#	shell "/bin/bash"
+	#end
 
 	directory "/home/%s/" % username do
 		mode "0700"
