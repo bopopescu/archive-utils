@@ -6,6 +6,7 @@ import aws
 import subprocess
 import pprint
 import time
+import urllib
 """
 Chef needs a pem key to authenticate with the API, check for some under common names
 If we can't find a pem key bail out as none of this will work without one
@@ -36,54 +37,46 @@ def wait_for_traffic_to_die(host):
 def wait_for_traffic(host):
     code = subprocess.call(["scripts/check-for-traffic", "-ge", "3", host])
 
-def notify_newrelic(version, email):
-    code = subprocess.call(["scripts/notify-newrelic", version, email])
+def try_call(what):
+    code = subprocess.call(what)
     if code != 0:
-        return False
+        return True
     else:
-        return True
-
-def checkout(version):
-    code = subprocess.call(["scripts/checkout", version])
-    if code != 0:
         return False
-    else: 
-        return True
+    
+def notify_newrelic(version, email):
+    return try_call(["scripts/notify-newrelic", version, email])
+
+def notify_hipchat(message, color):
+    encoded = urllib.quote(message)
+    return try_call(["scripts/notify-hipchat", encoded, color])
+
+def hipchat_msg(message):
+    return notify_hipchat(message, "yellow")
+
+def hipchat_err(message):
+    return notify_hipchat(message, "red")
+
+def hipchat_success(message):
+    return notify_hipchat(message, "green")
+    
+def checkout(version):
+    return try_call(["scripts/checkout", version])
 
 def tag(version):
-    code = subprocess.call(["scripts/tag", version])
-    if code != 0:
-        return False
-    else:
-        return True
+    return try_call(["scripts/tag", version])
 
 def build_platz(version):
-    code = subprocess.call(["scripts/build-platz", version])
-    if code != 0:
-        return False
-    else:
-        return True
-
+    return try_call(["scripts/build-platz", version])
+    
 def build_pegasus(version):
-    code = subprocess.call(["scripts/build-pegasus", version])
-    if code != 0:
-        return False
-    else:
-        return True
-
+    return try_call(["scripts/build-pegasus", version])
+    
 def deploy_platz(version,host):
-    code = subprocess.call(["scripts/deploy-platz", version, host])
-    if code != 0:
-        return False
-    else:
-        return True
+    return try_call(["scripts/deploy-platz", version, host])
 
 def deploy_pegasus(version, host):
-    code = subprocess.call(["scripts/deploy-pegasus", version, host])
-    if code != 0:
-        return False
-    else:
-        return True
+    return try_call(["scripts/deploy-pegasus", version, host])
  
 def get_app_host_info():
     print "Using load balancer names: %s" % (load_balancers())
@@ -160,32 +153,41 @@ if __name__ == '__main__':
     host_info = get_app_host_info()
     print "Will deploy platz *only* to hosts:\n\t%s" % ("\n\t".join(admin_hosts()))
     print "\n"
-                                                        
+                   
+
     print "Will deploy to hosts:\n\t%s" % ("\n\t".join(host_info["hosts"]))       
     raw_input ("Hit <Enter> to continue")
-
+    hipchat_msg("Starting Production Deployment (%s, %s)" % (email, version))
     print "Updating source"
     checkout_ok = checkout(version)
     if checkout_ok == False:
-        print "Checkout failed. Stopping deployment."
+        msg = "Checkout failed. Stopping deployment."
+        print msg
+        hipchat_err(msg)
         exit(1)
 
     print "Building Pegasus"
     pegasus_ok = build_pegasus(version)
     if pegasus_ok  == False:
-        print "Pegasus build failed. Stopping deployment."
+        msg = "Pegasus build failed. Stopping deployment."
+        print msg
+        hipchat_err(msg)
         exit(1)
         
     print "Building Platz"
     platz_ok = build_platz(version)
     if platz_ok == False:
-        print "Platz build failed. Stopping deployment."
+        msg = "Platz build failed. Stopping deployment."
+        print msg
+        hipchat_err(msg)
         exit(1)
 
     print "Tagging Build"
     tag_ok = tag(version)
     if tag_ok == False:
-        print "Tag failed. stopping deployment."
+        msg = "Tag failed. stopping deployment."
+        print msg
+        hipchat_err(msg)
         exit(1)
 
     show_prompt = True
@@ -193,20 +195,24 @@ if __name__ == '__main__':
     for host in admin_hosts():
         deploy_platz(version, host)
 
-    val = raw_input("Admin deploy done, print <Enter> to continue")
-
+    val = raw_input("Admin deploy done, print <Enter> to continue: ")
+    hipchat_msg("Admin deploy complete")
     for host in host_info["hosts"]:
+        hipchat_msg("Removing %s from ELB" % (host))
         remove_from_elbs(host, host_info)
         print "Waiting for traffic to die off"
         wait_for_traffic_to_die(host)
         
+        hipchat_msg("Deploying to %s", % (host))
         deploy_platz(version, host)
         deploy_pegasus(version, host)
 
+
         add_to_elbs(host, host_info)
+
         print "Waiting for host to start getting traffic"
         wait_for_traffic(host)
-
+        hipchat_msg("%s back in ELB" % host)
         print "Done with %s" % host
         if show_prompt == True:
             val = raw_input("Hit <Enter> to continue to the next host, or type all and hit <Enter> to do the remainder or the boxes without prompting again.")
@@ -217,7 +223,8 @@ if __name__ == '__main__':
 
     print "Notifying new relic of deployment"
     notify_newrelic(version, email)
-            
+    print "Notifying hipchat of deployment"
+    hipchat_success("Production Deployment Complete! (%s, %s)" % (email, version))            
 
         
 

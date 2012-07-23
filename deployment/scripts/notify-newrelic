@@ -12,11 +12,16 @@ fi
 
 VERSION=$1
 DEPLOYER=$2
-PLATZ_REV=`cd ${PLATZ_BUILD_HOME}; git rev-parse --short HEAD;`
-PEGASUS_REV=`cd ${PEGASUS_BUILD_HOME}; git rev-parse --short HEAD;`
+REV=`cd ${PLATZ_BUILD_HOME}; git rev-parse --short HEAD;`
 
+APPS="APPS01 APPS02 APPS03 APPS04 APPS05 APPS06 APPS07 APPS08";
+PLATZ_APPS="Aggregated ${APPS}"
+PEGASUS_APPS="Core Photos ${APPS}"
 
+for A in $PLATZ_APPS; do
+    curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PLATZ] ${A}" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml;
+done
 
-curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PLATZ] Aggregated" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${PLATZ_REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml
-
-curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PEGASUS] Aggregated" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${PEGASUS_REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml
+for A in $PEGASUS_APPS; do
+    curl -H "x-api-key:11734ce3d116e575c4e2443cc41b2c44c5b941d03ef437b" -d "deployment[app_name]=[PEGASUS] ${A}" -d "deployment[description]=${VERSION}" -d "deployment[revision]=${REV}" -d "deployment[user]=${DEPLOYER}" https://api.newrelic.com/deployments.xml;
+done

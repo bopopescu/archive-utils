@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+source $(dirname $0)/include
+
+shift $(($OPTIND - 1))
+
+if test $# -lt 1 ; then
+  fatal "two arguments are required"
+fi
+
+MESSAGE=$1
+COLOR=$2
+curl -d "room_id=Production&from=Deploy+Bot&message=${MESSAGE}&notify=1&color=${COLOR}" "https://api.hipchat.com/v1/rooms/message?format=json&auth_token=47ee063dc3d99cebf45afd8fd6890b" > /dev/null 2>&1
