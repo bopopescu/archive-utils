@@ -31,6 +31,7 @@ git commit -am "Setting asset version"
 git push ${LOCKERZ_REMOTE} master
 
 echo "Updating vendors"
+rm -rf vendor
 php bin/vendors.php install
 
 echo "Cleaning cache, log, web/bundles"
