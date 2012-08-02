@@ -20,7 +20,7 @@ cg_template = """# Oncall Notifications config
 define contactgroup{
         contactgroup_name       oncall-lockerz-admins
         alias                   Oncall Lockerz Admins
-	members			%(primary)s, lockerz_alerts, spryLockerzOps
+	members			%(primary)s, lockerz_alerts
 	}
 
 define contactgroup{
