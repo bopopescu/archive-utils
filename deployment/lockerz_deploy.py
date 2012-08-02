@@ -40,9 +40,9 @@ def wait_for_traffic(host):
 def try_call(what):
     code = subprocess.call(what)
     if code != 0:
-        return True
-    else:
         return False
+    else:
+        return True
     
 def notify_newrelic(version, email):
     return try_call(["scripts/notify-newrelic", version, email])
@@ -203,7 +203,7 @@ if __name__ == '__main__':
         print "Waiting for traffic to die off"
         wait_for_traffic_to_die(host)
         
-        hipchat_msg("Deploying to %s", % (host))
+        hipchat_msg("Deploying to %s" % (host))
         deploy_platz(version, host)
         deploy_pegasus(version, host)
 
