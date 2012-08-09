@@ -1,0 +1,180 @@
+#!/bin/sh
+
+LBIN=/opt/lockerz/bin
+LDIR=/opt/lockerz/bin/ldap
+OUTF=/tmp/ldap.out
+INF=/tmp/ldap.in
+RT=0
+CRED=`cat /etc/ldap.secret`
+ADMINHOST=admin0.opz.prod.lockerz.us
+LDAPHOST=auth0.opz.prod.lockerz.int
+LDAPFLAGS="-x -w $CRED -h $LDAPHOST -D cn=admin,dc=lockerz,dc=com"
+
+
+
+
+	THIS_CNT=`ps -ef www | grep $0 | grep -v grep | wc -l`
+	
+	if [ $THIS_CNT -gt 2 ]; then
+	    echo -e "\nERROR:  there is already an instance of $0 running\n\n"
+	    exit 1
+	fi
+	
+	HOST=`hostname`
+	if [ $HOST != $ADMINHOST ]; then
+	    echo -e "\nERROR:  Please run $0 from $ADMINHOST\n!"
+	    exit 1
+	fi
+	
+	
+	echo -ne "Enter Unix Username: "
+	read USERNAME
+	
+	
+	case $1 in
+
+	-delete|--delete|delete|-del|--del|del|-d|--d)
+
+		#DNF=$LDIR/user-delete.ldif
+
+		echo -ne "Are you sure you want to delete user [$USERNAME]?  (y/n)"
+		read ANS
+		if [ $ANS != "y" ]; then
+			echo -e "\nOK, not sure ... exiting!\n"
+			exit 0
+		fi
+
+
+		LD_DEL="uid=$USERNAME,ou=people,dc=lockerz,dc=com"
+
+		echo "echo $LD_DEL | ldapdelete $LDAPFLAGS" 
+		echo "$LD_DEL" | ldapdelete $LDAPFLAGS
+		RT=$?
+		if [ $RT -ne 0 ]; then
+			echo -e "\nERROR:  ldapdelete error code: $RT\n"
+			exit 1
+		fi
+
+		ldapsearch $LDAPFLAGS > $OUTF 
+
+		echo -e "
+	
+			DONE!  User $USERNAME deleted.  Check $OUTF for Ldap query results.
+
+			---------------------------------------------------------------------------
+	
+			Remaining to-dos to delete user $USERNAME:
+				1) save any files in /home/$USERNAME
+				2) remove ~$USERNAME home dir
+				3) change GMAIL password, forward to manager,
+				4) blah blah
+				5) ...
+	
+			---------------------------------------------------------------------------
+	
+			"
+
+		;;	
+	
+	
+	-add|--add|add|-a|--a)
+	
+		echo -ne "Enter First Name: "
+		read FIRST
+		echo -ne "Enter Last Name: "
+		read LAST
+	
+		#DNF=$LDIR/user-add.ldif
+	
+		NEWUID=`ldapsearch $LDAPFLAGS uidNumber | grep uidNumber | awk '{print $2}' | sort -n | tail -1`
+		NEWUID=`expr $NEWUID + 1`
+		echo -e "\nNEW UID = $NEWUID\n\n"
+	
+		#echo -e "\nsed s/FIRST/$FIRST/g $DNF | sed s/LAST/$LAST/g  | sed s/USERNAME/$USERNAME/g | sed s/USERUID/$NEWUID/g | ldapadd $LDAPFLAGS \n\n..."
+		#sed s/FIRST/$FIRST/g $DNF | sed s/LAST/$LAST/g  | sed s/USERNAME/$USERNAME/g | sed s/USERUID/$NEWUID/g | ldapadd $LDAPFLAGS
+
+
+		echo "dn: uid=$USERNAME,ou=people,dc=lockerz,dc=com
+gidNumber: 10005
+loginShell: /bin/bash
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+shadowExpire: -1
+shadowFlag: 0
+shadowMax: 999999
+shadowMin: 8
+shadowWarning: 7
+uid: $USERNAME
+gecos: $FIRST $LAST
+homeDirectory: /home/$USERNAME
+mail: $USERNAME@lockerz.com
+sn: $FIRST
+uidNumber: $NEWUID
+cn: $FIRST $LAST" > $INF
+
+		#echo $LD_ADD | ldapadd $LDAPFLAGS
+		echo -e "ldapadd $LDAPFLAGS < $INF\n\n"
+		ldapadd $LDAPFLAGS < $INF
+		
+		RT=$?
+		if [ $RT -ne 0 ]; then
+			echo -e "\nERROR:  ldapadd error code: $RT\n"
+			exit 1
+		fi
+	
+		ldapsearch $LDAPFLAGS > $OUTF 
+
+		mkdir /home/$USERNAME
+		chown $USERNAME:user /home/$USERNAME 
+		# passwd $USERNAME
+	
+		echo -e "
+	
+	
+			DONE!  User $USERNAME added  Check $OUTF for Ldap query results..
+	
+		
+
+			---------------------------------------------------------------------------
+
+			Final Steps to add a developer to Lockerz ...
+		
+			1. Add laptop:~.ssh/id_rsa key to locknoc:~.ssh/authorized_keys
+			2. Change passwd
+			3. Setup github account and email <murray@> for lockerz github access.
+			4.  Enter "ServerAliveInterval 60" in file named ~/.ssh/config on your lappy
+			5.  Blah ...
+			6.  Blah ...
+		
+			---------------------------------------------------------------------------
+	
+			"
+
+		;;	
+
+
+	-search|--search|search|-s|--s)
+
+		ldapsearch $LDAPFLAGS > $OUTF 
+		egrep -C 15 uid=$USERNAME $OUTF
+		RT=$?
+		if [ $RT -ne 0 ]; then
+			echo -e "Username [$USERNAME] not found!\n"
+		fi
+		;;	
+	
+
+	*)
+	
+		echo -e "\nUSAGE: $0 [ -add | -delete | -search ]"
+		exit 1
+		;;
+		
+	esac
+	
+	
+exit 0
+	
+
+
