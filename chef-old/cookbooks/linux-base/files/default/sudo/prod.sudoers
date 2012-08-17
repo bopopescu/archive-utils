@@ -3,10 +3,10 @@
 %ops	ALL	= (root) NOPASSWD: ALL
 %logmanager	ALL	= (root) NOPASSWD: ALL
 
-bryan	ALL	= (root) NOPASSWD: ALL
 buddy	ALL	= (root) NOPASSWD: ALL
 steve	ALL	= (root) NOPASSWD: ALL
 bernard	ALL	= (root) NOPASSWD: ALL
+q	ALL	= (root) NOPASSWD: ALL
 
 Cmnd_Alias SUBSYS_LOCK = /bin/touch /var/lock/subsys/*, /bin/rm -f /var/lock/subsys/*
 
