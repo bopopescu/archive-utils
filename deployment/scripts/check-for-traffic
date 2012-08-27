@@ -16,8 +16,6 @@ DESIRED=2
 
 LOG_FILE=`date +"/var/log/platz/jetty-%Y_%m_%d.access.log"`
 
-if [ -a "${LOG_FILE}" ]; then
-
 while [ $SEEN -lt $DESIRED ]; do
     SAMPLE=`(ssh ubuntu@${HOST} tail -n0 -f ${LOG_FILE} & P=$! ; sleep 2; kill -9 $P) | wc -l`
     echo "Saw $SAMPLE accesses in the past 2 seconds";
@@ -31,4 +29,4 @@ while [ $SEEN -lt $DESIRED ]; do
     echo "${SEEN} / ${DESIRED}"
 done
 
-fi
+

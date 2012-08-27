@@ -215,11 +215,11 @@ if __name__ == '__main__':
     for host in host_info["hosts"]:
         hipchat_msg("Removing %s from ELB" % (host))
         remove_from_elbs(host, host_info)
-        print "Waiting for traffic to die off"
-        wait_for_traffic_to_die(host)
         
 
         if 'platz' in host:
+            print "Waiting for traffic to die off"
+            wait_for_traffic_to_die(host)
             hipchat_msg("Deploying (Platz/Pegasus) to %s" % (host))
             deploy_platz(version, host)
         else:
@@ -230,8 +230,10 @@ if __name__ == '__main__':
 
         add_to_elbs(host, host_info)
 
-        print "Waiting for host to start getting traffic"
-        wait_for_traffic(host)
+        if 'platz' in host:
+            print "Waiting for host to start getting traffic"
+            wait_for_traffic(host)
+
         hipchat_msg("%s back in ELB" % host)
         print "Done with %s" % host
         if show_prompt == True:
