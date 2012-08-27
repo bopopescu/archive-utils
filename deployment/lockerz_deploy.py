@@ -29,7 +29,7 @@ def admin_hosts():
 
 def load_balancers():
     #return ["deploy-test"]
-    return ["lockerz-com", "api-lockerz-com"]
+    return ["lockerz-com", "api-lockerz-com", "pics-lockerz-com"]
 
 def wait_for_traffic_to_die(host):
     code = subprocess.call(["scripts/check-for-traffic", "-le", "0", host])
@@ -91,6 +91,8 @@ def get_app_host_info():
     instance_ids_to_fqdns['i-fc51729b'] = 'apps06.platz.lockerz.int'
     instance_ids_to_fqdns['i-bcccffdb'] = 'apps07.platz.lockerz.int'
     instance_ids_to_fqdns['i-baccffdd'] = 'apps08.platz.lockerz.int'
+    instance_ids_to_fqdns['i-95136fee'] = 'pics01.lockerz.int'
+    instance_ids_to_fqdns['i-930579e8'] = 'pics02.lockerz.int'
 
     balancers_to_instance_ids = {}
     ids_to_instances = {}
@@ -216,8 +218,13 @@ if __name__ == '__main__':
         print "Waiting for traffic to die off"
         wait_for_traffic_to_die(host)
         
-        hipchat_msg("Deploying to %s" % (host))
-        deploy_platz(version, host)
+
+        if 'platz' in host:
+            hipchat_msg("Deploying (Platz/Pegasus) to %s" % (host))
+            deploy_platz(version, host)
+        else:
+            hipchat_msg("Deploying (Pegasus) to %s" % (host))
+
         deploy_pegasus(version, host)
 
 
