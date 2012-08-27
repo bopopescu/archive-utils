@@ -12,6 +12,7 @@ $TTL    86400
 
 auth0.opz	IN A	10.85.150.24
 auth1.opz	IN A	10.98.71.150
+sys01.opz	IN A	10.192.178.64
 paul0.opz	IN A	10.86.183.188
 
 splunk0.opz	IN A 	10.32.253.81
