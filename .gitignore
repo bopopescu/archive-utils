@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.py[co]
 
 # Packages
@@ -25,3 +26,12 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+=======
+#metadata
+metadata.json
+
+#exclude stoopid zone files here
+named.som
+named.rcbi
+named.rti.local
+>>>>>>> 6237e82a6859cf8b11d7bb33cdcb80f459130ef4
