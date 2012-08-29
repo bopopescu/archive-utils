@@ -1,5 +1,5 @@
-maintainer       "YOUR_COMPANY_NAME"
-maintainer_email "YOUR_EMAIL"
+maintainer       "Lockerz"
+maintainer_email "steve@lockerz.com"
 license          "All rights reserved"
 description      "Installs/Configures bind"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))
