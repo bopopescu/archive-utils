@@ -29,6 +29,7 @@ def admin_hosts():
 
 def load_balancers():
     #return ["deploy-test"]
+    #return ["lockerz-com", "api-lockerz-com", "pics-lockerz-com"]
     return ["lockerz-com", "api-lockerz-com"]
 
 def wait_for_traffic_to_die(host):
@@ -80,6 +81,20 @@ def deploy_pegasus(version, host):
  
 def get_app_host_info():
     print "Using load balancer names: %s" % (load_balancers())
+
+    instance_ids_to_fqdns = {}
+    instance_ids_to_fqdns['i-ec303788'] = 'admin01.platz.lockerz.int'
+    instance_ids_to_fqdns['i-4c828528'] = 'apps01.platz.lockerz.int'
+    instance_ids_to_fqdns['i-d08186b4'] = 'apps02.platz.lockerz.int'
+    instance_ids_to_fqdns['i-1880877c'] = 'apps03.platz.lockerz.int'
+    instance_ids_to_fqdns['i-d2843eb5'] = 'apps04.platz.lockerz.int'
+    instance_ids_to_fqdns['i-fe517299'] = 'apps05.platz.lockerz.int'
+    instance_ids_to_fqdns['i-fc51729b'] = 'apps06.platz.lockerz.int'
+    instance_ids_to_fqdns['i-bcccffdb'] = 'apps07.platz.lockerz.int'
+    instance_ids_to_fqdns['i-baccffdd'] = 'apps08.platz.lockerz.int'
+    instance_ids_to_fqdns['i-95136fee'] = 'pics01.lockerz.int'
+    instance_ids_to_fqdns['i-930579e8'] = 'pics02.lockerz.int'
+
     balancers_to_instance_ids = {}
     ids_to_instances = {}
     ids_to_balancers = {}
@@ -95,7 +110,8 @@ def get_app_host_info():
             
         
     for instance_id in ids_to_instances.keys():
-        fqdn = aws.fqdn_for_instance_id(instance_id)
+        #fqdn = aws.fqdn_for_instance_id(instance_id)
+        fqdn = instance_ids_to_fqdns[instance_id]
         fqdns_to_ids[fqdn] = instance_id
         ids_to_balancers[instance_id] = [b for b in balancers_to_instance_ids.keys() if instance_id in balancers_to_instance_ids[b]]
         
@@ -200,18 +216,25 @@ if __name__ == '__main__':
     for host in host_info["hosts"]:
         hipchat_msg("Removing %s from ELB" % (host))
         remove_from_elbs(host, host_info)
-        print "Waiting for traffic to die off"
-        wait_for_traffic_to_die(host)
         
-        hipchat_msg("Deploying to %s" % (host))
-        deploy_platz(version, host)
+
+        if 'platz' in host:
+            print "Waiting for traffic to die off"
+            wait_for_traffic_to_die(host)
+            hipchat_msg("Deploying (Platz/Pegasus) to %s" % (host))
+            deploy_platz(version, host)
+        else:
+            hipchat_msg("Deploying (Pegasus) to %s" % (host))
+
         deploy_pegasus(version, host)
 
 
         add_to_elbs(host, host_info)
 
-        print "Waiting for host to start getting traffic"
-        wait_for_traffic(host)
+        if 'platz' in host:
+            print "Waiting for host to start getting traffic"
+            wait_for_traffic(host)
+
         hipchat_msg("%s back in ELB" % host)
         print "Done with %s" % host
         if show_prompt == True:

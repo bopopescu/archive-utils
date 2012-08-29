@@ -13,9 +13,13 @@ fi
 VERSION=$1
 HOST=$2
 
-cd ${PEGASUS_BUILD_HOME}
+cd ${THRIFT_BUILD_HOME}
 ssh ubuntu@${HOST} "sudo service apache2 stop"
+rsync --progress --exclude=.git -az . ubuntu@${HOST}:/home/ubuntu/opt/shared-interface
+
+cd ${PEGASUS_BUILD_HOME}
 rsync --progress --exclude=.git -az . ubuntu@${HOST}:/home/ubuntu/opt/pegasus
+
 ssh ubuntu@${HOST} "sudo rm -rf /home/ubuntu/opt/pegasus/cache/*"
 ssh ubuntu@${HOST} "cd /home/ubuntu/opt/pegasus; php bin/console -e=prod --no-debug cache:clear;"
 ssh ubuntu@${HOST} "sudo chmod -R 777 /home/ubuntu/opt/pegasus/cache"
