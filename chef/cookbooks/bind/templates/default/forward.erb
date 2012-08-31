@@ -13,12 +13,9 @@ $ORIGIN lockerz.int.
 <% end -%>
 
 <% @hosts.each do |host| -%>
-<<<<<<< HEAD
 <% Chef::Log.warn("Host is %s"%host) -%>
 <% Chef::Log.warn("Host[fqdn] is %s"%host['fqdn']) -%>
 <% Chef::Log.warn("Host[ipaddress] is %s"%host['ipaddress']) -%>
-=======
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 <% if not host['fqdn'] =~ /^[0-9a-zA-z.-]+$/ -%>
 <%  if host.key?('fqdn') and not (host['fqdn'].nil? or host['fqdn'].empty? ) -%>
 <%   Chef::Log.warn("%s FQDN %s contains illegal characters"%[host, host['fqdn']]) -%>
