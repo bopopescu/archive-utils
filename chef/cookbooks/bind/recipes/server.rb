@@ -9,11 +9,7 @@ cookbook_file "/etc/bind/named.conf" do
 	owner "named"
 	group "bind"
 	source "named.conf"
-<<<<<<< HEAD
 	notifies :restart, resources(:service => "bind9")
-=======
-	notifies :reload, resources(:service => "bind9")
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 end
 
 cookbook_file "/etc/bind/named.conf.lockerz-zones" do
@@ -21,11 +17,7 @@ cookbook_file "/etc/bind/named.conf.lockerz-zones" do
 	owner "named"
 	group "bind"
 	source "named.conf.lockerz-zones"
-<<<<<<< HEAD
 	notifies :restart, resources(:service => "bind9")
-=======
-	notifies :reload, resources(:service => "bind9")
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 end
 
 # cookbook_file "/etc/bind/named.rfc1912.zones" do
@@ -33,11 +25,7 @@ end
 # 	owner "named"
 # 	group "bind"
 # 	source "named.rfc1912.zones"
-<<<<<<< HEAD
-# 	notifies :reload, resources(:service => "bind")
-=======
 # 	notifies :reload, resources(:service => "bind9")
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 # end
 
 ## forward zone is for lockerz.int reverse zone is for 10.in-addr.arpa
@@ -48,11 +36,7 @@ end
 hosts = []
 search(:node, "*:*") {|n| hosts << n }
 nameservers = []
-<<<<<<< HEAD
 search(:node, "fqdn:sys*.opz.prod.lockerz.int") {|n| nameservers << n }
-=======
-search(:node, "fqdn:auth*.opz.prod.lockerz.us") {|n| nameservers << n }
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 serial = Time.now.strftime("%Y%m%d%H%M%S")
 
 template "/etc/bind/db.lockerz" do
@@ -66,11 +50,7 @@ template "/etc/bind/db.lockerz" do
 	:serial => serial,
 	:nameservers => nameservers
   })
-<<<<<<< HEAD
   notifies :restart, resources(:service => "bind9")
-=======
-  notifies :reload, resources(:service => "bind9")
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 end
 
 template "/etc/bind/db.lockerz-reverse" do
@@ -84,11 +64,7 @@ template "/etc/bind/db.lockerz-reverse" do
 	:nameservers => nameservers,
 	:serial => serial
   })
-<<<<<<< HEAD
   notifies :restart, resources(:service => "bind9")
-=======
-  notifies :reload, resources(:service => "bind9")
->>>>>>> b2145a077f37a478998148d5b822f3f00f28e2b0
 end
 
 
