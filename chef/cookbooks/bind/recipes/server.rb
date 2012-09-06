@@ -20,6 +20,14 @@ cookbook_file "/etc/bind/named.conf.lockerz-zones" do
 	notifies :restart, resources(:service => "bind9")
 end
 
+cookbook_file "/etc/bind/named.conf.options" do
+        mode "0755"
+        owner "named"
+        group "bind"
+        source "named.conf.options"
+        notifies :restart, resources(:service => "bind9")
+end
+
 # cookbook_file "/etc/bind/named.rfc1912.zones" do
 # 	mode "0755"
 # 	owner "named"
