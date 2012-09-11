@@ -1,0 +1,12 @@
+##
+# Stack services
+
+<% @envs.each do |environment| %>
+define service{ 
+	use		generic-service
+	name	<%= environment.name %>.<%= @role.name %>
+	normal_check_interval   5
+	retry_check_interval    1
+	register	0
+}
+<% end %>

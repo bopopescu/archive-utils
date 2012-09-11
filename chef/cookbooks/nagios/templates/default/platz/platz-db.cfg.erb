@@ -1,0 +1,2 @@
+command[check_mysql]=/usr/lib/nagios/plugins/check_mysql -u nagios -p Qq7V3ktyKxCUHpwKockrwLhBSiyk4rU<%= (@database_type==:db_slave)?(' -S -w 1 -c 10'):('') %>
+command[check_mysql_procs]=/usr/lib/nagios/plugins/check_procs -C mysqld -c 1:1

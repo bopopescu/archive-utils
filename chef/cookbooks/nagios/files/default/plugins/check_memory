@@ -1,0 +1,111 @@
+#!/usr/bin/python
+"""check_memory
+
+This is a nagios plugin that reads memory utilisation data from /proc/meminfo
+
+The avilable memory is calculated by summing free, cached and buffers as
+all of those blocks are available for use by a process calling malloc
+
+As a side effect, the calculated data is written to syslog so it can be
+picked up for analysis by splunk.
+"""
+
+import sys
+import os
+import exceptions
+from syslog import *
+import getopt
+
+#######
+# Function Definitions
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+def usage():
+        sys.stderr.write("%s: usage [-w <warn percent>] [-c <crit percent>]\n")
+
+
+#######
+# Parse args
+
+try:
+        opts, args = getopt.getopt(sys.argv[1:], "w:c:")
+except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(3)
+
+warnpct=None
+critpct=None
+
+for o, a in opts:
+        if o == '-w':
+                if a[-1]=='%':
+                        warnpct=int(a[:-1])
+                else:
+                        warnpct=int(a)
+
+        elif o == '-c':
+                if a[-1]=='%':
+                        critpct=int(a[:-1])
+                else:
+                        critpct=int(a)
+
+
+
+#######
+# Main body
+try:
+	openlog("check_memory")
+
+	stats={}
+	for l in open("/proc/meminfo").readlines():
+		l=l.split()
+		# we don't want the : on the end of the labels
+		stats[l[0][:-1]]=int(l[1])
+
+	total=stats['MemTotal']
+	free=stats['MemFree']
+	caches=stats['Buffers'] + stats['Cached']
+	avail=free + caches
+	
+	avpct=100.0*avail/total
+	frpct=100.0*free/total
+	capct=100.0*caches/total
+	uspct=100-avpct
+
+	msg="%.01f GB avail of %.01f GB total memory (%.01f%% free %.01f%% caches)"%(avail/1048576.0, total/1048576.0, frpct, capct)
+	syslog(msg)
+
+	if critpct and (uspct >= critpct):
+		#CRIT(msg)
+		CRIT("%.01f%% of memory in use"%(uspct))
+	if warnpct and (uspct >= warnpct):
+		#WARN(msg)
+		WARN("%.01f%% of memory in use"%(uspct))
+	OK(msg)
+	
+except exceptions.SystemExit:
+        raise
+except:
+        sys.stderr.write(`sys.exc_info()`+"\n")
+        CRIT("internal plugin failure")
+

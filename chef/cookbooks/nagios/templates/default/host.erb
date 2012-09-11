@@ -1,0 +1,10 @@
+##
+# Host <%= @params[:name] %>
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+define host {
+	<% @params.each do |key,val| %>
+	<%= key %> <%= val %>
+	<% end %>
+}

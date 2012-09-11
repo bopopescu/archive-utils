@@ -1,0 +1,25 @@
+##
+# VodPod checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+## Web checks
+command[check_for_nginx]=/usr/lib64/nagios/plugins/check_procs -a nginx -c 2:20
+command[check_for_cluster_script]=/usr/lib64/nagios/plugins/check_procs -a cluster -c 1:2
+command[check_for_mongrel_rails]=/usr/lib64/nagios/plugins/check_procs -a mongrel_rails -c 5:10
+
+## API checks
+command[check_for_api_cluster]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'cluster.rb' -c 1:10
+command[check_for_api_service]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'vodpod-api.rb' -c 1:5
+
+## Backend checks
+command[check_for_run_queue]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'run_queue.rb' -c 1:
+command[check_for_run_scrape_queue]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'run_scrape_queue.rb' -c 1:
+command[check_for_video_imports]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'VideoImport.process_imports' -c 3:5
+command[check_for_background_job]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'BackgroundJob.start' -c 1:3
+command[check_for_queued_job]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'QueuedJob.start' -c 1:3
+
+command[check_for_alerts_script]=/usr/lib64/nagios/plugins/check_procs -C 'ruby' -a 'alerts.rb' -c 1:
+
+command[check_for_redis_service]=/usr/lib64/nagios/plugins/check_procs -C 'redis-server' -c 1:

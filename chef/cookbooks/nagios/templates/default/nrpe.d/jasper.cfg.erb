@@ -1,0 +1,9 @@
+##
+# Jasper checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_for_mysql]=/usr/lib64/nagios/plugins/check_procs -a mysqld -c 1:
+command[check_for_tomcat]=/usr/lib64/nagios/plugins/check_procs -a java -c 1:
+
