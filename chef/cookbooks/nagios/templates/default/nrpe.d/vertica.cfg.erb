@@ -1,0 +1,10 @@
+##
+# Vertica checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_vertica_procs]=/usr/lib64/nagios/plugins/check_procs -C vertica -c 1:1
+command[check_spread_procs]=/usr/lib64/nagios/plugins/check_procs -C spread -c 1:1
+command[check_disk_data]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /data
+

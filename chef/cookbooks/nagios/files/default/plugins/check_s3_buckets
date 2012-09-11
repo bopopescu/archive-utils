@@ -1,0 +1,62 @@
+#!/usr/bin/python
+# Config
+AWS_ACCESS_KEY_ID="AKIAIO6ZJBIIOKEYEGVQ"
+AWS_ACCOUNT_ID="234412458349"
+AWS_SECRET_ACCESS_KEY="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"
+
+def usage():
+	sys.stderr.write("%s: usage [-w <warn count>] [-c <crit count>]\n")
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+import boto, boto.s3
+import getopt, sys
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "w:W:c:C:")
+except getopt.GetoptError, err:
+	print str(err)
+	usage()
+	sys.exit(3)
+
+warncount=None
+critcount=None
+warnsize=None
+critsize=None
+
+for o, a in opts:
+	if o == '-w':
+		warncount=int(a)
+	elif o == '-c':
+		critcount=int(a)
+
+conn=boto.connect_s3(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+bucks=conn.get_all_buckets()
+
+buckcount=len(bucks)
+msg="S3 contains %d buckets"%(buckcount)
+
+if (critcount and (critcount <= buckcount)):
+	CRIT(msg)
+if (warncount and (warncount <= buckcount)):
+	WARN(msg)
+OK(msg)

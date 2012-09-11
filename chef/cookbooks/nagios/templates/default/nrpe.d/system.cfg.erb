@@ -1,0 +1,13 @@
+##
+# Chef checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_disk_root]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /
+command[check_disk_local]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /mnt/local
+command[check_disk_ebs]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /mnt/ebs
+
+command[check_cpu]=/usr/lib64/nagios/plugins/check_cpu -w 50% -c 80%
+command[check_memory]=/usr/lib64/nagios/plugins/check_memory -w 75% -c 90%
+

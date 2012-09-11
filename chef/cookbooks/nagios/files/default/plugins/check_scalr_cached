@@ -1,0 +1,210 @@
+#!/usr/bin/python
+
+"""check_scalr
+
+This is a nagios plugin that interfaces with the scalr API to find
+hosts that should be monitored, then executes another nagios plugin
+against that list of hosts and summarises the result to allow
+monitoring of a dynamic cluster without constantly changing the
+Nagios configuration
+
+"""
+
+import scalr
+import sys
+import ConfigParser
+import subprocess
+import threading
+import pickle
+import os
+
+#######
+# Function Definitions
+
+def run_plugins(args, instances):
+	"""run_plugins(args, instances) - fork and run a plugin for each instance
+and generate a summary as the result"""
+
+	# XXX This algorithm for forking children and gatheing results is
+	# primitive - would be better to gather the results from the children
+	# as they become available - also should handle timeouts for children
+	# that return slow - would be better to return a descriptive error
+	# rather than just be listed as a timeout in the nagios interface
+
+	
+	# Look for the magic substitution tokens in the args
+	internal=None
+	try:
+		internal=args.index('_INTERNAL_')
+	except ValueError:
+		pass
+	external=None
+	try:
+		external=args.index('_EXTERNAL_')
+	except ValueError:
+		pass
+
+	# Walk through the passed in list of instances, and start the plugins
+	children={}
+	ips={}
+	for i in instances:
+		if i['Status']!='Running':
+			# Don't run tests against systems that aren't live
+			continue
+
+		argv=list(args) # make a copy
+		if internal!=None:
+			argv[internal]=i['InternalIP']
+		if external!=None:
+			argv[external]=i['ExternalIP']
+			
+		children[i['PlatformProperties']['InstanceID']]=run_plugin(argv)
+		ips[i['PlatformProperties']['InstanceID']]=(i['InternalIP'], i['ExternalIP'])
+
+	# Gather the results from the forked children and summarise
+	results={}
+
+	worst=0
+	checks=0
+	failures=0
+	last_failure=None
+	summary=[0, 0, 0, 0] # OK, WARN, CRIT, UNKNOWN
+
+	for child in children.keys():
+		results[child]=children[child].communicate()
+		status=children[child].wait()
+		if status > worst: # XXX - this will do for now, but UNKNOWN isn't as bad as CRITICAL
+			worst=status
+		if status:
+			failures += 1
+			last_failure=child
+		checks += 1
+
+		try:
+			summary[status]+=1
+		except IndexError:
+			pass
+
+	if checks == 0: # We didn't run any checks?!?!
+		UNKNOWN("No hosts found to check!")
+
+	if (checks == 1) or (failures == 1): # pass through the one that matters
+		if checks == 1:
+			sysid=children.keys()[0]
+			print "%s says %s"%(ips[sysid][0], results[sysid][0].strip())
+			sys.exit(worst)
+		if worst in [1, 2, 3]:
+			sysid=last_failure
+			print "%s says %s"%(ips[sysid][0], results[sysid][0].strip())
+			sys.exit(worst)
+		# If we made it here, a plugin returned a non standard error
+		UNKNOWN("tests: %d, critical: %d, warning: %d, unknown: %d, ok: %d - in addition something returned %d"%(summary[2], summary[1], summary[3], summary[0], worst))
+
+	if failures == 0: # No failures - summarise as all OK
+		sysid=children.keys()[0]
+		OK("tests: %d, ok: %d - %s said %s "%(checks, summary[0], ips[sysid][0], results[sysid][0].strip()))
+
+	# If we made it here, there were multiple failures...
+	# Build the summary
+	msg=["tests: %d"%(checks)]
+	if summary[2]:
+		msg+=["critical: %d"%(summary[2])]
+	if summary[1]:
+		msg+=["warning: %d"%(summary[1])]
+	if summary[3]:
+		msg+=["unknown: %d"%(summary[3])]
+	if summary[0]:
+		msg+=["ok: %d"%(summary[0])]
+
+	# convert the list into a comma seperated string
+	msg=", ".join(msg)
+
+	# Add the output of one of the failures
+	msg+=" - %s said %s"%(ips[last_failure][0], results[last_failure][0])
+
+	# And exit with the summary message
+	if worst == 1:
+		WARN(msg)
+	if worst == 2:
+		CRIT(msg)
+	if worst == 3:
+		UNKNOWN(msg)
+
+
+def run_plugin(argv):
+	"""simple wrapper function to fork child plugins"""
+	return subprocess.Popen(argv, stdout=subprocess.PIPE)
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+#######
+# Main body
+
+# Sanity check arguments
+if len(sys.argv) < 5:
+	UNKNOWN("usage: check_scalr <config> <farm> <app> <plugin> [plugin args]")
+
+# Load config file
+config=ConfigParser.SafeConfigParser()
+config.read(["/etc/check_scalr.ini", "check_scalr.ini"])
+
+# Initialise scalr API connection
+sc=scalr.scalr(config.get(sys.argv[1], 'keyid'), config.get(sys.argv[1], 'access'))
+
+# Get list of farms from scalr
+if(os.path.exists( "/tmp/"+sys.argv[1]+"_scalr_farms") == False):
+	farms = sc.FarmsList()['FarmSet']
+	cache = open( "/tmp/scalr_farms","w" )
+	pickle.dump( farms,cache )
+	cache.close()
+
+else:
+	farms = pickle.load(open("/tmp/"+sys.argv[1]+"_scalr_farms","r"))
+
+# Look for the specified farm
+FarmID=None
+for farm in farms:
+	if farm['Name'] == sys.argv[2]:
+		FarmID=farm['ID']
+		break
+
+if FarmID == None:
+	UNKNOWN("Farm '%s' not found"%(sys.argv[2]))
+
+# Get list of roles on Farm
+if(os.path.exists( "/tmp/"+sys.argv[1]+"_scalr_farm_%s" % FarmID ) == False):
+	details = sc.FarmGetDetails(FarmID)['FarmRoleSet']
+	cache = open( "/tmp/"+sys.argv[1]+"_scalr_farm_%s" % FarmID, "w" )
+	pickle.dump( details,cache )
+	cache.close()
+
+else:
+	details = pickle.load(open( "/tmp/"+sys.argv[1]+"_scalr_farm_%s" % FarmID, "r" ))
+	
+
+# Look for the specified Role - if found, run specified plugins
+for app in details:
+	if app['Name']==sys.argv[3]:
+		run_plugins(sys.argv[4:], app['ServerSet'])
+		# Not Reached - run_plugin should return with a summary
+		break
+	
+UNKNOWN("Config problem - App '%s' not found in Farm '%s'"%(sys.argv[3], sys.argv[2]))

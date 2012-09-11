@@ -1,0 +1,68 @@
+#!/usr/bin/python2.6
+
+# needs 2.6 for the inbuilt json module
+
+# Basic config stuff
+
+key="925be218-ef90-4219-b723-d33cefeac089" # by default
+url="https://api.lockerz.com" # by default
+import sys
+if len(sys.argv) > 1:
+	url=sys.argv[1]
+	if not (url.startswith("http://") or url.startswith("https://")):
+		url="http://"+url
+	if len(sys.argv) >2:
+		key=sys.argv[2]
+
+argo_url="%s/argo/ping/?key=%s"%(url,key)
+
+import json
+import urllib2
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+try: 
+	jrsp=urllib2.urlopen(argo_url)
+
+	# Grab the JSON formatted status info from the phoenix console server
+	argo=json.load(jrsp)
+except:
+	UNKNOWN(sys.exc_info()[1])
+
+
+
+# Analyse the response
+down=[]
+proxies=filter(lambda x: x.endswith("Prx"), argo.keys())
+for proxy in proxies:
+	if argo[proxy]!="OK":
+		down.append(proxy)
+
+# Decide what the result should be
+if down:
+	# If there are any hosts down, that takes priority
+	if len(down)==1:
+		# Full detail if just one
+		CRIT("%s is reporting %s via argo on %s"%(down[0], argo[down[0]], argo['hostname']))
+	else:
+		# Summarise multiple failures
+		CRIT("%d proxies are not OK via argo on %s"%(len(down), argo['hostname']))
+else:
+	OK("argo version (%s) using phoenix version (%s) on %s reports %d proxies OK"%(argo['argo.version'], argo['phoenix.version'], argo['hostname'], len(proxies)))

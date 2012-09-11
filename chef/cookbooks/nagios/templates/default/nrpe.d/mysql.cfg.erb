@@ -1,0 +1,14 @@
+##
+# MySQL Checks
+#
+# @TODO: expand the health checks to do more.
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_mysql_procs]=/usr/lib64/nagios/plugins/check_procs -C mysqld -c 1
+
+command[check_mysql_health]=/usr/lib64/nagios/plugins/check_mysql_health --hostname 127.0.0.1 --username <%= node['mysql']['users']['nagios']['username'] %> --password <%= node['mysql']['users']['nagios']['password'] %> --mode slow-queries
+
+command[check_mysql_slave_lag]=/usr/lib64/nagios/plugins/check_mysql_health --hostname 127.0.0.1 --username <%= node['mysql']['users']['nagios']['username'] %> --password <%= node['mysql']['users']['nagios']['password'] %> --mode slave-lag
+

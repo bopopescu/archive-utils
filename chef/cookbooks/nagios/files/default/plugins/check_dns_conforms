@@ -1,0 +1,34 @@
+#!/bin/bash
+# Look up two domain names in the DNS and ensure that they both resolve
+# to the same A record
+# Intended use is to check that the internal and external DNS are in sync
+# for the reporting DB domain names that murali uses
+#
+# The grep here is just to limit the output to only things that look like an IP address
+IP1=`/usr/bin/dig +short $1 | /bin/grep -E "^[0-9]+.[0-9]+.[0-9]+.[0-9]+$"`
+IP2=`/usr/bin/dig +short $2 | /bin/grep -E "^[0-9]+.[0-9]+.[0-9]+.[0-9]+$"`
+
+if [ "$IP1" ]
+then
+:
+else
+	echo "CRITICAL: DNS lookup of $1 failed"
+	exit 2
+fi
+
+if [ "$IP2" ]
+then
+:
+else
+	echo "CRITICAL: DNS lookup of $2 failed"
+	exit 2
+fi
+
+if [ "$IP1" = "$IP2" ]
+then
+	echo "OK: $1 [$IP1] == $2 [$IP2]"
+	exit 0
+else
+	echo "CRITICAL: $1 [$IP1] != $2 [$IP2]"
+	exit 2
+fi

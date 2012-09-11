@@ -5,7 +5,7 @@
 #	2) Nameservers are gathered by searching chef for any nodes that have
 #		the recipe "bind::server", which should be any qualified nameserver.
 #
-# @author   Bryan Kroger ( bryan@lockerz.com )
+# @author   Steve Layton ( steve@lockerz.com )
 
 define :resolv, :domain => "lockerz.int" do
 
