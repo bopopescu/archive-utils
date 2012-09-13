@@ -9,6 +9,7 @@
 
 define :resolv, :domain => "lockerz.int" do
 
+
 	## Assemble the list of primary and secondary dns servers.
 	nameServers = {}
 	search( :node,'run_list:role\[DNSMaster\]' ).each do |srv|
@@ -17,6 +18,7 @@ define :resolv, :domain => "lockerz.int" do
 	search( :node,'run_list:role\[DNSSlave\]' ).each do |srv|
 		nameServers[srv.fqdn] = srv
 	end
+
 
 	template "/etc/resolv.conf" do
 		mode "0755"
