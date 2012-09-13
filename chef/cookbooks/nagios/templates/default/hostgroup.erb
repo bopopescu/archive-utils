@@ -1,0 +1,10 @@
+##
+# HostGroup <%= @params[:name] %>
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+define hostgroup {
+	<% @params.each do |key,val| %>
+	<%= key %> <%= val %>
+	<% end %>
+}

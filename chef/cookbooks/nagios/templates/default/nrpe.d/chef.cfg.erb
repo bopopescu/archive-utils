@@ -1,0 +1,10 @@
+##
+# Chef checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_couchdb_proc]=/usr/lib64/nagios/plugins/check_procs -a /usr/bin/couchdb -c 1:1
+command[check_chefserver_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server (api)" -c 1:1
+command[check_chefserverwebui_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server-webui" -c 1:1
+

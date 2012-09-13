@@ -1,0 +1,8 @@
+##
+# OpenMQ checks
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_solr_proc]=/usr/lib64/nagios/plugins/check_procs -a org.apache.catalina.startup.Bootstrap -c 1:1
+

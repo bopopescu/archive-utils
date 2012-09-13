@@ -1,0 +1,68 @@
+#! /usr/bin/python
+
+# Python ICE module was compiled from source - the ubuntu packages seem
+# to have a version mismatch between the python interpreter and the
+# ICE libraries
+#
+# to pre-compile the phoenix.ice slice file requires the slice2python app
+# the phoenix.ice file needs to be recompiled if the interfaces change
+
+import sys
+sys.path.append('/opt/Ice-3.3.1/python')
+sys.path.append('/usr/phoenix')
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+
+import Ice
+from com.lockerz.phoenix import slice
+
+import socket
+import time
+
+hostName=sys.argv[1]
+
+# Fire up ICE
+comm=None
+comm=Ice.initialize()
+ip=socket.gethostbyname(hostName)
+
+# grab hold of the proxy for the services we want to talk to
+AuctionProxyServiceAdmin=slice.auctions.AuctionProxyServiceAdminPrx.checkedCast(comm.stringToProxy("AuctionProxyServiceAdmin:tcp -h %s -p 12350"%( hostName)))
+
+clusters = AuctionProxyServiceAdmin.getClusters()
+crits=[]
+for k in clusters:
+	if k.status==slice.auctions.ClusterStatus.Down:
+		crits.append("cluster:%d(%s): %s"%(k.id, k.type, k.status))
+
+if comm:
+    # Clean up
+    try:
+        comm.destroy()
+    except:
+	UNKNOWN("Internal error during cleanup")
+
+# Any failed?
+if crits:
+	CRIT("%d clusters in DOWN state: %s"%(len(crits), ', '.join(crits)))
+
+OK("%d clusters good."%(len(clusters)))

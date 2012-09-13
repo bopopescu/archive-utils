@@ -1,0 +1,94 @@
+#!/usr/bin/python
+# Config
+
+def usage():
+	sys.stderr.write("%s: usage [-w <warn count>|<warn percent>%] [-c <crit count>|<crit percent>%] -h host [-P port] -u user -p password\n")
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+import MySQLdb
+import getopt, sys
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "w:c:h:P:u:p:")
+except getopt.GetoptError, err:
+	print str(err)
+	usage()
+	sys.exit(3)
+
+warncount=None
+critcount=None
+warnpct=None
+critpct=None
+host=None
+port=3306
+user=None
+passwd=None
+
+for o, a in opts:
+	if o == '-w':
+		if a[-1]=='%':
+			warnpct=int(a[:-1])
+		else:
+			warncount=int(a)
+
+	elif o == '-c':
+		if a[-1]=='%':
+			critpct=int(a[:-1])
+		else:
+			critcount=int(a)
+
+	elif o == '-h':
+		host=a
+	
+	elif o == '-P':
+		port=a
+
+	elif o == '-u':
+		user=a
+
+	elif o == '-p':
+		passwd=a
+
+
+try:
+	db=MySQLdb.connect(host=host, port=port, user=user, passwd=passwd)
+	c=db.cursor()
+	c.execute("SHOW GLOBAL STATUS LIKE 'Threads_connected'")
+	conncount=int(c.fetchone()[1])
+	msg="%d connections"%(conncount)
+	if critpct or warnpct:
+		c.execute("SHOW GLOBAL VARIABLES LIKE 'max_connections'")
+		maxc=int(c.fetchone()[1])
+		connpct=conncount*100.0/maxc
+		msg="%d/%d connections (%0.1f%%)"%(conncount, maxc, connpct)
+except:
+	CRIT("problems retrieving stats from %s"%(host))
+
+if (critcount and (critcount <= conncount)):
+	CRIT(msg)
+if (warncount and (warncount <= conncount)):
+	WARN(msg)
+if (critpct and (critpct <= connpct)):
+	CRIT(msg)
+if (warnpct and (warnpct <= connpct)):
+	WARN(msg)
+OK(msg)

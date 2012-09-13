@@ -1,0 +1,66 @@
+#!/usr/bin/python
+
+"""check_scalr
+
+This is a nagios plugin that interfaces with the scalr API to confirm
+that an app is running on a farm
+
+"""
+
+import scalr
+import sys
+import ConfigParser
+import subprocess
+import threading
+
+
+def OK(msg):
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+if len(sys.argv) < 1:
+	UNKNOWN('usage: check_scalr_app_running "<config> <farm> <app>"')
+
+config=ConfigParser.SafeConfigParser()
+config.read(["/etc/check_scalr.ini", "check_scalr.ini"])
+
+if len(sys.argv)==2:
+	(Conf, Farm, App)=sys.argv[1].split()
+else:
+	(Conf, Farm, App)=sys.argv[1:]
+
+
+sc=scalr.scalr(config.get(Conf, 'keyid'), config.get(Conf, 'access'))
+
+farms=sc.FarmsList()['FarmSet']
+
+FarmID=None
+for farm in farms:
+	if farm['Name'] == Farm:
+		FarmID=farm['ID']
+		break
+
+if FarmID == None:
+	UNKNOWN("Farm '%s' not found"%(Farm))
+
+details=sc.FarmGetDetails(FarmID)['FarmRoleSet']
+
+for app in details:
+	if app['Name']==App:
+                app.update(app.pop('PlatformProperties'))
+                app.update(app.pop('ScalingProperties'))
+		OK("ID=%(ID)s Category='%(Category)s' InstanceType=%(InstanceType)s [%(MinInstances)s/%(MaxInstances)s]"%(app))
+	
+UNKNOWN("Config problem - App '%s' not found in Farm '%s'"%(App, Farm))

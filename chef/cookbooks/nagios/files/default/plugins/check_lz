@@ -1,0 +1,194 @@
+#!/usr/bin/python
+
+"""check_lz
+
+This is a nagios plugin that interfaces with the the internal lockerz DNS
+hosts that should be monitored, then executes another nagios plugin
+against that list of hosts and summarises the result to allow
+monitoring of a dynamic cluster without constantly changing the
+Nagios configuration
+
+"""
+
+import scalr
+import sys
+import ConfigParser
+import subprocess
+import threading
+from socket import gethostbyname_ex
+
+#######
+# Function Definitions
+
+def run_plugins(args, ip):
+	"""run_plugins(args, ip) - fork and run a plugin for each instance
+and generate a summary as the result"""
+
+	# XXX This algorithm for forking children and gatheing results is
+	# primitive - would be better to gather the results from the children
+	# as they become available - also should handle timeouts for children
+	# that return slow - would be better to return a descriptive error
+	# rather than just be listed as a timeout in the nagios interface
+
+
+	# Look for the magic substitution tokens in the args
+	address=None
+	try:
+		address=args.index('_INTERNAL_')
+	except ValueError:
+		pass
+	try:
+		address=args.index('_EXTERNAL_')
+	except ValueError:
+		pass
+
+	# Walk through the passed in list of instances, and start the plugins
+	children={}
+	for i in ip[2]:
+
+		argv=list(args) # make a copy
+		if address!=None:
+			argv[address]=i
+			
+		children[i]=run_plugin(argv)
+
+	# Gather the results from the forked children and summarise
+	results={}
+
+	worst=0
+	checks=0
+	failures=0
+	last_failure=None
+	summary=[0, 0, 0, 0] # OK, WARN, CRIT, UNKNOWN
+
+	for child in children.keys():
+		results[child]=children[child].communicate()
+		status=children[child].wait()
+		if status > worst: # XXX - this will do for now, but UNKNOWN isn't as bad as CRITICAL
+			worst=status
+		if status:
+			failures += 1
+			last_failure=child
+		checks += 1
+
+		try:
+			summary[status]+=1
+		except IndexError:
+			pass
+
+	if checks == 0: # We didn't run any checks?!?!
+		UNKNOWN("No hosts found to check!")
+
+	if (checks == 1) or (failures == 1): # pass through the one that matters
+		if checks == 1:
+			sysid=children.keys()[0]
+			print "%s says %s"%(sysid, results[sysid][0].strip())
+			sys.exit(worst)
+		if worst in [1, 2, 3]:
+			sysid=last_failure
+			print "%s says %s"%(sysid, results[sysid][0].strip())
+			sys.exit(worst)
+		# If we made it here, a plugin returned a non standard error
+		UNKNOWN("tests: %d, critical: %d, warning: %d, unknown: %d, ok: %d - in addition something returned %d"%(summary[2], summary[1], summary[3], summary[0], worst))
+
+	if failures == 0: # No failures - summarise as all OK
+		sysid=children.keys()[0]
+		OK("tests: %d, ok: %d - %s said %s "%(checks, summary[0], sysid, results[sysid][0].strip()))
+
+	# If we made it here, there were multiple failures...
+	# Build the summary
+	msg=["tests: %d"%(checks)]
+	if summary[2]:
+		msg+=["critical: %d"%(summary[2])]
+	if summary[1]:
+		msg+=["warning: %d"%(summary[1])]
+	if summary[3]:
+		msg+=["unknown: %d"%(summary[3])]
+	if summary[0]:
+		msg+=["ok: %d"%(summary[0])]
+
+	# convert the list into a comma seperated string
+	msg=", ".join(msg)
+
+	# Add the output of one of the failures
+	msg+=" - %s said %s"%(last_failure, results[last_failure][0])
+
+	# And exit with the summary message
+	if worst == 1:
+		WARN(msg)
+	if worst == 2:
+		CRIT(msg)
+	if worst == 3:
+		UNKNOWN(msg)
+
+
+def run_plugin(argv):
+	"""simple wrapper function to fork child plugins"""
+	return subprocess.Popen(argv, stdout=subprocess.PIPE)
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+#######
+# Main body
+
+# Sanity check arguments
+if len(sys.argv) < 5:
+	UNKNOWN("usage: check_lz <config> <farm> <role> <plugin> [plugin args]")
+
+# Look for the magic substitution tokens in the args
+internal=None
+try:
+	internal=sys.argv.index('_INTERNAL_')
+except ValueError:
+	pass
+
+external=None
+try:
+	external=sys.argv.index('_EXTERNAL_')
+except ValueError:
+	pass
+
+if internal!=None:
+	scope="int"
+if external!=None:
+	scope="ext"
+
+env=sys.argv[1]
+if env in ['prod', 'production', 'commerce']:
+	env='prod'
+elif env in ['dev','nonprod']:
+	env='dev'
+else:
+	UNKNOWN("sorry, but the environment %s is unknown"%(env))
+
+farm=sys.argv[2]
+role=sys.argv[3]
+
+name = "%s-%s.%s.%s.lockerz"%(scope,role,farm,env)
+
+# Lookup the instance IP using internal dns.
+try:
+	result = gethostbyname_ex(name)
+except:
+	UNKNOWN("gethostbyname('%s') failed"%(name))
+run_plugins(sys.argv[4:], result)
+	
+# UNKNOWN("Config problem for Farm: %s Role %s"%(sys.argv[3], sys.argv[2]))

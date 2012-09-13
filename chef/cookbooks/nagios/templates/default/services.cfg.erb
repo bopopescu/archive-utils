@@ -1,0 +1,59 @@
+##
+# Services
+#
+# Each search has an environment prefix.  This way we can
+#	create services like wit_web_service and essentially disable it.
+#	Or, if the case may be, enable it.
+#
+# cmdTemplate:	This is a way to create a command template, so we can do things like
+#	check_http -H api.wit.lockerz.int -I reverseproxy0.site.wit.lockerz.int -u /argo/ping/?key=fd480b8c-1fd1-43d8-b19a-a9ba9f1b115b -p 8080
+#	Where we have variable data that is environment/role/node based.
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+# @copyright 2011 lockerz.com
+
+<% @roles.each do |role| %>
+<% next if(role.default_attributes["nagios"] == nil) ## No nagios service checks are configured %>
+<% next if(@envRoleNodes[role.name].size == 0) ## No node are found for this role/env pair %>
+
+<% role.default_attributes["nagios"]["services"].each do |service| ## Iterate through each service check %>
+
+<% if(service["params"] != nil) %>
+<% end %>
+
+define service {
+	use			<%= @environment.name %>-generic-service
+	hostgroup	<%= @environment.name %>.<%= role.name %>
+
+	<% if(service["cmd"] != nil) ## This allows for the creation of a command template %>
+	check_command           <%= service["cmd"] %>
+	<% elsif(service["cmdTemplate"] != nil) %>
+		<% erb = Erubis::Eruby.new(service["cmdTemplate"]) %>
+	check_command	<%= erb.evaluate({ :environment => @environment, :role => role }) %>
+	<% end %>
+
+	<% if(service["desc_url"] != nil) %>
+	notes_url	<%= service["desc_url"] %>
+	<% end %>
+
+	register	<%= (service["register"] != nil ? service["register"].to_i() : 1) %>
+
+	contact_groups		<%= (service["contact_groups"].class == String ? service["contact_groups"] : service["contact_groups"].join( "," ) )%>
+	service_description	<%= service["desc"] %>
+
+	check_period		24x7
+	retry_interval    	2
+	process_perf_data	0 
+	max_check_attempts	2
+	notification_period		24x7
+	normal_check_interval	10
+
+	## Environment specific overrides
+	<% if(@environment.default_attributes["nagios"] != nil) %>
+		<% @environment.default_attributes["nagios"].each do |key,val| %>
+	#<%= key %>	<%= val %>
+		<% end ## each env pair %>
+	<% end ## env defaults%>
+}
+<% end ## services %>
+<% end ## roles %>

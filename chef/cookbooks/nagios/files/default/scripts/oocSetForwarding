@@ -1,0 +1,138 @@
+#! /usr/bin/python26
+
+"""oocSetForwarding
+
+bernard@sprybts.com for lockerz.com 2011-06-17
+
+This script configures a forwarding rule to enable direct paging of the
+on-call person without the requirement to look up who's on call in the
+calendar - email sent to ooc@lockerz.com is forwarded to the relevant
+pager address
+
+We don't just use forwarding as the ooc mailbox is on mailing lists
+(like all@lockerz.com) and we don't want to page the oncall person every
+time a message is sent to one of those lists.
+
+The gamil API only appears to include a call to add a new filter - so
+we use the gmail simple HTML user interface to delete the old filter.
+
+If they change the interface significantly, we'll probably be in trouble...
+"""
+
+gmail_domain='lockerz.com'
+gmail_acct='ooc'
+gmail_pass='00Call0ck3rz'
+
+import sys
+
+# Read the current oncall pager details from the nagios config
+
+import pynag.Parsers
+nc=pynag.Parsers.config('/etc/nagios/nagios.cfg')
+nc.parse()
+oncall=nc.get_contactgroup('oncall-lockerz-admins')
+oncall=oncall['members'].split(', ')[0] # whosOnFirst puts the oncall person first on this list
+fwd=nc.get_contact(oncall)['pager']
+
+print "setting forwarding %s@%s -> %s (%s)"%(gmail_acct, gmail_domain, fwd, oncall)
+
+# First we need to go in via the gmail user interface and find and delete
+# the current filter (if it exists)
+
+import mechanize
+import cookielib
+
+# Create the browser emulator
+br = mechanize.Browser()
+# Let it handle cookies
+cj = cookielib.LWPCookieJar()
+br.set_cookiejar(cj)
+# Set up some other browser options
+br.set_handle_equiv(True)
+br.set_handle_redirect(True)
+br.set_handle_referer(True)
+br.set_handle_robots(False)
+
+# Follows refresh 0 but not hangs on refresh > 0
+br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+
+# Log in to gmail UI
+br.open('https://www.google.com/a/%s/'%(gmail_domain))
+# Select the first (index zero) form
+br.select_form(nr=0)
+
+# User credentials
+br.form['Email'] = gmail_acct
+br.form['Passwd'] = gmail_pass
+
+# Login
+br.submit()
+
+# Click Email
+br.follow_link(text='Email')
+
+# Switch to the brain dead version - we're not a very clever browser ;)
+br.follow_link(text='Load basic HTML')
+
+# Click Settings
+br.follow_link(text='Settings')
+
+# Click Filters
+br.follow_link(text='Filters')
+
+from BeautifulSoup import BeautifulSoup
+import re
+
+html = br.response().read()
+soup = BeautifulSoup(html)
+
+current=soup.find(text="to:(%s@%s)"%(gmail_acct, gmail_domain))
+if current:
+	# If there's already a filter defined, we'll edit it...
+	# Find all the forms
+	forms=soup.findAll('form')
+	# And find the index of the one we're interested in and select it
+	br.select_form(nr=forms.index(current.parent.parent.parent))
+	# Click edit
+	br.submit(label='edit', name='nvp_bu_eftb')
+	# Click next step in the second form
+	br.select_form(nr=1)
+	br.submit(label='Next Step', name='nvp_bu_nxsb')
+	# Select the desired forwarding address
+	br.select_form(nr=1)
+	try:
+		br["cf2_email"]=[fwd]
+		br.submit(label='Create Filter')
+		# That's it for a normal run
+	except mechanize._form.ItemNotFoundError:
+		# The selected address isn't registered as a forwarding address
+		print "\n\n%s is not registered as a forwarding address"%(fwd)
+		print "once %s has verified their account to receive forwards, please manually"%(oncall)
+		print "run the script %s again to configure forwarding"%(sys.argv[0])
+		print "\n\n!!! FORWARDING WAS NOT CHANGED !!!"
+else:
+	# Otherwise, we'll create a new one
+	# We want the last form here:
+	br.select_form(nr=len(soup.findAll('form'))-1)
+	br.submit(label="Create a new Filter")
+	br.select_form(nr=1)
+	br['cf1_to']='%s@%s'%(gmail_acct, gmail_domain)
+	br.submit(label='Next Step')
+	br.select_form(nr=1)
+	br['cf2_emc']=["true"]
+	try:
+		br["cf2_email"]=[fwd]
+		br.submit(label='Create Filter')
+		# That's it for a normal run
+	except mechanize._form.ItemNotFoundError:
+		# The selected address isn't registered as a forwarding address
+		print "%s is not registered as a forwarding address"%(fwd)
+		print "Log in to gmail (as %s) and use the Forwarding Settings to add a new Forwarding address"%(gmail_acct)
+		print "once %s has verified their account to receive forwards, please manually"%(oncall)
+		print "run the script %s again to configure forwarding"%(sys.argv[0])
+		print "\n\n!!! FORWARDING WAS NOT CHANGED !!!"
+
+
+# Logout
+br.follow_link(text='Sign out')
+

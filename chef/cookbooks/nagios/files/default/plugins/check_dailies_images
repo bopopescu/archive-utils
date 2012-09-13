@@ -1,0 +1,142 @@
+#! /usr/bin/python
+
+# Python ICE module was compiled from source - the ubuntu packages seem
+# to have a version mismatch between the python interpreter and the
+# ICE libraries
+#
+# to pre-compile the phoenix.ice slice file requires the slice2python app
+# the phoenix.ice file needs to be recompiled if the interfaces change
+
+import sys
+sys.path.append('/opt/Ice-3.3.1/python')
+sys.path.append('/usr/phoenix')
+
+image_host="static.lockerz.com"
+image_path="/img/dailies"
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+
+import Ice
+from com.lockerz.phoenix import slice
+
+import socket
+import time
+
+if len(sys.argv) > 1:
+	hostName=sys.argv[1]
+else:
+	hostName="int-services-java.dailies-java.prod.lockerz"
+
+# Fire up ICE
+
+comm=None
+
+comm=Ice.initialize()
+ip=socket.gethostbyname(hostName)
+
+# grab hold of the proxy for the services we want to talk to
+
+dailiesServiceAdmin=slice.DailiesServiceAdminPrx.checkedCast(comm.stringToProxy("DailiesServiceAdmin:tcp -h %s -p 10750"%( hostName)))
+
+# Do some date maths...
+# We need to know what time it is now
+now=time.time()
+# And what the date is
+timea=time.gmtime(now)
+# And what the date will be 24 hours from now...
+timeb=time.gmtime(now+(60*60*24)) # 24 hours from now
+
+# We also need to know what the time will be in 8 hours
+# That way we can alert for warnings before 8pm EDT (0:00 UTC)
+# For warnings, let's look a bit further into the future...
+nowplus=now+(8*60*60)
+plusa=time.gmtime(nowplus)
+plusb=time.gmtime(nowplus+(60*60*24)) # 32 hours from now
+plusc=time.gmtime(nowplus+(60*60*24*2)) # 56 hours from now
+
+# Ask dailies for the list of questions for this month
+da=dailiesServiceAdmin.getDailies(timea.tm_year, timea.tm_mon)
+# And if 56 hours away will be next month, we'd better get next month's too
+if timea.tm_mon != plusc.tm_mon:
+	da = dailiesServiceAdmin.getDailies(plusc.tm_year, plusc.tm_mon) + da
+
+# 
+qcrits=[time.strftime("%Y-%m-%d", timea), time.strftime("%Y-%m-%d", timeb)]
+qwarns=[time.strftime("%Y-%m-%d", plusa), time.strftime("%Y-%m-%d", plusb),
+	time.strftime("%Y-%m-%d", plusc)]
+icrits=[time.strftime("%Y-%m-%d", timea), time.strftime("%Y-%m-%d", timeb)]
+iwarns=[time.strftime("%Y-%m-%d", plusa), time.strftime("%Y-%m-%d", plusb),
+	time.strftime("%Y-%m-%d", plusc)]
+	
+import httplib
+def imgok(img):
+	c=httplib.HTTPConnection(image_host)
+	c.request('HEAD', "%s/%s"%(image_path, img))
+	r=c.getresponse()
+	return r and r.status == 200
+		
+
+# Run through the questions, striking out the interesting days if they
+# have a question defined and the image can be retrieved without an error
+for d in da:
+	day=time.strftime("%Y-%m-%d", time.gmtime(d.dailyDate))
+	if day in qcrits:
+		qcrits.remove(day)
+		if imgok(d.imageURL):
+			icrits.remove(day)
+	if day in qwarns:
+		qwarns.remove(day)
+		if imgok(d.imageURL):
+			iwarns.remove(day)
+
+	if not qcrits and not qwarns:
+		# If there are no more interesting days left, we're done
+		break
+
+if comm:
+    # Clean up
+    try:
+        comm.destroy()
+    except:
+	UNKNOWN("Internal error during cleanup")
+
+# If we didn't strike out all of the interesting days, there's a problem...
+if qcrits and icrits:
+	CRIT("missing questions for %s, missing images for %s"%(', '.join(qcrits), ', '.join(icrits)))
+
+if qcrits:
+	CRIT("missing questions for %s"%(', '.join(qcrits)))
+
+if icrits:
+	CRIT("missing images for %s"%(', '.join(icrits)))
+
+if qwarns and iwarns:
+	WARN("missing questions for %s, missing images for %s"%(', '.join(qwarns), ', '.join(iwarns)))
+
+if qwarns:
+	WARN("missing questions for %s"%(', '.join(qwarns)))
+
+if iwarns:
+	WARN("missing images for %s"%(', '.join(iwarns)))
+
+OK("found questions and images for the next couple of days")
+

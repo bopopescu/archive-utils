@@ -1,0 +1,90 @@
+#!/usr/bin/python2.6
+
+# needs 2.6 for the inbuilt json module
+
+# Basic config stuff
+
+# Argo
+key="925be218-ef90-4219-b723-d33cefeac089" # by default
+argo_url="https://api.lockerz.com/argo/ping/?key=%s"%(key)
+
+# Phoenixconsole
+network="production" # by default
+pc_url="https://phoenixconsole.lockerz.com/phoenixcon/main/status/json?network=%s"%network
+pc_user="bernard"
+pc_pass="C0mmerce"
+pc_realm="resin"
+
+import sys
+import json
+import urllib2
+
+# Grab Argo's phoenix version
+jrsp=urllib2.urlopen(argo_url)
+
+# Grab the JSON formatted status info from the argo interface
+argo=json.load(jrsp)
+argo_phoenix_version=argo['phoenix.version']
+
+# Grab versions from phoenix console
+
+# Configure urllib2 to log in with our username and password
+pman=urllib2.HTTPPasswordMgr()
+pman.add_password(pc_realm, pc_url, pc_user, pc_pass)
+authhandler=urllib2.HTTPBasicAuthHandler(pman)
+opener=urllib2.build_opener(authhandler)
+urllib2.install_opener(opener)
+
+jrsp=urllib2.urlopen(pc_url)
+
+# Grab the JSON formatted status info from the phoenix console server
+pcon=json.load(jrsp)
+
+# Analyse the response
+pc_versions={}
+for service in pcon:
+	if service.has_key('version'):
+		if pc_versions.has_key(service['version']):
+			pc_versions[service['version']].append(service)
+		else:
+			pc_versions[service['version']]=[service]
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+# Decide what the result should be
+if len(pc_versions.keys())==1:
+	# If there's only one version coming from phoenix console,
+	# then that's the version we're interested in
+	pc_dominant_version=pc_versions.keys()[0]
+else:
+	# Otherwise, we'll find the version that occurs most frequently
+	# First, count the number of times each version was seen...
+	sortable=map(lambda x: (x[0], len(x[1])), pc_versions.items())
+	# Then sort the list by count, largest first
+	sortable.sort(cmp=lambda x, y: cmp(x[1],y[1]), reverse=True)
+	# That's the version we're interested in...
+	pc_dominant_version=sortable[0][0]
+
+if argo_phoenix_version==pc_dominant_version:
+	OK("argo phoenix version %s matches the dominant version for other phoenix services"%(argo_phoenix_version))
+else:
+	WARN("argo phoenix version %s does not match the dominant version for other phoenix services (%s)"%(argo_phoenix_version, pc_dominant_version))
+

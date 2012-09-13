@@ -1,0 +1,40 @@
+##
+# Hosts
+#
+# @author   Bryan Kroger ( bryan@lockerz.com )
+
+<% @nodes.each do |node| %>
+<% next if(node[:ipaddress] == nil) %>
+<% next if(node["nagios_service"] != nil && node["nagios_service"]["register"] != nil && node["nagios_service"]["register"].to_i == 0) %>
+<% next if(node["fqdn"] != nil && node["fqdn"].match( /vodpod/ )) %>
+<% next if(node["fqdn"] != nil && node["fqdn"].match( /jasper/ )) %>
+<% next if(node["fqdn"] != nil && node["fqdn"].match( /pegasus/ )) %>
+<% next if(node["fqdn"] != nil && node["fqdn"].match( /commerce/ )) %>
+<% next if(node["fdqn"] != nil && node["fqdn"].match( /targo/ )) %>
+define host {
+	use			generic-host
+	address		<%= node['ipaddress'] %>
+	host_name 	<%= (node['fqdn'] == nil ? "Unknown hostname" : node['fqdn']) %>
+<% hg=node.run_list.roles.map{|roleName| "%s.%s" % [node.chef_environment,roleName]}.join( "," ) -%>
+<% if (hg!="") -%>
+	hostgroups	<%= hg %>
+<% end -%>
+	<% if( node["nagios_service"] != nil ) %>
+	 <% node["nagios_service"].each do |key,val| %>
+	<%= key %>	<%= val %>
+	 <% end %>
+	<% end %>
+}
+
+<% end -%>
+
+<% @roles.each do |role| %>
+<% next if(@envRoleNodes[role.name].size == 0 ) %>
+define hostgroup {
+	alias			<%= @environment.name %>.<%= role.name %>
+	hostgroup_name	<%= @environment.name %>.<%= role.name %>
+}
+
+<% end %>
+
+
