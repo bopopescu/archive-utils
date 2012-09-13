@@ -1,0 +1,29 @@
+# Cookbook Name:: linux-base
+# 	This cookbook is the base setup script for everything else.
+#
+#
+# @author	Steve Layton ( steve@lockerz.com )
+
+## Pull in the other recipes for default.
+# 	This could be moved to the recipe for system, but this
+#	seems to make things more clear.
+
+## Ensure the resolv.conf file gets created properly.
+#	This means using chef searches to find the DNSMasters and DNSSlaves
+#	Defined in definitions/resolv.rb
+
+# hosts = []
+# search(:node, "*:*") {|n| hosts << n }
+# hostlist = hosts.join(" ")
+# domain = hostlist.split(" ").map{ |e| e.gsub(/^[a-z0-9]*\./,'')}
+
+# hosts = {}
+#         search(:node, "*:*").each do |hostlist|
+#                 hosts[hostlist.fqdn] = hostlist
+#         end
+# domain = host.join{" ")
+
+resolv do
+	domain "lockerz.int" % envName
+end
+
