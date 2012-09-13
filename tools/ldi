@@ -27,6 +27,7 @@ if [ "$HOST" = "" ];then
 	Usage
 fi
 
+# Remove this shyte after Layton fixes his junk
 DNS=`diff /etc/resolv.NEW /etc/resolv.conf`
 if [ "$DNS" = "" ];then
 	Debug "resolv.conf good to go"
