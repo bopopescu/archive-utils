@@ -23,55 +23,55 @@ Debug()
 }
 
 
-if [ "$HOST" = "" ];then
-	Usage
-fi
-
-# Remove this shyte after Layton fixes his junk
-DNS=`diff /etc/resolv.NEW /etc/resolv.conf`
-if [ "$DNS" = "" ];then
-	Debug "resolv.conf good to go"
-else
-	sudo cp /etc/resolv.NEW /etc/resolv.conf
-fi
-
-
-IP=$(nslookup $HOST | tail -3 | grep Address | awk '{print $2}')
-if [ "$IP" = "" ];then
-	echo "UHOH"
-	exit 1
-fi
-
-if [ ! -f $DI ]; then
-	Debug "ec2-describe-instances --show-empty-fields > $DI"
-	ec2-describe-instances --show-empty-fields > $DI
-else
-	Debug "using pre-existing $DI"
-fi
-
-Debug "grep $IP $DI"
-AWS_ID=`grep $IP $DI | awk '{print $2}'`
-
-if [ ! -f $HO ]; then
-	Debug "ec2-describe-instances --show-empty-fields $AWS_ID > $HO"
-	echo -e "\n\n\nEC2 Describe Instance $AWS_ID\n----------------------------------\n" >> $HO
-	ec2-describe-instances --show-empty-fields $AWS_ID >> $HO
-	echo -e "\n\n\nFilesystem info:  df -k \n----------------------------------\n" >> $HO
-	ssh root@$HOST df -k >> $HO
-
-else
-	Debug "using pre-existing $HO"
-fi
-
-
-
-Debug "grep $IP $DI"
-#awk "{ print \" HOST:  $HOST\n Int IP: $IP\n Ext IP: \",\$14, \"\n Zone: \", \$11,\"\n\"}"
-echo -e "\n===========================\nHOST:  $HOST \n===========================\n"
-echo "  Int IP:   $IP"
-grep $IP $DI |  awk '{print "  Ext IP:  ",$17 ,"\n  Zone:    ",$12, "\n  Machine: ",$10}'
-echo "  AWS ID:   $AWS_ID"
-echo "  Other :"
-cat $HO
-
-
+	if [ "$HOST" = "" ];then
+		Usage
+	fi
+	
+	# Remove this shyte after Layton fixes his junk
+	DNS=`diff /etc/resolv.NEW /etc/resolv.conf`
+	if [ "$DNS" = "" ];then
+		Debug "resolv.conf good to go"
+	else
+		sudo cp /etc/resolv.NEW /etc/resolv.conf
+	fi
+	
+	
+	IP=$(nslookup $HOST | tail -3 | grep Address | awk '{print $2}')
+	if [ "$IP" = "" ];then
+		echo "UHOH"
+		exit 1
+	fi
+	
+	if [ ! -f $DI ]; then
+		Debug "ec2-describe-instances --show-empty-fields > $DI"
+		ec2-describe-instances --show-empty-fields > $DI
+	else
+		Debug "using pre-existing $DI"
+	fi
+	
+	Debug "grep $IP $DI"
+	AWS_ID=`grep $IP $DI | awk '{print $2}'`
+	
+	if [ ! -f $HO ]; then
+		Debug "ec2-describe-instances --show-empty-fields $AWS_ID > $HO"
+		echo -e "\n\n\nEC2 Describe Instance $AWS_ID\n----------------------------------\n" >> $HO
+		ec2-describe-instances --show-empty-fields $AWS_ID >> $HO
+		echo -e "\n\n\nFilesystem info:  df -k \n----------------------------------\n" >> $HO
+		ssh root@$HOST df -k >> $HO
+	
+	else
+		Debug "using pre-existing $HO"
+	fi
+	
+	
+	
+	Debug "grep $IP $DI"
+	#awk "{ print \" HOST:  $HOST\n Int IP: $IP\n Ext IP: \",\$14, \"\n Zone: \", \$11,\"\n\"}"
+	echo -e "\n===========================\nHOST:  $HOST \n===========================\n"
+	echo "  Int IP:   $IP"
+	grep $IP $DI |  awk '{print "  Ext IP:  ",$17 ,"\n  Zone:    ",$12, "\n  Machine: ",$10}'
+	echo "  AWS ID:   $AWS_ID"
+	echo "  Other :"
+	cat $HO
+	
+	
