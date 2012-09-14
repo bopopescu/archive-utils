@@ -1,9 +1,9 @@
 # Client recipe
 # This recipe installs and configures nrpe on a locekrz client server
-# copied from platz-system.rb recipes written by Bernard Gardner 
+# copied from platz-system.rb recipes written by Bernard Gardner (Spry)
 
 if(node[:platform] != "ubuntu")
-	raise "Currently the nagios::platz-system.rb recipe only works on ubuntu systems"
+	raise "Currently the nagios::nagios-client.rb recipe only works on ubuntu systems"
 end
 
 package "nagios-nrpe-server"
