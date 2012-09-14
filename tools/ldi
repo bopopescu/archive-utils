@@ -27,18 +27,10 @@ Debug()
 		Usage
 	fi
 	
-	# Remove this shyte after Layton fixes his junk
-	DNS=`diff /etc/resolv.NEW /etc/resolv.conf`
-	if [ "$DNS" = "" ];then
-		Debug "resolv.conf good to go"
-	else
-		sudo cp /etc/resolv.NEW /etc/resolv.conf
-	fi
-	
 	
 	IP=$(nslookup $HOST | tail -3 | grep Address | awk '{print $2}')
 	if [ "$IP" = "" ];then
-		echo "UHOH"
+		echo "ERROR:  hostname [$HOST] not found."
 		exit 1
 	fi
 	
