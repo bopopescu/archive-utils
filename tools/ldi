@@ -3,15 +3,27 @@
 HOST=$1
 DEBUG=0
 DI=/tmp/di.out
-HO=/tmp/$HOST.out
+KNL=/tmp/knl.out
+
+
+
 
 Usage()
 {
-
-echo "USAGE:  $0  <hostname>"
-exit 1;
-
+	echo -e "\nUSAGE:  $0"
+	echo -e "     --> interactive mode to choose host"
+	echo -e "\nUSAGE:  $0  <hostname>"
+	echo -e "     --> return all data on <hostname>"
+	exit 0;
 }
+
+
+Fatal()
+{
+	echo -e "\nFATAL:  $*"
+	exit 1;
+}
+
 
 
 Debug()
@@ -23,26 +35,78 @@ Debug()
 }
 
 
-	if [ "$HOST" = "" ];then
-		Usage
+
+
+### Begin Main Script
+
+
+	TODAY=$(date | awk '{print $3}')
+	DIDAY=$(ls -al $DI | awk '{print $7}')
+	if [ $TODAY -ne $DIDAY ];then
+		Debug "removing stale decribe-instances file $DI"
+		#rm -f $DI
+	elif [ ! -s $DI ];then
+		Debug "removing empty decribe-instances file $DI"
+		rm -f $DI
+	else
+		Debug "decribe-instances file $DI is up to date"
+		ls -al $DI
 	fi
+
+
+	case $HOST in 
+
+	-help|--help|help|-h|--h|-H|--H)
+		Usage
+		;;
+
+	"")
+		echo -e "Please select a hostname (enter just base node name, not FQDN):\n"
+		if [ ! -f $KNL ];then
+			knife node list > $KNL
+		fi
+		if [ ! -s $KNL ];then
+			Fatal "knife node list $KNL not valid."
+		fi
+		cat  $KNL
+		echo
+		read HOST
+
+		Debug "interactive usage"
+		;;
+
+	*)
+		Debug "standard usage"
+		;;
+
+
+	esac
+
+
+	if [ "$HOST" = "" ];then
+		Fatal "must enter a host."
+	fi
+	HO=/tmp/$HOST.out
 	
 	
 	IP=$(nslookup $HOST | tail -3 | grep Address | awk '{print $2}')
 	if [ "$IP" = "" ];then
-		echo "ERROR:  hostname [$HOST] not found."
-		exit 1
+		Fatal "hostname [$HOST] not found."
 	fi
 	
 	if [ ! -f $DI ]; then
 		Debug "ec2-describe-instances --show-empty-fields > $DI"
 		ec2-describe-instances --show-empty-fields > $DI
+		chmod 777 $DI
 	else
 		Debug "using pre-existing $DI"
 	fi
 	
 	Debug "grep $IP $DI"
 	AWS_ID=`grep $IP $DI | awk '{print $2}'`
+	if [ "$AWS_ID" = "" ];then
+		Fatal "AWS_ID is NULL"
+	fi
 	
 	if [ ! -f $HO ]; then
 		Debug "ec2-describe-instances --show-empty-fields $AWS_ID > $HO"
