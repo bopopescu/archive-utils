@@ -43,7 +43,7 @@ end
 #servers=[]
 #search(:node, "nagios\\:\\:server") {|n| servers << n["ipaddress"] }
 # not sure why this doesn't work...
-servers=['10.72.50.187']
+servers=['10.96.191.114']
 
 template "/etc/nagios/nrpe_local.cfg" do
 	mode "0444"
