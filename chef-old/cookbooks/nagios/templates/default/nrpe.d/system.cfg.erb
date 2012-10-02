@@ -11,3 +11,13 @@ command[check_disk_ebs]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /m
 command[check_cpu]=/usr/lib64/nagios/plugins/check_cpu -w 50% -c 80%
 command[check_memory]=/usr/lib64/nagios/plugins/check_memory -w 75% -c 90%
 
+# Chef checks
+command[check_couchdb_proc]=/usr/lib64/nagios/plugins/check_procs -a /usr/bin/couchdb -c 1:1
+command[check_chefserver_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server (api)" -c 1:1
+command[check_chefserverwebui_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server-webui" -c 1:1
+
+# Mysql checks
+command[check_mysql_procs]=/usr/lib64/nagios/plugins/check_procs -C mysqld -c 1
+
+# Check DNS
+command[check_dns]=/usr/lib64/nagios/plugins/check_dns -H www.google.com -s localhost 

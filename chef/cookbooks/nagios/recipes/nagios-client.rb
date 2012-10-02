@@ -1,5 +1,5 @@
 # Client recipe
-# This recipe installs and configures nrpe on a locekrz client server
+# This recipe installs and configures nrpe on a lockerz client server
 # copied from platz-system.rb recipes written by Bernard Gardner (Spry)
 
 if(node[:platform] != "ubuntu")

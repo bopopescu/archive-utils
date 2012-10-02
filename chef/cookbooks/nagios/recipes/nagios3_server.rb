@@ -6,10 +6,9 @@
 
 
 ## This is where we use chef to build out the configuration files nagios will use for alerting.
-## Create a host file for each environment
 
 ## Config dirs
-["hosts"].each do |dir|
+["hosts","hostgroups","services"].each do |dir|
 	directory "/etc/nagios3/conf.d/%s" % dir do
 		mode 0755
 		owner "root"
@@ -18,10 +17,11 @@
         end
 end
 
+## Create a host file 
 hosts = []
 search(:node, "*:*") {|n| hosts << n }
 
-template "/etc/nagios3/conf.d/hosts/systems.cfg" do
+template "/etc/nagios3/conf.d/hosts/hosts.lockerz.com.cfg" do
   mode 0755
   owner "root"
   group "root"
@@ -31,3 +31,20 @@ template "/etc/nagios3/conf.d/hosts/systems.cfg" do
   })
 end
 
+
+## Nagios services config
+cookbook_file "/etc/nagios3/conf.d/services/services.lockerz.com.cfg" do
+        mode "0755"
+        owner "root"
+        group "root"
+        source "services/services.lockerz.com.cfg"
+end
+
+
+## Nagios hostgroup config
+cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
+        mode "0755"
+        owner "root"
+        group "root"
+        source "hostgroups/hostgroups.lockerz.com.cfg"
+end
