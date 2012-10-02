@@ -9,7 +9,13 @@ define host {
 	use		generic-host
 	address		<%= host['ipaddress'] %>
 	host_name 	<%= (host['fqdn'] == nil ? "Unknown hostname" : host['fqdn']) %>
-	hostgroups	prod-servers
+<% hg=host.run_list.roles.map{|roleName| roleName}.join(",") -%>
+<% if (hg != "") -%>
+	hostgroups	<%= hg %>
+<% else -%>
+	hostgroups	Lockerz_base
+<% end -%>
+
 }
 
 <% end -%>
