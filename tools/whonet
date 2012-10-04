@@ -1,0 +1,11 @@
+
+if [ $1 = "-noport" ];then
+	echo "Foreign_IP"
+	echo "----------------------"
+	netstat -na | egrep 'tcp|udp' | awk '{print $5}' | awk -F':' '{print $1}' | sort | uniq -c
+else
+	echo "Foreign_IP:PORT"
+	echo "--------------------------"
+	netstat -na | egrep 'tcp|udp' | awk '{print $5}' | sort | uniq -c
+fi
+
