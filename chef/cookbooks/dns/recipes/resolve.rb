@@ -22,10 +22,7 @@ searchlist=h.keys.join(' ')
 
 ## Assemble the list of primary and secondary dns servers.
 nameServers = {}
-search( :node,'run_list:role\[DNSMaster\]' ).each do |srv|
-        nameServers[srv.fqdn] = srv
-end
-search( :node,'run_list:role\[DNSSlave\]' ).each do |srv|
+search( :node,'run_list:role\[DNSServer\]' ).each do |srv|
         nameServers[srv.fqdn] = srv
 end
 

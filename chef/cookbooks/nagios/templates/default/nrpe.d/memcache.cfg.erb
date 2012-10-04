@@ -4,5 +4,5 @@
 # @author   Bryan Kroger ( bryan@lockerz.com )
 # @copyright 2011 lockerz.com
 
-command[check_memcache_procs]=/usr/lib64/nagios/plugins/check_procs -C memcached -c <%= node["num_servers"] %>:<%= node["num_servers"] %>
+command[check_memcache_procs]=/usr/lib64/nagios/plugins/check_procs -C memcached -c 1:1 
 
