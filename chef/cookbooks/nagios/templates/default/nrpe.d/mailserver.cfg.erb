@@ -1,0 +1,8 @@
+##
+# Chef checks
+#
+# @author   Michael Kroger ( michaelr@lockerz.com )
+# @copyright 2011 lockerz.com
+
+command[check_smtp_status]=/usr/lib64/nagios/plugins/check_smtp -H localhost -p 25 -w 25 -c 30 -t 15
+command[check_postqueue]=/usr/lib64/nagios/plugins/check_postfix_mailqueue -w 20 -c 50

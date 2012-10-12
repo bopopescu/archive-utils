@@ -1,0 +1,16 @@
+##
+# Contacts 
+
+<% @users.each do |user| %>
+<% next if(user["dn"][0].match( /System/ )) %>
+<% next if(user["mail"] == nil || user["mail"].size ==0) %>
+
+## <%= user["dn"][0] %>
+define contact {
+	use             gmail
+	alias           <%= user["cn"][0] %>
+	email           <%= user["mail"][0] %>
+	contact_name    <%= user["mail"][0] %>
+}
+<% end %>
+

@@ -1,0 +1,110 @@
+#!/usr/bin/python2.6
+
+# needs 2.6 for the inbuilt json module
+
+# Basic config stuff
+
+network="production" # by default
+import sys
+if len(sys.argv) > 1:
+	network=sys.argv[1]
+
+pc_url="https://phoenixconsole.lockerz.com/phoenixcon/main/status/json?network=%s"%network
+pc_user="bernard"
+pc_pass="C0mmerce"
+pc_realm="resin"
+
+import json
+import urllib2
+
+# Configure urllib2 to log in with our username and password
+pman=urllib2.HTTPPasswordMgr()
+pman.add_password(pc_realm, pc_url, pc_user, pc_pass)
+authhandler=urllib2.HTTPBasicAuthHandler(pman)
+opener=urllib2.build_opener(authhandler)
+urllib2.install_opener(opener)
+
+
+jrsp=urllib2.urlopen(pc_url)
+
+# Grab the JSON formatted status info from the phoenix console server
+pcon=json.load(jrsp)
+
+# Some hacks for testing
+#pcon=filter(lambda x: x['uptimePretty']!='DOWN', json.load(open("/tmp/pc.uat2.json")))
+#pcon=json.load(open("/tmp/pc.uat3.json"))
+
+# Analyse the response
+down=[]
+versions={}
+for service in pcon:
+	if service['uptimePretty']=='DOWN':
+		down.append(service)
+	else:
+		if versions.has_key(service['version']):
+			versions[service['version']].append(service)
+		else:
+			versions[service['version']]=[service]
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+# Decide what the result should be
+if down:
+	# If there are any hosts down, that takes priority
+	if len(down)==1:
+		# Full detail if just one
+		CRIT("%s on %s (%s) is down"%(down[0]['serviceClass'], down[0]['ip'], down[0]['name']))
+	else:
+		# Summarise multiple failures
+		CRIT("%d services are down"%(len(down)))
+else:
+	# Check that the versions are all sensible
+	v=versions.keys()
+	if v:
+		if len(v)==1:
+			# Only 1 version running - good
+			OK("%d services running version %s"%(len(versions[v[0]]), v[0]))
+		elif len(v)==2:
+			# It's OK for there to be 2 versions, but only if it's auctions that's "off"
+			# So if v0a is the set of services running version v[0] that are auction services
+			# and v1a is the set of services running version v[1] that are auction services
+			# either v0a=None and v1a=all v1 services, OR v1a=all v0 services and v1a=None
+			# otherwise, it's a fault condition somehow
+			def isauction(x):
+				return x['serviceClass'].lower().startswith('auction')
+			v0a=filter(isauction, versions[v[0]])
+			v1a=filter(isauction, versions[v[1]])
+			if ((v0a==versions[v[0]])^(v1a==versions[v[1]]))&((v0a==[])^(v1a==[])):
+				if v0a==[]:
+					av=v[1]
+					ov=v[0]
+				else:
+					av=v[0]
+					ov=v[1]
+				OK("%d auction svcs running %s other %d services are running %s"%(len(versions[av]), av, len(versions[ov]), ov))
+			else:
+				WARN("%d different versions running (%s)"%(len(v), ", ".join(v)))
+		else:
+			# anything other than 1 or 2 versions running is always an error
+			WARN("%d different versions running (%s)"%(len(v), ", ".join(v)))
+	else:
+		#if we got here, something was wrong - there were no versions detected...
+		CRIT("no services were found")

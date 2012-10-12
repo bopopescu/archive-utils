@@ -1,0 +1,27 @@
+##
+# Chef checks
+#
+# @author   Steve Layton ( steve@lockerz.com )
+# @copyright 2012 lockerz.com
+
+command[check_disk_root]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /
+command[check_disk_local]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /mnt/local
+command[check_disk_ebs]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /mnt/ebs
+
+command[check_cpu]=/usr/lib64/nagios/plugins/check_cpu -w 50% -c 80%
+command[check_memory]=/usr/lib64/nagios/plugins/check_memory -w 85% -c 95%
+
+# Chef checks
+command[check_couchdb_proc]=/usr/lib64/nagios/plugins/check_procs -a /usr/bin/couchdb -c 1:1
+command[check_chefserver_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server (api)" -c 1:1
+command[check_chefserverwebui_proc]=/usr/lib64/nagios/plugins/check_procs -a "chef-server-webui" -c 1:1
+command[check_chef_client_procs]=/usr/lib64/nagios/plugins/check_procs -C chef-client -a -d -c 1:1
+
+# Mysql checks
+command[check_mysql_procs]=/usr/lib64/nagios/plugins/check_procs -C mysqld -c 1
+
+# Check DNS
+command[check_dns]=/usr/lib64/nagios/plugins/check_dns -H www.google.com -s localhost
+
+# Check New Relic
+command[check_nrsysmond_procs]=/usr/lib64/nagios/plugins/check_procs -C nrsysmond -c 2:2

@@ -29,8 +29,12 @@ envName = (node.chef_environment == nil ? "opz" : node.chef_environment)
 ## Ensure the resolv.conf file gets created properly.
 #	This means using chef searches to find the DNSMasters and DNSSlaves
 #	Defined in definitions/resolv.rb
+# resolv do
+# 	domain "%s.lockerz.int" % envName
+# end
+
 resolv do
-	domain "%s.lockerz.int" % envName
+	domain "lockerz.int dba.prod.lockerz.int opz.prod.lockerz.int platz.lockerz.int dba.uat.lockerz.int"
 end
 
 ## We use this to keep things secret, although, how secret is anything

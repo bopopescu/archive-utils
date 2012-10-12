@@ -1,0 +1,194 @@
+#!/usr/bin/python
+"""check_webmetrics
+This nagios plugin talks to the webmetrics API to retrieve current status
+for all webmetrics monitored services. The intention is just to use the
+nagios notifications to draw attention when webemtrics detects a problem.
+"""
+
+username="lockerzops"
+api_key="6dbe0f9b76deba5c73ba4c2a3e390e9cdb43ecb0"
+
+url="https://api.webmetrics.com/v2/?"
+
+# The API call we use can only be hit once every 10 seconds so we cache
+# the response for 10 seconds and keep the call generic to get all data
+# for all services
+cachename="/var/tmp/webmetrics.cache.xml"
+
+import os
+import fcntl
+import time
+import base64
+import urllib
+import hashlib
+import urllib2
+import xml.etree.ElementTree
+import sys
+import getopt
+import exceptions
+
+#######
+# Function Definitions
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+def usage():
+        sys.stderr.write("%s: usage [-w <warn percent>] [-c <crit percent>]\n")
+
+
+#######
+# Parse args
+
+try:
+        opts, svcids = getopt.getopt(sys.argv[1:], "v")
+except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(3)
+
+verbose=False
+
+for o, a in opts:
+        if o == '-v':
+		verbose=True
+
+####
+# Main Body
+
+try:
+	status=None
+	usedcache=False
+	try:
+		# We open the file in mode a+ which should give us a R/W
+		# handle and create the file if it doesn't already exist
+		cfile=open(cachename, "a+") 
+		fcntl.lockf(cfile, fcntl.LOCK_SH)
+
+		c_stat=os.stat(cachename)
+		c_age=time.time() - c_stat.st_mtime
+		# We double check here to make sure that the file isn't empty
+		# If we just created it because it didn't exist, it will
+		# be 0 seconds old... but useless as a cache :)
+		cfile.seek(0, 2) # go to the end of the file
+		if ((c_age < 10) & (cfile.tell() != 0)):
+			if verbose:
+				sys.stderr.write("%s is %d seconds old - using it\n"%(cachename, c_age))
+			# if the cache is less than 10 seconds old, use it
+			cfile.seek(0)
+			status=xml.etree.ElementTree.parse(cfile)
+			usedcache=True
+		else:
+			if verbose:
+				sys.stderr.write("%s is %d seconds old - not using it\n"%(cachename, c_age))
+
+	except OSError: # couldn't stat or open the cache file... no biggie
+		if verbose:
+			sys.stderr.write("%s not usable\n"%(cachename))
+
+	if not usedcache:
+		# For whatever reason, we didn't load from the cache,
+		# so we're going to go get the data from the API and
+		# then we'll cache it.
+		# First, get a write lock on the file... this should
+		# stope anyone else who comes along from even trying
+		# to read the age of the file until we have updated it
+		fcntl.lockf(cfile, fcntl.LOCK_EX)
+		args=[]
+		# calculate the required signature for a webmetrics API call
+		args.append(('sig', base64.encodestring(hashlib.sha1("%s%s%d"%(username,api_key,time.time())).digest()).strip()))
+
+		args.append(('username', username))
+		args.append(('method', 'snapshot.getdata'))
+
+		# don't pass the svcids to the API or the cache will be
+		# incorrect for a different service - need to filter the
+		# results instead
+		#for s in svcids:
+		#	args.append(('serviceid', s))
+
+		status=xml.etree.ElementTree.parse(urllib2.urlopen(url + urllib.urlencode(args)))
+
+
+		# if stat != ok - UNKNOWN and print the error message
+		if status.getroot().get('stat') != 'ok':
+			UNKNOWN(status.getroot().getchildren()[0].get('msg'))
+
+		# write out a cache of the response for later use
+		cfile.seek(0) # Go to the start of the file
+		cfile.truncate(0) # Empty the file
+		status.write(cfile) # and write the XML to it
+
+	# OK, we're all done with the cache - unlock it and close the
+	# file handle
+	fcntl.lockf(cfile, fcntl.LOCK_UN)
+	cfile.close()
+
+	if verbose: # then dump some debug info
+		status.write(sys.stderr)
+		sys.stderr.write("\n\n")
+		for svc in status.findall('service'):
+			sys.stderr.write("%s\t%s\t%s\t%s\n"%(svc.find('id').text, svc.find('name').text, svc.find('status').text, svc.find('lastsampletime').text))
+
+	svcs=status.findall('service')
+	if svcids:
+		svcs=filter(lambda x: x.find('id').text in svcids, svcs)
+	if len(svcs) > 1: # if multiple services then summarise
+		alls=map(lambda x: x.find('status').text, svcs)
+		s=list(set(alls))
+		msg=", ".join(map(lambda x: "%s:%d"%(x, alls.count(x)), s))
+		if 'ERROR' in s: # Any errors, it's crit
+			CRIT(msg)
+		if 'WARNING' in s: # Any warnings, it's warn
+			WARN(msg)
+		if s != ['OK']: # Anything other than all ok...
+			UNKNOWN(msg)
+		OK(msg) # it must have been OK
+
+	elif len(svcs) == 1: # if single service then print full details
+		svc=svcs[0]
+
+		msg="%s %s in %s at %s"%(svc.find('name').text, svc.find('status').text, svc.find('lastsample').text, svc.find('lastsampletime').text)
+		s=svc.find('status').text
+		# check the error log for a detailed message that matches
+		# the latest check
+		t=svc.find('lastsampletime').text.split()[-1]
+		id=svc.find('id').text
+		if status.find('recenterrors'):
+			for e in status.find('recenterrors').findall('error'):
+				if (e.find('errortime').text == t) & (e.find('serviceid').text == id):
+					msg=msg + " " + e.find('errormsg').text
+
+		if s=='ERROR': # error, it's crit
+			CRIT(msg)
+		if s=='WARNING': # warning, it's warn
+			WARN(msg)
+		if s!='OK': # Anything other than all ok...
+			UNKNOWN(msg)
+		OK(msg) # it must have been OK
+	else:
+		UNKNOWN("No services found")
+
+except exceptions.SystemExit:
+        raise
+except:
+        sys.stderr.write(`sys.exc_info()`+"\n")
+        CRIT("internal plugin failure")
+

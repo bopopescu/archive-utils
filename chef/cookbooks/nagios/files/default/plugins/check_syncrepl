@@ -1,0 +1,180 @@
+#! /usr/bin/perl -w
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#
+
+use POSIX;
+use strict;
+use lib "/usr/lib/nagios/plugins" ;
+use utils qw($TIMEOUT %ERRORS &print_revision &support);
+
+use Net::LDAPS;
+use Time::Local;
+use Getopt::Long;
+
+my $PROGNAME = "check_syncrepl";
+
+my($status, $state, $answer, $masterCSN, $consumerCSN);
+my($opt_V, $opt_h, $opt_d, $opt_b, $opt_H, $opt_M);
+
+
+#Option checking
+$status = GetOptions(
+	"V|version"	=> \$opt_V,
+	"help"	=> \$opt_h, 
+	"M|master=s"	=> \$opt_M,
+	"H|host=s"	=> \$opt_H,
+	"b|baseDN=s"	=> \$opt_b,
+	"d|delta=i"	=> \$opt_d
+	);
+		
+if ($status == 0)
+{
+	print_help() ;
+	exit $ERRORS{'OK'};
+}
+
+
+if ($opt_V) {
+	print_revision($PROGNAME,'$Revision: 1.0 $ ');
+	exit $ERRORS{'OK'};
+}
+
+if ($opt_h) {
+	print_help();
+	exit $ERRORS{'OK'};
+}
+
+if ($opt_d) {
+	if ($opt_d ne int($opt_d)) {
+		print "Delta not in seconds!\n";
+		print_help();
+		exit $ERRORS{'OK'};
+	}
+	$opt_d = int($opt_d);
+} else {
+	$opt_d = 300;
+}
+
+if (! utils::is_hostname($opt_M)){
+	usage();
+	exit $ERRORS{"UNKNOWN"};
+}
+
+if (! utils::is_hostname($opt_H)){
+	usage();
+	exit $ERRORS{"UNKNOWN"};
+}
+
+if(!defined $opt_b){
+	usage();
+	exit $ERRORS{"UNKNOWN"};
+}
+
+my $ldapm = Net::LDAPS->new($opt_M) ;
+if(!defined $ldapm){
+	print "Unable to connect to $opt_M. Exiting.\n";
+	exit $ERRORS{"UNKNOWN"};
+}
+
+my $ldaps = Net::LDAPS->new($opt_H);
+if(!defined $ldaps){
+	print "Unable to connect to $opt_H. Exiting.\n";
+	exit $ERRORS{"UNKNOWN"};
+}
+
+my $bindm = $ldapm->bind;
+$bindm = $ldapm->search(
+			base => $opt_b,
+			scope => "base",
+			attrs => ['contextCSN'],
+			filter => "(contextCSN=*)"
+			);
+
+if($bindm->code){
+	$state = "CRITICAL";
+	print "SyncRepl: $state: $bindm->error\n";
+	exit $ERRORS{$state};
+}
+
+foreach my $entry ($bindm->all_entries) {
+	my $CSN= $entry->get_value( 'contextCSN' );
+	my($year, $month, $day, $hour, $min, $sec) = unpack("a4a2a2a2a2a2", $CSN);
+	$year -= 1900;
+	$month--;
+	my $time = timegm($sec, $min, $hour, $day, $month, $year);
+	$masterCSN = $time;
+}
+
+$ldapm->unbind();
+
+
+my $binds = $ldaps->bind;
+$binds = $ldaps->search(
+			base => $opt_b,
+			scope => "base",
+			attrs => ['contextCSN'],
+			filter => "(contextCSN=*)"
+			);
+
+if($binds->code){
+	$state = "CRITICAL";
+	print "SyncRepl: $state: $binds->error\n";
+	exit $ERRORS{$state};
+}
+
+foreach my $entry ($binds->all_entries) {
+	my $CSN= $entry->get_value( 'contextCSN' );
+	my($year, $month, $day, $hour, $min, $sec) = unpack("a4a2a2a2a2a2", $CSN);
+	$year -= 1900;
+	$month--;
+	my $time = timegm($sec, $min, $hour, $day, $month, $year);
+	$consumerCSN = $time;
+}
+
+$ldaps->unbind();
+
+my $delta = $masterCSN - $consumerCSN;
+
+if($delta > $opt_d){
+	$state = "CRITICAL";
+	print "SyncRepl: $state: Replication delay in excess of $opt_d.($delta)\n";
+}elsif($consumerCSN > $masterCSN){
+	$state = "CRITICAL";
+	print "SyncRepl: $state: Consumer ahead of producer.\n";
+}else{
+	$state = "OK";
+	print "SyncRepl: $state: Replication delay is $delta seconds.\n";
+}
+
+exit $ERRORS{$state};
+	
+sub usage {
+	print "\nMissing arguments!\n";
+	print "\n";
+	print "check_syncrepl -H <host IP> -M <master IP> [-b <baseDN>] [-d delta]\n";
+	print "\n\n";
+	exit $ERRORS{"UNKNOWN"};
+}
+
+sub print_help {
+	print "check_syncrepl retrieves the contextCSN from the syncrepl consumer\n";
+  	print "and compares it to the producer.\n";
+	print "\nUsage:\n";
+	print "   -H (--host)       Syncrepl consumer to query - (required)\n";
+	print "   -M (--master)     Syncrepl producer to query - (required)\n";
+	print "   -d (--delta)      Maximum lag in seconds for replication.\n";
+	print "   -b (--base)       BaseDN for lookup.\n";
+	print "   -V (--version)    Plugin version\n";
+	print "   -h (--help)       usage help \n\n";
+	print_revision($PROGNAME, '$Revision: 1.0 $');
+	
+}

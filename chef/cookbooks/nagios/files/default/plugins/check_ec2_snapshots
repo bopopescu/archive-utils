@@ -1,0 +1,69 @@
+#!/usr/bin/python
+# Config
+AWS_ACCESS_KEY_ID="AKIAIO6ZJBIIOKEYEGVQ"
+AWS_ACCOUNT_ID="234412458349"
+AWS_SECRET_ACCESS_KEY="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"
+
+def usage():
+	sys.stderr.write("%s: usage [-w <warn count>] [-c <crit count>] [-W <warn size>] [-C <crit size>]\n")
+
+def OK(msg):
+        """exit OK"""
+        print "OK: %s"%(msg)
+        sys.exit(0)
+
+def WARN(msg):
+        """exit WARNING"""
+        print "WARNING: %s"%(msg)
+        sys.exit(1)
+
+def CRIT(msg):
+        """exit CRITICAL"""
+        print "CRITICAL: %s"%(msg)
+        sys.exit(2)
+
+def UNKNOWN(msg):
+        """exit UNKNOWN"""
+        print "UNKNOWN: %s"%(msg)
+        sys.exit(3)
+
+import boto, boto.ec2
+import getopt, sys
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "w:W:c:C:")
+except getopt.GetoptError, err:
+	print str(err)
+	usage()
+	sys.exit(3)
+
+warncount=None
+critcount=None
+warnsize=None
+critsize=None
+
+for o, a in opts:
+	if o == '-w':
+		warncount=int(a)
+	elif o == '-c':
+		critcount=int(a)
+	elif o == '-W':
+		warnsize=int(a)
+	elif o == '-C':
+		critsize=int(a)
+
+conn=boto.connect_ec2(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+snaps=conn.get_all_snapshots()
+
+# We're only interested in snapshots that we own
+mysnaps=filter(lambda x: x.owner_id==AWS_ACCOUNT_ID, snaps)
+snapcount=len(mysnaps)
+snapsize=sum(map(lambda x: x.volume_size, mysnaps))
+msg="%d snapshots using %d Gig"%(len(mysnaps), sum(map(lambda x: x.volume_size, mysnaps)))
+
+if (critcount and (critcount <= snapcount)) or (critsize and (critsize <= snapsize)):
+	CRIT(msg)
+if (warncount and (warncount <= snapcount)) or (warnsize and (warnsize <= snapsize)):
+	WARN(msg)
+OK(msg)

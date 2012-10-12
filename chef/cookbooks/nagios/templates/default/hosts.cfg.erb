@@ -1,0 +1,22 @@
+##
+# Hosts
+#
+# @author   Steve Layton ( steve@lockerz.com )
+
+<% @hosts.each do |host| %>
+<% next if(host[:ipaddress] == nil) %>
+define host {
+	use		generic-host
+	address		<%= host['ipaddress'] %>
+	host_name 	<%= (host['fqdn'] == nil ? "Unknown hostname" : host['fqdn']) %>
+<% hg=host.run_list.roles.map{|roleName| roleName}.join(",") -%>
+<% if (hg != "") -%>
+	hostgroups	<%= hg %>
+<% else -%>
+	hostgroups	Lockerz_base
+<% end -%>
+
+}
+
+<% end -%>
+
