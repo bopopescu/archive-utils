@@ -29,7 +29,11 @@ def admin_hosts():
 
 def load_balancers():
     #return ["deploy-test"]
-    return ["lockerz-com", "api-lockerz-com", "pics-lockerz-com"]
+    return ["lockerz-com", 
+            "api-lockerz-com", 
+            "pics-lockerz-com",
+            "secure-lockerz-com"]
+
     #return ["lockerz-com", "api-lockerz-com"]
     #return ["pics-lockerz-com"]
 
