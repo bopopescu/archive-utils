@@ -1,0 +1,1 @@
+alias psg='ps -ef | head -1; ps -ef | grep -v grep | grep'
