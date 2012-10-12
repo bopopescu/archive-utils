@@ -27,6 +27,10 @@ cd ${PEGASUS_BUILD_HOME};
 info "Setting asset version in config_prod.yml"
 cat config/config_prod.yml | set-pegasus-asset-version $VERSION > config/config_prod.yml.tmp
 mv config/config_prod.yml.tmp config/config_prod.yml
+
+cat config/config_ihr.yml | set-pegasus-asset-version $VERSION > config/config_ihr.yml.tmp
+mv config/config_ihr.yml.tmp config/config_ihr.yml
+
 git commit -am "Setting asset version"
 git push ${LOCKERZ_REMOTE} master
 

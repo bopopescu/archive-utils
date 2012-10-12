@@ -34,7 +34,8 @@ def load_balancers():
     #return ["pics-lockerz-com"]
 
 def wait_for_traffic_to_die(host):
-    code = subprocess.call(["scripts/check-for-traffic", "-le", "0", host])
+    #code = subprocess.call(["scripts/check-for-traffic", "-le", "0", host])
+    time.sleep(20)
 
 def wait_for_traffic(host):
     code = subprocess.call(["scripts/check-for-traffic", "-ge", "3", host])
