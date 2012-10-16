@@ -56,3 +56,14 @@ cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
         group "root"
         source "hostgroups/hostgroups.lockerz.com.cfg"
 end
+
+## Custom/extra plugins
+        ["check_http"].each do |pluginName|
+                cookbook_file "/etc/nagios-plugins/config/%s" % pluginName do
+                        mode "0555"
+                        owner "root"
+                        group "root"
+                        source "commands/%s" % pluginName
+                end
+        end
+

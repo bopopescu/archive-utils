@@ -48,6 +48,14 @@ cookbook_file "/etc/nagios3/conf.d/services/services.lockerz.com.cfg" do
         source "services/services.lockerz.com.cfg"
 end
 
+## Nagios services config
+cookbook_file "/etc/nagios3/conf.d/services/platz-service_nagios2.cfg" do
+        mode "0755"
+        owner "root"
+        group "root"
+        source "services/platz-service_nagios2.cfg"
+end
+
 
 ## Nagios hostgroup config
 cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
