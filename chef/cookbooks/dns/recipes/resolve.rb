@@ -8,17 +8,20 @@
 #	This means using chef searches to find the DNSMasters and DNSSlaves
 #       and search domains
 
-h = Hash.new
-hosts = []
-search(:node, "*:*") {|n| hosts << n }
-hosts.each do |host|
-       if (host['fqdn'] == nil)
-              h[host.fqdn.gsub(/^.*/,'lockerz.int')]=1
-       else
-              h[host.fqdn.gsub(/^[a-z0-9\-]*\./,'')]=1
-       end
-end
-searchlist=h.keys.join(' ')
+
+# THIS USED TO WORK!! - DYNAMICALLY BUILD A LIST OF DF DOMAINS
+# h = Hash.new
+# hosts = []
+# search(:node, "*:*") {|n| hosts << n }
+# hosts.each do |host|
+#         if (host['fqdn'] == nil)
+#               h[host.fqdn.gsub(/^.*/,'lockerz.int')]=1
+#         else
+#              h[host.name.gsub(/^[a-z0-9\-]*\./,'')]=1
+#         end
+# end
+# searchlist=h.keys.join(' ')
+searchlist="lockerz.int dba.prod.lockerz.int opz.prod.lockerz.int platz.lockerz.int dba.uat.lockerz.int"
 
 ## Assemble the list of primary and secondary dns servers.
 nameServers = {}
