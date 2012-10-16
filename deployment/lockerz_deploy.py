@@ -29,12 +29,17 @@ def admin_hosts():
 
 def load_balancers():
     #return ["deploy-test"]
-    return ["lockerz-com", "api-lockerz-com", "pics-lockerz-com"]
+    return ["lockerz-com", 
+            "api-lockerz-com", 
+            "pics-lockerz-com",
+            "secure-lockerz-com"]
+
     #return ["lockerz-com", "api-lockerz-com"]
     #return ["pics-lockerz-com"]
 
 def wait_for_traffic_to_die(host):
-    code = subprocess.call(["scripts/check-for-traffic", "-le", "0", host])
+    #code = subprocess.call(["scripts/check-for-traffic", "-le", "0", host])
+    time.sleep(20)
 
 def wait_for_traffic(host):
     code = subprocess.call(["scripts/check-for-traffic", "-ge", "3", host])
