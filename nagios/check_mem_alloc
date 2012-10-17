@@ -1,0 +1,123 @@
+#!/usr/bin/python
+"""check_mem_other
+
+This is a nagios plugin that checks memory usage/data in /proc/vmstat
+
+This usage data is written to syslog so it can be picked up for analysis by future iterations of this check, and by tools like graphite or splunk.
+"""
+
+import sys
+import os
+import exceptions
+from syslog import *
+import getopt
+import re
+import string
+
+#######
+# Function Definitions
+
+
+
+def DEBUG(msg):
+	DEBUG.cnt += 1
+        if dflag > 0:
+	        print "DEBUG [%d]: %s"%(DEBUG.cnt,msg)
+DEBUG.cnt=0
+
+def OK(msg):
+	"""exit OK"""
+	print "OK: %s"%(msg)
+	sys.exit(0)
+
+def WARN(msg):
+	"""exit WARNING"""
+	print "WARNING: %s"%(msg)
+	sys.exit(1)
+
+def CRIT(msg):
+	"""exit CRITICAL"""
+	print "CRITICAL: %s"%(msg)
+	sys.exit(2)
+
+def UNKNOWN(msg):
+	"""exit UNKNOWN"""
+	print "UNKNOWN: %s"%(msg)
+	sys.exit(3)
+
+def Usage():
+        sys.stderr.write("Usage: check_mem_other [-i <>] \n")
+
+
+
+#######
+# Parse args
+
+try:
+        opts, args = getopt.getopt(sys.argv[1:], "i:")
+except getopt.GetoptError, err:
+        print str(err)
+        Usage()
+        sys.exit(3)
+
+
+dflag=0
+dcnt=0
+incr=0
+for o, a in opts:
+        if o == '-i':
+                incr=int(a)
+
+DEBUG("Increment=%d"%(incr))
+
+
+#######
+# Main body
+try:
+	save=""
+	openlog("check_mem_other")
+	stats={}
+	for l in open("/proc/vmstat").readlines():
+		l=l.split()
+		stats[l[0]]=int(l[1])
+
+	stallcnt=stats['allocstall']
+	DEBUG("Stallcnt=%d"%(stallcnt))
+	#last_stallcnt = os.system('grep LAST_ALLOC /var/log/syslog | tail -1 | cut -d"=" -f3')
+	#for l in open("/var/log/syslog").readlines():
+	for l in open("/var/log/syslog").readlines():
+		if re.match("^.*ALLOCSTALL.*$", l):
+			#DEBUG("Match!=%s"%(l))
+			l=l.split('=')
+			save=l
+	DEBUG("MATCH %s"%(save))
+
+	last_stallcnt = string.atoi(save[2])
+	#last_stallcnt = int(l[2])
+	DEBUG("Last_stallcnt=%d"%(last_stallcnt))
+
+	msg="LAST_ALLOCSTALL_CNT=%d, CURR_ALLOCSTALL_CNT=%d"%(last_stallcnt,stallcnt)
+	syslog(msg)
+
+	stallcnt+=1
+	if stallcnt-incr > last_stallcnt:
+		CRIT(msg)
+	else:
+		OK(msg)
+
+		
+	#if critpct and (uspct >= critpct):
+	#	#CRIT(msg)
+	#	CRIT("%.01f%% of memory in use"%(uspct))
+	#if warnpct and (uspct >= warnpct):
+	#	#WARN(msg)
+	#	WARN("%.01f%% of memory in use"%(uspct))
+	OK(msg)
+	
+except exceptions.SystemExit:
+        raise
+except:
+        sys.stderr.write(`sys.exc_info()`+"\n")
+        CRIT("internal plugin failure")
+
+
