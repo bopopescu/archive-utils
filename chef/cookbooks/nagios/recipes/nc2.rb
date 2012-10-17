@@ -73,7 +73,7 @@ if(node[:platform] == "ubuntu")
 
 
 	## Custom/extra plugins
-	["check_cpu","check_memory","check_postfix_mailqueue"].each do |pluginName|
+	["check_cpu","check_memory","check_mem_alloc","check_postfix_mailqueue"].each do |pluginName|
 		cookbook_file "/usr/lib/nagios/plugins/%s" % pluginName do
 			mode "0555"
 			owner "root"
@@ -109,7 +109,7 @@ if(node[:platform] == "centos")
 	end
 
 	## Custom/extra plugins
-	["check_procs","check_mysql_health","check_cpu","check_memory"].each do |pluginName|
+	["check_procs","check_mysql_health","check_cpu","check_mem_alloc","check_memory"].each do |pluginName|
 		cookbook_file "/usr/lib64/nagios/plugins/%s" % pluginName do
 			mode "0755"
 			owner "nrpe"
