@@ -3,13 +3,11 @@
 # copied from platz-system.rb recipes written by Bernard Gardner (Spry)
 
 ## Config dirs
-["hosts"].each do |dir|
-        directory "/var/log/nagios" % dir do
-                mode 0777
-                owner "nagios"
-                group "nagios"
-                action :create
-        end
+directory "/var/log/nagios" % dir do
+        mode 0777
+        owner "nagios"
+        group "nagios"
+        action :create
 end
 
 
