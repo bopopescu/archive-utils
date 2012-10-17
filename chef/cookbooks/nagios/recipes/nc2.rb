@@ -2,6 +2,17 @@
 # This recipe installs and configures nrpe on a locekrz client server
 # copied from platz-system.rb recipes written by Bernard Gardner (Spry)
 
+## Config dirs
+["hosts"].each do |dir|
+        directory "/var/log/nagios" % dir do
+                mode 0777
+                owner "nagios"
+                group "nagios"
+                action :create
+        end
+end
+
+
 if(node[:platform] == "ubuntu")
 
 	package "nagios-nrpe-server"
