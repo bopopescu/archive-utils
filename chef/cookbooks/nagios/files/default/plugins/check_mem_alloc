@@ -1,8 +1,7 @@
 #!/usr/bin/python
 """check_mem_alloc
-This is a nagios plugin that checks memory usage/data in /proc/vmstat
-
-This usage data is written to syslog so it can be picked up for analysis by future iterations of this check, and by tools like graphite or splunk.
+This nagios plugin checks memory usage & pressure in /proc/vmstat, and writes to /var/log/perf.log 
+to allow for analysis by future iterations of this check, and by tools like graphite or splunk.
 """
 
 import sys
@@ -12,6 +11,15 @@ from syslog import *
 import getopt
 import re
 import string
+import datetime
+
+
+#######
+# Globals
+
+thisfile="check_mem_alloc"
+logfile="/var/log/nagios/perf.log"
+
 
 #######
 # Function Definitions
@@ -22,30 +30,13 @@ def DEBUG(msg):
 	DEBUG.cnt += 1
         if dflag > 0:
 	        print "DEBUG [%d]: %s"%(DEBUG.cnt,msg)
-DEBUG.cnt=0
 
-def OK(msg):
-	"""exit OK"""
-	print "OK: %s"%(msg)
-	sys.exit(0)
-
-def WARN(msg):
-	"""exit WARNING"""
-	print "WARNING: %s"%(msg)
-	sys.exit(1)
-
-def CRIT(msg):
-	"""exit CRITICAL"""
-	print "CRITICAL: %s"%(msg)
-	sys.exit(2)
-
-def UNKNOWN(msg):
-	"""exit UNKNOWN"""
-	print "UNKNOWN: %s"%(msg)
-	sys.exit(3)
 
 def Usage():
-        sys.stderr.write("Usage: check_mem_other [-i <>] \n")
+        sys.stderr.write("Usage: %s [-d] [-i <>] \n"%thisfile)
+	# -d is for debug mode
+	# -i <increment> specifies maximum acceptable increase in allocstall before alert
+
 
 
 
@@ -53,19 +44,24 @@ def Usage():
 # Parse args
 
 try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:")
+        opts, args = getopt.getopt(sys.argv[1:], "di:")
 except getopt.GetoptError, err:
         print str(err)
         Usage()
         sys.exit(3)
 
 
+DEBUG.cnt=0
 dflag=0
 dcnt=0
 incr=0
+xc=0
+
 for o, a in opts:
         if o == '-i':
                 incr=int(a)
+        elif o == '-d':
+                dflag=1
 
 DEBUG("Increment=%d"%(incr))
 
@@ -74,7 +70,7 @@ DEBUG("Increment=%d"%(incr))
 # Main body
 try:
 	save=""
-	openlog("check_mem_alloc")
+	openlog(thisfile)
 	stats={}
 	for l in open("/proc/vmstat").readlines():
 		l=l.split()
@@ -82,32 +78,45 @@ try:
 
 	stallcnt=stats['allocstall']
 	DEBUG("Stallcnt=%d"%(stallcnt))
-	#last_stallcnt = os.system('grep LAST_ALLOC /var/log/syslog | tail -1 | cut -d"=" -f3')
-	for l in open("/var/log/syslog").readlines():
+	open(logfile,"a+").close();
+	logfh = open(logfile,"r")
+	DEBUG("POST first OPEN")
+	for l in logfh.readlines():
 		if re.match("^.*ALLOCSTALL.*$", l):
-			DEBUG("Match!=%s"%(l))
-			l=l.split('=')
-			save=l
+			#DEBUG("Match!=%s"%(l))
+			save=l.split('=')
+	logfh.close()
 	if save == "":	
 		DEBUG("No Match!")
 		last_stallcnt = 0
 	else:
 		DEBUG("LAST MATCH %s"%(save))
 		last_stallcnt = string.atoi(save[2])
-		DEBUG("Last_stallcnt=%d"%(last_stallcnt))
 
-	msg="LAST_ALLOCSTALL_CNT=%d, CURR_ALLOCSTALL_CNT=%d"%(last_stallcnt,stallcnt)
-	syslog(msg)
+
+	msg="last_stall_cnt=%d, stall_cnt=%d [incr=%d]"%(last_stallcnt, stallcnt, incr)
+	DEBUG(msg)
+	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	full_log_entry="%s: %s: %s ... OK!\n"%(now, thisfile, msg)
 
 	if stallcnt-incr > last_stallcnt:
-		CRIT(msg)
-	else:
-		OK(msg)
+		full_log_entry="%s: %s: %s ... CRITICAL!\n"%(now, thisfile, msg)
+		syslog("%s ... CRITICAL!"%(msg))
+		xc=2
+
+	DEBUG(full_log_entry)
+	logfh = open(logfile, "a")
+	logfh.write (full_log_entry)
+	logfh.close()
+
+	sys.exit(xc)
+
+
 
 except exceptions.SystemExit:
         raise
 except:
         sys.stderr.write(`sys.exc_info()`+"\n")
-        CRIT("internal plugin failure")
-
+	print "internal plugin failure"
+	exit(2)
 
