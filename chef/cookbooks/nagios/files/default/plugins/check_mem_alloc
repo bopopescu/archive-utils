@@ -104,7 +104,7 @@ try:
 		syslog("%s ... CRITICAL!"%(msg))
 		xc=2
 
-	DEBUG(full_log_entry)
+	print(full_log_entry)
 	logfh = open(logfile, "a")
 	logfh.write (full_log_entry)
 	logfh.close()
