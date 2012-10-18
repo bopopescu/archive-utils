@@ -1,0 +1,122 @@
+#!/usr/bin/python
+"""check_mem_alloc
+This nagios plugin checks memory usage & pressure in /proc/vmstat, and writes to /var/log/perf.log 
+to allow for analysis by future iterations of this check, and by tools like graphite or splunk.
+"""
+
+import sys
+import os
+import exceptions
+from syslog import *
+import getopt
+import re
+import string
+import datetime
+
+
+#######
+# Globals
+
+thisfile="check_mem_alloc"
+logfile="/var/log/nagios/perf.log"
+
+
+#######
+# Function Definitions
+
+
+
+def DEBUG(msg):
+	DEBUG.cnt += 1
+        if dflag > 0:
+	        print "DEBUG [%d]: %s"%(DEBUG.cnt,msg)
+
+
+def Usage():
+        sys.stderr.write("Usage: %s [-d] [-i <>] \n"%thisfile)
+	# -d is for debug mode
+	# -i <increment> specifies maximum acceptable increase in allocstall before alert
+
+
+
+
+#######
+# Parse args
+
+try:
+        opts, args = getopt.getopt(sys.argv[1:], "di:")
+except getopt.GetoptError, err:
+        print str(err)
+        Usage()
+        sys.exit(3)
+
+
+DEBUG.cnt=0
+dflag=0
+dcnt=0
+incr=0
+xc=0
+
+for o, a in opts:
+        if o == '-i':
+                incr=int(a)
+        elif o == '-d':
+                dflag=1
+
+DEBUG("Increment=%d"%(incr))
+
+
+#######
+# Main body
+try:
+	save=""
+	openlog(thisfile)
+	stats={}
+	for l in open("/proc/vmstat").readlines():
+		l=l.split()
+		stats[l[0]]=int(l[1])
+
+	stallcnt=stats['allocstall']
+	DEBUG("Stallcnt=%d"%(stallcnt))
+	open(logfile,"a+").close();
+	logfh = open(logfile,"r")
+	DEBUG("POST first OPEN")
+	for l in logfh.readlines():
+		if re.match("^.*stall_cnt=.*$", l):
+			#DEBUG("Match!=%s"%(l))
+			save=l.split('=')
+	logfh.close()
+	if save == "":	
+		DEBUG("No Match!")
+		last_stallcnt = 0
+	else:
+		DEBUG("LAST MATCH %s"%(save))
+		last_stallcnt = string.atoi(save[2])
+
+
+	msg="last_stall_cnt=%d, stall_cnt=%d=>[incr=%d]"%(last_stallcnt, stallcnt, incr)
+	DEBUG(msg)
+	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	full_log_entry="%s: %s: %s ... OK!\n"%(now, thisfile, msg)
+
+	if stallcnt-incr > last_stallcnt:
+		full_log_entry="%s: %s: %s ... CRITICAL!\n"%(now, thisfile, msg)
+		syslog("%s ... CRITICAL!"%(msg))
+		xc=2
+
+	print(full_log_entry)
+	logfh = open(logfile, "a")
+	logfh.write (full_log_entry)
+	logfh.close()
+
+	sys.exit(xc)
+
+
+
+except exceptions.SystemExit:
+        raise
+except:
+        sys.stderr.write(`sys.exc_info()`+"\n")
+	print "internal plugin failure"
+	exit(2)
+
