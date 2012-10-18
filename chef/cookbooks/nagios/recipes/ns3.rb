@@ -58,12 +58,20 @@ cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
 end
 
 ## Custom/extra plugins
-        ["check_http"].each do |pluginName|
-                cookbook_file "/etc/nagios-plugins/config/%s" % pluginName do
+        ["http"].each do |pluginName|
+                cookbook_file "/etc/nagios-plugins/config/%s.cfg" % pluginName do
                         mode "0555"
                         owner "root"
                         group "root"
-                        source "commands/%s" % pluginName
+                        source "commands/%s.cfg" % pluginName
                 end
+        end
+
+
+## Restart nagios 
+        service "nagios3" do
+                action [ :enable, :start ]
+                supports :restart => true, :reload => true
+                ignore_failure true
         end
 
