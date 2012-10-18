@@ -82,7 +82,7 @@ try:
 	logfh = open(logfile,"r")
 	DEBUG("POST first OPEN")
 	for l in logfh.readlines():
-		if re.match("^.*ALLOCSTALL.*$", l):
+		if re.match("^.*stall_cnt=.*$", l):
 			#DEBUG("Match!=%s"%(l))
 			save=l.split('=')
 	logfh.close()
@@ -94,7 +94,7 @@ try:
 		last_stallcnt = string.atoi(save[2])
 
 
-	msg="last_stall_cnt=%d, stall_cnt=%d [incr=%d]"%(last_stallcnt, stallcnt, incr)
+	msg="last_stall_cnt=%d, stall_cnt=%d=>[incr=%d]"%(last_stallcnt, stallcnt, incr)
 	DEBUG(msg)
 	now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	full_log_entry="%s: %s: %s ... OK!\n"%(now, thisfile, msg)
