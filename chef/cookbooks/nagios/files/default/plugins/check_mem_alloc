@@ -100,9 +100,9 @@ try:
 	full_log_entry="%s: %s: %s ... OK!\n"%(now, thisfile, msg)
 
 	if stallcnt-incr > last_stallcnt:
-		full_log_entry="%s: %s: %s ... CRITICAL!\n"%(now, thisfile, msg)
-		syslog("%s ... CRITICAL!"%(msg))
-		xc=2
+		full_log_entry="%s: %s: %s ... WARNING!\n"%(now, thisfile, msg)
+		syslog("%s ... WARNING!"%(msg))
+		xc=1
 
 	print(full_log_entry)
 	logfh = open(logfile, "a")
