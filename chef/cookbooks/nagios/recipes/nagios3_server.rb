@@ -66,7 +66,7 @@ cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
 end
 
 ## Custom/extra plugins
-        ["http"].each do |pluginName|
+        ["http","vertica"].each do |pluginName|
                 cookbook_file "/etc/nagios-plugins/config/%s.cfg" % pluginName do
                         mode "0555"
                         owner "root"

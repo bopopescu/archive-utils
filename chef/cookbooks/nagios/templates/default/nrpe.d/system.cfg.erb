@@ -26,3 +26,6 @@ command[check_dns]=/usr/lib64/nagios/plugins/check_dns -H www.google.com -s loca
 
 # Check New Relic
 command[check_nrsysmond_procs]=/usr/lib64/nagios/plugins/check_procs -C nrsysmond -c 2:2
+
+# Check Vertica
+command[check_vertica_procs]=/usr/lib64/nagios/plugins/check_procs -C vertica -c 1:1
