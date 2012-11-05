@@ -21,3 +21,8 @@ command[check_mysql_procs]=/usr/lib64/nagios/plugins/check_procs -C mysqld -c 1
 
 # Check DNS
 command[check_dns]=/usr/lib64/nagios/plugins/check_dns -H www.google.com -s localhost 
+
+
+# Check Vertica
+command[check_vertica_procs]=/usr/lib64/nagios/plugins/check_procs -C vertica -c 1:1
+
