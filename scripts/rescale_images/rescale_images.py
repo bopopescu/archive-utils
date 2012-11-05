@@ -10,6 +10,8 @@ import shutil
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
+import redis
+
 s3_conn = None
 decalz_bucket = None
 def connect_to_s3():
@@ -20,7 +22,7 @@ def connect_to_s3():
     except:
         fail("couldn't connect to s3")
     try:
-        decalz_bucket = s3_conn.create_bucket(s3_bucket())
+        decalz_bucket = s3_conn.get_bucket(s3_bucket(), validate=False)
     except:
         fail("couldn't get decalz_bucket")
         
@@ -91,12 +93,12 @@ class ScaleDescriptor:
 
 ScaleDescriptor.THUMBNAIL=ScaleDescriptor("thumbnail", width=75, height=75)
 ScaleDescriptor.SMALL=ScaleDescriptor("small", width=150, height=150)
-ScaleDescriptor.W300=ScaleDescriptor("w300", width=300, quality=70, optimize=True)
-ScaleDescriptor.W300LQ=ScaleDescriptor("w300_lq", width=300, quality=45, optimize=True)
+ScaleDescriptor.W300=ScaleDescriptor("W300", width=300, quality=70, optimize=True)
+ScaleDescriptor.W300LQ=ScaleDescriptor("W300LQ", width=300, quality=45, optimize=True)
 ScaleDescriptor.MOBILE=ScaleDescriptor("mobile", width=320)
 ScaleDescriptor.MEDIUM=ScaleDescriptor("medium", width=600)
-ScaleDescriptor.W600=ScaleDescriptor("w600", width=600, quality=70, optimize=True)
-ScaleDescriptor.W600LQ=ScaleDescriptor("w600_lq", width=600, quality=45, optimize=True)
+ScaleDescriptor.W600=ScaleDescriptor("W600", width=600, quality=70, optimize=True)
+ScaleDescriptor.W600LQ=ScaleDescriptor("W600LQ", width=600, quality=45, optimize=True)
 ScaleDescriptor.ORIGINAL=ScaleDescriptor("original")
 ScaleDescriptor.ALL=[ScaleDescriptor.THUMBNAIL, 
                      ScaleDescriptor.SMALL, 
@@ -127,7 +129,8 @@ def scale_file(filename, key_template, descriptor, dest_format=None):
         dest_extension = ".%s" % dest_format
         
     dest_filename = "%s_%s%s" % (base_filename, descriptor.name, dest_extension)
-        
+    
+    key_template ="".join(key_template.split(".")[0:-1] + [dest_extension])
     dest_s3_key = s3_key_for_template(key_template, descriptor)
     
     if descriptor.scale_only_width():
@@ -212,23 +215,28 @@ def optimize_png(filename):
             "filename" : filename}
     resolved =  template % args
     run_command(resolved)
-    os.remove(pngcrush_filename)
+    try:
+        os.remove(precrush_filename)
+    except:
+        pass
 
 def upload_to_s3(scale_result):
     try:
+        print "uploading to: %s" % scale_result.s3_key
         key = Key(decalz_bucket)
         key.key = scale_result.s3_key
-        key.set_contents_from_filename(scale_result.filename)
-        key.set_acl('public-read')
-    except:
+        key.set_contents_from_filename(scale_result.filename, policy='public-read')
+        
+    except Exception as e:
+        print e
         fail("Failed uploading to s3")
+        
 
-def rescale_from(template_url, source_url, cleanup, upload):
-    garbage_url = sized_url(template_url, "garbage")
+def rescale_from(template_url, cleanup, upload):
     original_url = sized_url(template_url, "original")
     medium_url = sized_url(template_url, "medium")
     
-    candidates = [original_url, medium_url, source_url]
+    candidates = [original_url, medium_url]
     filename = fetch_best_source_for_candidates(candidates)
     if not filename:
         fail("failed - couldn't download any of %s" % candidates)
@@ -259,13 +267,19 @@ def rescale_from(template_url, source_url, cleanup, upload):
 
 def main():
     parser = argparse.ArgumentParser(description="Rescale original images for lockerz")
-    parser.add_argument('template_url', type=str, help="the value of url in decal_entity")
-    parser.add_argument('source_url', type=str, help="the source_url in decal_entity")
     parser.add_argument("--no-cleanup", action="store_false", dest="cleanup", default=True, help="don't erase dowloaded / scaled files, useful for debugging")
     parser.add_argument("--no-upload", action="store_false", dest="upload", default=True, help="don't upload to s3. useful for debugging")
     args = parser.parse_args()
-    rescale_from(args.template_url, args.source_url, args.cleanup, args.upload)
 
+    redis_conn = redis.StrictRedis('ec2-54-245-43-214.us-west-2.compute.amazonaws.com', port=6379, db=0)
+    
+    while True:
+        template_url = redis_conn.brpop("image_process_queue")[1]
+        redis_conn.sadd("image_work", template_url)
+        rescale_from(template_url, args.cleanup, args.upload)
+        redis_conn.srem("image_work", template_url)
+        redis_conn.lpush("image_success", template_url)
+    
 
 if __name__ == "__main__":
     main()
