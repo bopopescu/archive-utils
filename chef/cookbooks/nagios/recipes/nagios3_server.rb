@@ -4,6 +4,11 @@
 # @author   Steve Layton ( steve@lockerz.com )
 # @copyright 2012 lockerz.com
 
+service "nagios3" do
+        action [ :enable, :start ]
+        supports :restart => true, :reload => true
+        ignore_failure true
+end
 
 ## This is where we use chef to build out the configuration files nagios will use for alerting.
 
@@ -29,6 +34,7 @@ template "/etc/nagios3/conf.d/hosts/hosts.lockerz.com.cfg" do
   variables({
         :hosts => hosts
   })
+  notifies :restart, resources(:service => "nagios3")
 end
 
 ## Nagios contacts config
@@ -37,6 +43,7 @@ cookbook_file "/etc/nagios3/conf.d/contacts/contacts_nagios2.cfg" do
         owner "root"
         group "root"
         source "contacts/contacts_nagios2.cfg"
+        notifies :restart, resources(:service => "nagios3")
 end
 
 
@@ -46,6 +53,7 @@ cookbook_file "/etc/nagios3/conf.d/services/services.lockerz.com.cfg" do
         owner "root"
         group "root"
         source "services/services.lockerz.com.cfg"
+        notifies :restart, resources(:service => "nagios3")
 end
 
 ## Nagios services config
@@ -54,6 +62,7 @@ cookbook_file "/etc/nagios3/conf.d/services/platz-service_nagios2.cfg" do
         owner "root"
         group "root"
         source "services/platz-service_nagios2.cfg"
+        notifies :restart, resources(:service => "nagios3")
 end
 
 
@@ -63,6 +72,7 @@ cookbook_file "/etc/nagios3/conf.d/hostgroups/hostgroups.lockerz.com.cfg" do
         owner "root"
         group "root"
         source "hostgroups/hostgroups.lockerz.com.cfg"
+        notifies :restart, resources(:service => "nagios3")
 end
 
 ## Custom/extra plugins
