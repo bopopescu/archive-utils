@@ -25,4 +25,4 @@ command[check_dns]=/usr/lib64/nagios/plugins/check_dns -H www.google.com -s loca
 
 # Check Vertica
 command[check_vertica_procs]=/usr/lib64/nagios/plugins/check_procs -C vertica -c 1:1
-
+command[check_spread_procs]=/usr/lib64/nagios/plugins/check_procs -C spread -c 1:1
