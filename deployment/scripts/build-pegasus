@@ -34,6 +34,9 @@ mv config/config_ihr.yml.tmp config/config_ihr.yml
 git commit -am "Setting asset version"
 git push ${LOCKERZ_REMOTE} master
 
+cp web/.htaccess.PROD web/.htaccess
+cp web/robots.txt.PROD web/robots.txt
+
 echo "Updating vendors"
 rm -rf vendor
 php bin/vendors.php install
