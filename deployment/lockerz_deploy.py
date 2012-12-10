@@ -94,13 +94,12 @@ def get_app_host_info():
     instance_ids_to_fqdns['i-d08186b4'] = 'apps02.platz.lockerz.int'
     instance_ids_to_fqdns['i-1880877c'] = 'apps03.platz.lockerz.int'
     instance_ids_to_fqdns['i-d2843eb5'] = 'apps04.platz.lockerz.int'
-    instance_ids_to_fqdns['i-fe517299'] = 'apps05.platz.lockerz.int'
-    instance_ids_to_fqdns['i-fc51729b'] = 'apps06.platz.lockerz.int'
-    instance_ids_to_fqdns['i-bcccffdb'] = 'apps07.platz.lockerz.int'
+    instance_ids_to_fqdns['i-df4974a0'] = 'apps05.platz.lockerz.int'
+    instance_ids_to_fqdns['i-813508fe'] = 'apps06.platz.lockerz.int'
+    instance_ids_to_fqdns['i-7f340900'] = 'apps07.platz.lockerz.int'
     instance_ids_to_fqdns['i-baccffdd'] = 'apps08.platz.lockerz.int'
     instance_ids_to_fqdns['i-95136fee'] = 'pics01.lockerz.int'
     instance_ids_to_fqdns['i-930579e8'] = 'pics02.lockerz.int'
-    instance_ids_to_fqdns['i-faf55c80'] = 'pics03.lockerz.int'
     balancers_to_instance_ids = {}
     ids_to_instances = {}
     ids_to_balancers = {}
@@ -167,11 +166,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Platz deployment script')
     parser.add_argument("version", type=str, nargs=1, help="the version to give this build")
     parser.add_argument("email", type=str, nargs=1, help="the email of the person running this deployment")
-
+    parser.add_argument("--platz-only", dest='platz_only', action='store_true', default=False, help="only deploy platz")
     args = parser.parse_args()
     version = args.version[0]
     email = args.email[0]
+    platz_only = args.platz_only
 
+    if platz_only:
+        print "** ONLY DEPLOYING PLATZ, MAKE SURE THIS IS WHAT YOU WANT! ***"
     host_info = get_app_host_info()
     print "Will deploy platz *only* to hosts:\n\t%s" % ("\n\t".join(admin_hosts()))
     print "\n"
@@ -189,7 +191,11 @@ if __name__ == '__main__':
         exit(1)
 
     print "Building Pegasus"
-    pegasus_ok = build_pegasus(version)
+    if not platz_only:
+        pegasus_ok = build_pegasus(version)
+    else:
+        pegasus_ok = True
+
     if pegasus_ok  == False:
         msg = "Pegasus build failed. Stopping deployment."
         print msg
@@ -232,7 +238,8 @@ if __name__ == '__main__':
         else:
             hipchat_msg("Deploying (Pegasus) to %s" % (host))
 
-        deploy_pegasus(version, host)
+        if not platz_only:
+            deploy_pegasus(version, host)
 
 
         add_to_elbs(host, host_info)

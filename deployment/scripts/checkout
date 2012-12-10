@@ -18,6 +18,7 @@ GIT_TAG="${VERSION}"
 
 echo "Updating git and resetting master"
 cd ${LOCKERZ_BUILD_HOME}
+git reset --hard ${LOCKERZ_REMOTE}/${LOCKERZ_BASE_BRANCH}
 git checkout ${LOCKERZ_BASE_BRANCH}
 git fetch ${LOCKERZ_REMOTE}
 git reset --hard ${LOCKERZ_REMOTE}/${LOCKERZ_BASE_BRANCH}
