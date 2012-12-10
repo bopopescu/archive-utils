@@ -2,7 +2,19 @@
 # This recipe installs and configures nrpe on a locekrz client server
 # copied from platz-system.rb recipes written by Bernard Gardner (Spry)
 
+## Config dirs
+
 if(node[:platform] == "ubuntu")
+
+	["nagios"].each do |dir|
+		directory "/var/log/%s" % dir do
+        		mode 0777
+        		owner "nagios"
+        		group "nagios"
+        		action :create
+		end
+	end
+
 
 	package "nagios-nrpe-server"
 
@@ -51,7 +63,7 @@ if(node[:platform] == "ubuntu")
 	#servers=[]
 	#search(:node, "nagios\\:\\:server") {|n| servers << n["ipaddress"] }
 	# not sure why this doesn't work...
-	servers=['10.96.191.114']
+	servers=['10.193.135.95']
 
 	template "/etc/nagios/nrpe_local.cfg" do
 		mode "0444"
@@ -64,7 +76,7 @@ if(node[:platform] == "ubuntu")
 
 
 	## Custom/extra plugins
-	["check_cpu","check_memory","check_postfix_mailqueue"].each do |pluginName|
+	["check_cpu","check_memory","check_mem_alloc","check_postfix_mailqueue"].each do |pluginName|
 		cookbook_file "/usr/lib/nagios/plugins/%s" % pluginName do
 			mode "0555"
 			owner "root"
@@ -83,6 +95,16 @@ if(node[:platform] == "centos")
 	# @author   Bryan Kroger ( bryan@lockerz.com )
 	# @copyright 2011 lockerz.com
 
+       ["nagios"].each do |dir|
+                directory "/var/log/%s" % dir do
+                        mode 0777
+                        owner "nrpe"
+                        group "nrpe"
+                        action :create
+                end
+        end
+
+
 
 	## Config
 	directory "/etc/nrpe.d" do
@@ -100,7 +122,7 @@ if(node[:platform] == "centos")
 	end
 
 	## Custom/extra plugins
-	["check_procs","check_mysql_health","check_cpu","check_memory"].each do |pluginName|
+	["check_procs","check_mysql_health","check_cpu","check_mem_alloc","check_memory"].each do |pluginName|
 		cookbook_file "/usr/lib64/nagios/plugins/%s" % pluginName do
 			mode "0755"
 			owner "nrpe"
