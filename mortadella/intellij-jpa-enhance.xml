@@ -1,0 +1,19 @@
+<project name="JPA Enhance" default="enhance">
+  <path id="enhance-cp">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+    <!-- <pathelement path="out/production/meatshop"/> -->
+  </path>
+
+  <target name="enhance">
+    <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="enhance-cp"/>
+
+    <openjpac>
+      <classpath refid="enhance-cp"/>
+      <classpath location="out/production/meatshop"/>
+      <config propertiesFile="src/main/resources/META-INF/persistence.xml"/>
+    </openjpac>
+
+  </target>
+</project>

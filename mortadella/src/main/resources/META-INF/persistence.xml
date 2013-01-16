@@ -1,0 +1,18 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+  <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+    <mapping-file>com/lockerz/meatshop/model/orm.xml</mapping-file>
+    <properties>
+      <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+      <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/meatshop"/>
+      <property name="openjpa.ConnectionUserName" value="root"/>
+      <property name="openjpa.ConnectionPassword" value=""/>
+      <property name="openjpa.jdbc.DBDictionary" value="mysql"/>
+      <property name="openjpa.Log" value="DefaultLevel=TRACE"/>
+      <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true"/>
+      <property name="openjpa.ConnectionProperties" value="MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000"/>
+      <property name="openjpa.DataCache" value="false"/>
+      <property name="openjpa.QueryCache" value="true"/>
+      <property name="openjpa.RemoteCommitProvider" value="sjvm"/>
+    </properties>
+  </persistence-unit>
+</persistence>
