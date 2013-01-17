@@ -10,7 +10,11 @@ import com.lockerz.meatshop.dao.UserDaoImpl;
 import com.lockerz.meatshop.model.Meat;
 import com.lockerz.meatshop.model.Shop;
 import com.lockerz.meatshop.model.User;
+import com.lockerz.meatshop.model2.Address;
+import com.lockerz.meatshop.model2.AddressDao;
+import com.lockerz.meatshop.model2.Model2Module;
 import com.lockerz.meatshop.service.ServiceModule;
+import com.lockerz.meatshop.service.ShopService;
 
 /**
  * @author Brian Gebala
@@ -18,26 +22,13 @@ import com.lockerz.meatshop.service.ServiceModule;
  */
 public class App {
     public static void main(final String[] args) {
-        Injector injector = Guice.createInjector(new DaoModule(), new ServiceModule());
-        ShopDao shopDao = injector.getInstance(ShopDaoImpl.class);
-        UserDao userDao = injector.getInstance(UserDaoImpl.class);
+        Injector injector = Guice.createInjector(new ConfigModule(), new DaoModule(), new Model2Module(), new ServiceModule());
+        ShopService shopService = injector.getInstance(ShopService.class);
+        AddressDao addrDao = injector.getInstance(AddressDao.class);
 
-        //Shop shop = shopDao.newShop("Big Mario's Meats");
-        //Meat guanciale = shopDao.newMeat("Guanciale", 10, shop);
-
-        userDao.findUserByEmail("gebala@lockerz.com");
-        userDao.findUserForLogin("gebala@lockerz.com", "il2wwqs");
-
-        shopDao.findAllShops();
-
-        //User brian = new User();
-        //brian.setEmail("gebala@lockerz.com");
-        //brian.setPassword("il2wwqs");
-        //userDao.persistUser(brian);
-        //userDao.persistUser(brian);
-
-        //User user1 = userDao.findUserById(8);
-        //User user2 = userDao.findUserById(1);
+        User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
+        Shop shop = shopService.newShop("Long Duck Dong Meats");
+        Address addr = addrDao.newAddress("100 S. King St..", "Seattle");
 
         int x = 1;
     }

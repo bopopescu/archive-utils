@@ -1,6 +1,10 @@
 package com.lockerz.meatshop.service;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.name.Named;
+import com.lockerz.meatshop.dao.ShopDao;
+import com.lockerz.meatshop.dao.UserDao;
 
 /**
  * @author Brian Gebala
@@ -9,6 +13,15 @@ import com.google.inject.AbstractModule;
 public class ServiceModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(ShopService.class).to(ShopServiceImpl.class);
+        // No-op.
+    }
+
+    @Provides
+    public ShopService provideShopService(@Named("shop.service.maxPrice") final int maxPrice,
+                                          final ShopDao shopDao,
+                                          final UserDao userDao) {
+        ShopServiceImpl shopService = new ShopServiceImpl(shopDao, userDao);
+        shopService.setMaxPrice(maxPrice);
+        return shopService;
     }
 }
