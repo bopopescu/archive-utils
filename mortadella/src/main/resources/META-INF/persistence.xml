@@ -5,6 +5,7 @@
   </persistence-unit>
   <persistence-unit name="meatshop" transaction-type="RESOURCE_LOCAL">
     <mapping-file>com/lockerz/meatshop/model/orm.xml</mapping-file>
+    <!--
     <properties>
       <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
       <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/meatshop"/>
@@ -18,6 +19,7 @@
       <property name="openjpa.QueryCache" value="true"/>
       <property name="openjpa.RemoteCommitProvider" value="sjvm"/>
     </properties>
+    -->
   </persistence-unit>
   <persistence-unit name="model2" transaction-type="RESOURCE_LOCAL">
     <mapping-file>com/lockerz/meatshop/model2/orm.xml</mapping-file>

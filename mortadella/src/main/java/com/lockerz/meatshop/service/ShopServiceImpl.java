@@ -79,7 +79,6 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
         _executorService = MoreExecutors.listeningDecorator(
                 Executors.newFixedThreadPool(_executorMaxThreads,
                         new ThreadFactoryBuilder().setDaemon(false).setNameFormat("ShopService-%s").build()));
-        int x = 1;
     }
 
     @Override

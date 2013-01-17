@@ -6,13 +6,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import com.lockerz.meatshop.dao.DaoModule;
-import com.lockerz.meatshop.dao.ShopDao;
-import com.lockerz.meatshop.dao.ShopDaoImpl;
-import com.lockerz.meatshop.dao.UserDao;
-import com.lockerz.meatshop.dao.UserDaoImpl;
-import com.lockerz.meatshop.model.Meat;
 import com.lockerz.meatshop.model.Shop;
 import com.lockerz.meatshop.model.User;
 import com.lockerz.meatshop.model2.Address;
@@ -21,7 +15,9 @@ import com.lockerz.meatshop.model2.Model2Module;
 import com.lockerz.meatshop.service.ServiceModule;
 import com.lockerz.meatshop.service.ShopService;
 
+import java.io.FileReader;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Brian Gebala
@@ -29,7 +25,16 @@ import java.util.List;
  */
 public class App {
     public static void main(final String[] args) {
-        Injector injector = Guice.createInjector(new ConfigModule(), new DaoModule(), new Model2Module(), new ServiceModule());
+        Properties properties = new Properties();
+
+        try {
+            properties.load(new FileReader("app.properties"));
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        Injector injector = Guice.createInjector(new PropertiesModule(properties), new DaoModule(properties), new Model2Module(), new ServiceModule());
         final List<Service> services = Lists.newLinkedList();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -73,5 +78,7 @@ public class App {
         }
 
         int x = 1;
+
+        System.exit(1);
     }
 }
