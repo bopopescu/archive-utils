@@ -1,5 +1,6 @@
 package com.lockerz.meatshop.service;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.lockerz.meatshop.model.Shop;
 import com.lockerz.meatshop.model.User;
 
@@ -14,4 +15,6 @@ public interface ShopService {
                          final String password);
 
     public Shop newShop(final String name);
+
+    public ListenableFuture<Shop> newShopLF(final String name);
 }
