@@ -11,6 +11,11 @@ import com.lockerz.meatshop.model.User;
 public interface ShopService {
     public int getMaxPrice();
 
+    public User findUserByEmail(final String email);
+
+    public User login(final String email,
+                      final String password);
+
     public User register(final String email,
                          final String password);
 

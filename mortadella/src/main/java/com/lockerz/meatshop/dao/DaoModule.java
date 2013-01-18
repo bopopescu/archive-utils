@@ -1,7 +1,7 @@
 package com.lockerz.meatshop.dao;
 
 import com.google.inject.PrivateModule;
-import com.google.inject.persist.jpa.JpaPersistModule;
+import com.lockerz.meatshop.jpa.JpaProviderServiceModule;
 
 import java.util.Properties;
 
@@ -31,17 +31,24 @@ public class DaoModule extends PrivateModule {
         jpaProps.put("openjpa.QueryCache", "true");
         jpaProps.put("openjpa.RemoteCommitProvider", "sjvm");
 
+        /*
         JpaPersistModule jpaPersistModule = new JpaPersistModule("meatshop");
         jpaPersistModule.properties(jpaProps);
         install(jpaPersistModule);
 
         bind(JpaInitializer.class).asEagerSingleton();
+        */
 
-        bind(ShopDao.class).to(ShopDaoImpl.class).asEagerSingleton();
-        expose(ShopDao.class);
+        JpaProviderServiceModule jpa = new JpaProviderServiceModule("meatshop", jpaProps);
+        install(jpa);
+
+        bind(JpaInitializer.class).asEagerSingleton();
 
         bind(UserDao.class).to(UserDaoImpl.class).asEagerSingleton();
         expose(UserDao.class);
+
+        bind(ShopDao.class).to(ShopDaoImpl.class).asEagerSingleton();
+        expose(ShopDao.class);
 
         // Binding via a Provider will produce a non-AOP-wrapped UserDao bean.
         //bind(UserDao.class).toProvider(UserDaoProvider.class).asEagerSingleton();

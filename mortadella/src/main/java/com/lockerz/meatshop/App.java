@@ -1,15 +1,12 @@
 package com.lockerz.meatshop;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.lockerz.meatshop.dao.DaoModule;
-import com.lockerz.meatshop.model.Shop;
 import com.lockerz.meatshop.model.User;
-import com.lockerz.meatshop.model2.Address;
 import com.lockerz.meatshop.model2.AddressDao;
 import com.lockerz.meatshop.model2.Model2Module;
 import com.lockerz.meatshop.service.ServiceModule;
@@ -34,7 +31,7 @@ public class App {
             ex.printStackTrace();
         }
 
-        Injector injector = Guice.createInjector(new PropertiesModule(properties), new DaoModule(properties), new Model2Module(), new ServiceModule());
+        Injector injector = Guice.createInjector(new AppModule(properties), new DaoModule(properties), new ServiceModule());
         final List<Service> services = Lists.newLinkedList();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -63,12 +60,18 @@ public class App {
         }
 
         ShopService shopService = injector.getInstance(ShopService.class);
-        AddressDao addrDao = injector.getInstance(AddressDao.class);
+        User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
-        User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
-        Address addr = addrDao.newAddress("100 S. King St..", "Seattle");
-        ListenableFuture<Shop> shopLF = shopService.newShopLF("Long Duck Dong Meats");
 
+        int x = 1;
+
+        //AddressDao addrDao = injector.getInstance(AddressDao.class);
+
+        //User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
+        //Address addr = addrDao.newAddress("100 S. King St..", "Seattle");
+        //ListenableFuture<Shop> shopLF = shopService.newShopLF("Long Duck Dong Meats");
+
+        /*
         try {
             Shop shop = shopLF.get();
             int x = 1;
@@ -76,8 +79,7 @@ public class App {
         catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        int x = 1;
+        */
 
         System.exit(1);
     }

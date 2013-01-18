@@ -1,7 +1,7 @@
 package com.lockerz.meatshop.dao;
 
 import com.google.inject.Inject;
-import com.google.inject.persist.PersistService;
+import com.lockerz.meatshop.jpa.JpaProviderService;
 
 /**
  * See:
@@ -13,8 +13,13 @@ import com.google.inject.persist.PersistService;
  */
 public class JpaInitializer {
     @Inject
-    JpaInitializer(final PersistService service) {
+    JpaInitializer(final JpaProviderService jpaProviderService) {
         // This bootstrap's JPA.
-        service.start();
+        try {
+            jpaProviderService.start().get();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

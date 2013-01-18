@@ -10,6 +10,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.lockerz.meatshop.dao.ShopDao;
 import com.lockerz.meatshop.dao.UserDao;
+import com.lockerz.meatshop.jpa.JpaContextAware;
 import com.lockerz.meatshop.model.Shop;
 import com.lockerz.meatshop.model.User;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1/16/13 9:34 AM
  */
 @Singleton
+@JpaContextAware
 public class ShopServiceImpl extends AbstractIdleService implements ShopService {
     private ListeningExecutorService _executorService;
     private int _executorMaxThreads;
@@ -48,8 +50,26 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
     }
 
     @Override
+    public User findUserByEmail(final String email) {
+        return _userDao.findUserByEmail(email);
+    }
+
+    @Override
+    public User login(final String email,
+                      final String password) {
+        User user = _userDao.findUserForLogin(email, password);
+        return user;
+    }
+
+    @Override
     public User register(final String email,
                          final String password) {
+        User tmpUser = findUserByEmail(email);
+
+        if (tmpUser != null) {
+            throw new RuntimeException("User already registered: "  + email);
+        }
+
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);

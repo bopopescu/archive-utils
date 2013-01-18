@@ -1,7 +1,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
   <persistence-unit name="default">
     <mapping-file>com/lockerz/meatshop/model/orm.xml</mapping-file>
-    <mapping-file>com/lockerz/meatshop/model2/orm.xml</mapping-file>
+    <!-- <mapping-file>com/lockerz/meatshop/model2/orm.xml</mapping-file> -->
   </persistence-unit>
   <persistence-unit name="meatshop" transaction-type="RESOURCE_LOCAL">
     <mapping-file>com/lockerz/meatshop/model/orm.xml</mapping-file>
@@ -21,6 +21,7 @@
     </properties>
     -->
   </persistence-unit>
+  <!--
   <persistence-unit name="model2" transaction-type="RESOURCE_LOCAL">
     <mapping-file>com/lockerz/meatshop/model2/orm.xml</mapping-file>
     <properties>
@@ -37,4 +38,5 @@
       <property name="openjpa.RemoteCommitProvider" value="sjvm"/>
     </properties>
   </persistence-unit>
+  -->
 </persistence>
