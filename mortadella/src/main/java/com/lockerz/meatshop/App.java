@@ -15,6 +15,8 @@ import com.lockerz.meatshop.service.shop.ShopServiceModule;
 import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
 import com.lockerz.meatshop.service.shop.model.User;
 import com.lockerz.meatshop.service.shop.ShopService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.util.List;
@@ -25,6 +27,8 @@ import java.util.Properties;
  * @version 1/15/13 1:08 PM
  */
 public class App {
+    private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
+
     public static void main(final String[] args) {
         Properties properties = new Properties();
 
@@ -47,15 +51,14 @@ public class App {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.out.println("App is shutting down.");
+                LOGGER.info("App is shutting down.");
 
                 for (Service service : services) {
                     try {
                         service.stop();
                     }
                     catch (Exception ex) {
-                        System.out.println("Error stopping service: " + service.getClass());
-                        ex.printStackTrace();
+                        LOGGER.error("Error stopping service: " + service, ex);
                     }
                 }
             }

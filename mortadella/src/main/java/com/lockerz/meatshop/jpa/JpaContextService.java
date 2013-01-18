@@ -87,8 +87,6 @@ public class JpaContextService {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("enterContext: refCount={}, boundary={}", refCount, boundary);
         }
-
-        System.out.println("enterContext: refCount=" + refCount + ", boundary=" + boundary.toString());
     }
 
     public void exitContext(final Object boundary) {
@@ -98,8 +96,6 @@ public class JpaContextService {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("exitContext(): refCount={}, boundary={}", refCount, boundary);
         }
-
-        System.out.println("exitContext: refCount=" + refCount + ", boundary=" + boundary);
 
         if (refCount == 0) {
             Map<EntityManagerFactory, EntityManager> threadLocals = threadLocalContext.getEntityManagerFactories();
