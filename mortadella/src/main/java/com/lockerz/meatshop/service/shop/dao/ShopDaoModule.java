@@ -24,7 +24,7 @@ public class ShopDaoModule extends PrivateModule {
         jpaProps.put("openjpa.ConnectionUserName", _properties.get("user.dao.username"));
         jpaProps.put("openjpa.ConnectionPassword", _properties.get("user.dao.password"));
         jpaProps.put("openjpa.jdbc.DBDictionary", "mysql");
-        jpaProps.put("openjpa.Log", "DefaultLevel=TRACE");
+        jpaProps.put("openjpa.Log", "slf4j");
         jpaProps.put("openjpa.ConnectionFactoryProperties", "PrintParameters=true");
         jpaProps.put("openjpa.ConnectionProperties", _properties.get("user.dao.connectionProps"));
         jpaProps.put("openjpa.DataCache", "true");

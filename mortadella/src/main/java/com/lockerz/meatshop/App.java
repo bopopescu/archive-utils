@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.lockerz.meatshop.jpa.JpaContextService;
 import com.lockerz.meatshop.service.address.AddressService;
 import com.lockerz.meatshop.service.address.AddressServiceModule;
 import com.lockerz.meatshop.service.address.dao.AddressDao;
@@ -68,13 +69,22 @@ public class App {
             }
         }
 
-        ShopService shopService = injector.getInstance(ShopService.class);
-        User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
+        Object boundary = new Object();
+        JpaContextService jpaContextService = injector.getInstance(JpaContextService.class);
+        //jpaContextService.enterContext(boundary);
 
-        AddressService addressService = injector.getInstance(AddressService.class);
-        Address addr = addressService.newAddress("100 S. King St..", "Seattle");
+        try {
+            ShopService shopService = injector.getInstance(ShopService.class);
+            User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
-        int x = 1;
+            AddressService addressService = injector.getInstance(AddressService.class);
+            Address addr = addressService.newAddress("100 S. King St..", "Seattle");
+
+            int x = 1;
+        }
+        finally {
+            //jpaContextService.exitContext(boundary);
+        }
 
         //User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
         //ListenableFuture<Shop> shopLF = shopService.newShopLF("Long Duck Dong Meats");
