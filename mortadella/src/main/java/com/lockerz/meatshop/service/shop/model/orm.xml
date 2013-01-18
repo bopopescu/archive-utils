@@ -1,6 +1,6 @@
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" version="2.0">
 
-  <entity class="com.lockerz.meatshop.model.User" access="FIELD">
+  <entity class="com.lockerz.meatshop.service.shop.model.User" access="FIELD">
     <table name="user"/>
     <attributes>
       <id name="_id">
@@ -16,7 +16,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.lockerz.meatshop.model.Meat" access="FIELD">
+  <entity class="com.lockerz.meatshop.service.shop.model.Meat" access="FIELD">
     <table name="meat"/>
     <attributes>
       <id name="_id">
@@ -35,7 +35,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.lockerz.meatshop.model.Shop" access="FIELD">
+  <entity class="com.lockerz.meatshop.service.shop.model.Shop" access="FIELD">
     <table name="shop"/>
     <attributes>
       <id name="_id">

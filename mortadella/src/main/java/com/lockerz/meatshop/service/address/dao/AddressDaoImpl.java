@@ -1,9 +1,11 @@
-package com.lockerz.meatshop.model2;
+package com.lockerz.meatshop.service.address.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
+import com.lockerz.meatshop.jpa.JpaTransactional;
+import com.lockerz.meatshop.service.address.model.Address;
 
 import javax.persistence.EntityManager;
 
@@ -12,6 +14,7 @@ import javax.persistence.EntityManager;
  * @version 1/17/13 9:06 AM
  */
 @Singleton
+@JpaTransactional
 public class AddressDaoImpl implements AddressDao {
     @Inject
     private Provider<EntityManager> _em;

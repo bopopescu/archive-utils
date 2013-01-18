@@ -1,4 +1,4 @@
-package com.lockerz.meatshop.dao;
+package com.lockerz.meatshop.service.address.dao;
 
 import com.google.inject.Inject;
 import com.lockerz.meatshop.jpa.JpaProviderService;

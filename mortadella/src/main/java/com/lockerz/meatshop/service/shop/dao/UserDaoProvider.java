@@ -1,4 +1,4 @@
-package com.lockerz.meatshop.dao;
+package com.lockerz.meatshop.service.shop.dao;
 
 import com.google.inject.Provider;
 

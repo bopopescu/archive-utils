@@ -1,4 +1,4 @@
-package com.lockerz.meatshop.service;
+package com.lockerz.meatshop.service.shop;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -8,11 +8,11 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.lockerz.meatshop.dao.ShopDao;
-import com.lockerz.meatshop.dao.UserDao;
+import com.lockerz.meatshop.service.shop.dao.ShopDao;
+import com.lockerz.meatshop.service.shop.dao.UserDao;
 import com.lockerz.meatshop.jpa.JpaContextAware;
-import com.lockerz.meatshop.model.Shop;
-import com.lockerz.meatshop.model.User;
+import com.lockerz.meatshop.service.shop.model.Shop;
+import com.lockerz.meatshop.service.shop.model.User;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;

@@ -1,6 +1,6 @@
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" version="2.0">
 
-  <entity class="com.lockerz.meatshop.model2.Address" access="FIELD">
+  <entity class="com.lockerz.meatshop.service.address.model.Address" access="FIELD">
     <table name="address"/>
     <attributes>
       <id name="_id">

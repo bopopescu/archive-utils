@@ -1,4 +1,4 @@
-package com.lockerz.meatshop.model;
+package com.lockerz.meatshop.service.shop.model;
 
 import com.google.common.collect.Lists;
 

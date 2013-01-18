@@ -1,4 +1,6 @@
-package com.lockerz.meatshop.model2;
+package com.lockerz.meatshop.service.address.dao;
+
+import com.lockerz.meatshop.service.address.model.Address;
 
 /**
  * @author Brian Gebala

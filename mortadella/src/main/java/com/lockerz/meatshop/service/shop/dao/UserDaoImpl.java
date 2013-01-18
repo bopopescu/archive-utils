@@ -1,12 +1,11 @@
-package com.lockerz.meatshop.dao;
+package com.lockerz.meatshop.service.shop.dao;
 
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import com.google.inject.persist.Transactional;
 import com.lockerz.meatshop.jpa.JpaTransactional;
-import com.lockerz.meatshop.model.User;
+import com.lockerz.meatshop.service.shop.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

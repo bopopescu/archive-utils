@@ -1,6 +1,6 @@
-package com.lockerz.meatshop.dao;
+package com.lockerz.meatshop.service.shop.dao;
 
-import com.lockerz.meatshop.model.User;
+import com.lockerz.meatshop.service.shop.model.User;
 
 /**
  * @author Brian Gebala

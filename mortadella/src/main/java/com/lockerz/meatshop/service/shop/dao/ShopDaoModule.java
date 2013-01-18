@@ -1,4 +1,4 @@
-package com.lockerz.meatshop.dao;
+package com.lockerz.meatshop.service.shop.dao;
 
 import com.google.inject.PrivateModule;
 import com.lockerz.meatshop.jpa.JpaProviderServiceModule;
@@ -9,10 +9,10 @@ import java.util.Properties;
  * @author Brian Gebala
  * @version 1/15/13 1:38 PM
  */
-public class DaoModule extends PrivateModule {
+public class ShopDaoModule extends PrivateModule {
     private Properties _properties;
 
-    public DaoModule(final Properties properties) {
+    public ShopDaoModule(final Properties properties) {
         _properties = properties;
     }
 
@@ -30,14 +30,6 @@ public class DaoModule extends PrivateModule {
         jpaProps.put("openjpa.DataCache", "true");
         jpaProps.put("openjpa.QueryCache", "true");
         jpaProps.put("openjpa.RemoteCommitProvider", "sjvm");
-
-        /*
-        JpaPersistModule jpaPersistModule = new JpaPersistModule("meatshop");
-        jpaPersistModule.properties(jpaProps);
-        install(jpaPersistModule);
-
-        bind(JpaInitializer.class).asEagerSingleton();
-        */
 
         JpaProviderServiceModule jpa = new JpaProviderServiceModule("meatshop", jpaProps);
         install(jpa);

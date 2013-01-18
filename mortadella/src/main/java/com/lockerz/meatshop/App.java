@@ -5,12 +5,15 @@ import com.google.common.util.concurrent.Service;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.lockerz.meatshop.dao.DaoModule;
-import com.lockerz.meatshop.model.User;
-import com.lockerz.meatshop.model2.AddressDao;
-import com.lockerz.meatshop.model2.Model2Module;
-import com.lockerz.meatshop.service.ServiceModule;
-import com.lockerz.meatshop.service.ShopService;
+import com.lockerz.meatshop.service.address.AddressService;
+import com.lockerz.meatshop.service.address.AddressServiceModule;
+import com.lockerz.meatshop.service.address.dao.AddressDao;
+import com.lockerz.meatshop.service.address.dao.AddressDaoModule;
+import com.lockerz.meatshop.service.address.model.Address;
+import com.lockerz.meatshop.service.shop.ShopServiceModule;
+import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
+import com.lockerz.meatshop.service.shop.model.User;
+import com.lockerz.meatshop.service.shop.ShopService;
 
 import java.io.FileReader;
 import java.util.List;
@@ -31,7 +34,13 @@ public class App {
             ex.printStackTrace();
         }
 
-        Injector injector = Guice.createInjector(new AppModule(properties), new DaoModule(properties), new ServiceModule());
+        Injector injector = Guice.createInjector(
+                new AppModule(properties),
+                new AddressDaoModule(properties),
+                new AddressServiceModule(),
+                new ShopDaoModule(properties),
+                new ShopServiceModule());
+
         final List<Service> services = Lists.newLinkedList();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -62,13 +71,12 @@ public class App {
         ShopService shopService = injector.getInstance(ShopService.class);
         User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
+        AddressService addressService = injector.getInstance(AddressService.class);
+        Address addr = addressService.newAddress("100 S. King St..", "Seattle");
 
         int x = 1;
 
-        //AddressDao addrDao = injector.getInstance(AddressDao.class);
-
         //User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
-        //Address addr = addrDao.newAddress("100 S. King St..", "Seattle");
         //ListenableFuture<Shop> shopLF = shopService.newShopLF("Long Duck Dong Meats");
 
         /*

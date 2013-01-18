@@ -1,8 +1,8 @@
-package com.lockerz.meatshop.service;
+package com.lockerz.meatshop.service.shop;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.lockerz.meatshop.model.Shop;
-import com.lockerz.meatshop.model.User;
+import com.lockerz.meatshop.service.shop.model.Shop;
+import com.lockerz.meatshop.service.shop.model.User;
 
 /**
  * @author Brian Gebala
