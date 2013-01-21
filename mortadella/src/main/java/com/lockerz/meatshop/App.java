@@ -11,6 +11,7 @@ import com.lockerz.meatshop.service.address.AddressServiceModule;
 import com.lockerz.meatshop.service.address.dao.AddressDao;
 import com.lockerz.meatshop.service.address.dao.AddressDaoModule;
 import com.lockerz.meatshop.service.address.model.Address;
+import com.lockerz.meatshop.service.rest.JettyServerServiceModule;
 import com.lockerz.meatshop.service.shop.ShopServiceModule;
 import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
 import com.lockerz.meatshop.service.shop.model.User;
@@ -43,6 +44,7 @@ public class App {
                 new AppModule(properties),
                 new AddressDaoModule(properties),
                 new AddressServiceModule(),
+                new JettyServerServiceModule(),
                 new ShopDaoModule(properties),
                 new ShopServiceModule());
 
@@ -79,11 +81,14 @@ public class App {
         try {
             ShopService shopService = injector.getInstance(ShopService.class);
             User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
+            user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
-            AddressService addressService = injector.getInstance(AddressService.class);
-            Address addr = addressService.newAddress("100 S. King St..", "Seattle");
+            jpaContextService.flushDataCaches();
 
-            int x = 1;
+            user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
+
+            //AddressService addressService = injector.getInstance(AddressService.class);
+            //Address addr = addressService.newAddress("100 S. King St..", "Seattle");
         }
         finally {
             //jpaContextService.exitContext(boundary);
@@ -102,6 +107,6 @@ public class App {
         }
         */
 
-        System.exit(1);
+        //System.exit(1);
     }
 }
