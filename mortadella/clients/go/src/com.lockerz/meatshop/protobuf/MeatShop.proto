@@ -1,0 +1,13 @@
+package pbs;
+
+message Meat {
+  required int64 id = 1;
+  optional string name = 2;
+  optional int64 expirationDate = 3;
+  optional int32 priceCents = 4;
+  repeated string pictureUrls = 5;
+}
+
+message ListMeatsResponse {
+  repeated Meat meats = 1;
+}
