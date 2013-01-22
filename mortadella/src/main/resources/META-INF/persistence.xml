@@ -1,12 +1,10 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
-  <persistence-unit name="default">
-    <mapping-file>com/lockerz/meatshop/service/address/model/orm.xml</mapping-file>
-    <mapping-file>com/lockerz/meatshop/service/shop/model/orm.xml</mapping-file>
-  </persistence-unit>
   <persistence-unit name="address" transaction-type="RESOURCE_LOCAL">
-    <mapping-file>com/lockerz/meatshop/service/address/model/orm.xml</mapping-file>
+    <class>com.lockerz.meatshop.service.address.model.Address</class>
   </persistence-unit>
   <persistence-unit name="meatshop" transaction-type="RESOURCE_LOCAL">
-    <mapping-file>com/lockerz/meatshop/service/shop/model/orm.xml</mapping-file>
+    <class>com.lockerz.meatshop.service.shop.model.Meat</class>
+    <class>com.lockerz.meatshop.service.shop.model.Shop</class>
+    <class>com.lockerz.meatshop.service.shop.model.User</class>
   </persistence-unit>
 </persistence>
