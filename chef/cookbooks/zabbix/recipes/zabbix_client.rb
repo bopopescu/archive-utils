@@ -65,6 +65,16 @@ if(node[:platform] == "ubuntu")
 #       ignore_failure true
 #   end
 
+# Zabbix upstart script
+  cookbook_file "/etc/init/zabbix-agent.conf" do
+     mode "0644"
+     owner "zabbix_agent"
+     group "zabbix_agent"
+     source "zabbix/zabbix-agent.conf"
+     # notifies :restart, resources(:service => "zabbix-client")
+  end
+
+# Zabbix binaries 
   cookbook_file "/opt/zabbix/sbin/zabbix_agentd" do
      mode "0755"
      owner "zabbix_agent"
@@ -87,6 +97,7 @@ if(node[:platform] == "ubuntu")
      source "zabbix/zabbix_get"
   end
 
+# Zabbix config - specifies zabbix server ip 
   cookbook_file "/usr/local/etc/zabbix_agentd.conf" do
      mode "0644"
      owner "zabbix_agent"
