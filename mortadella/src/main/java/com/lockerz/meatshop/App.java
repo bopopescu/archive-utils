@@ -6,14 +6,11 @@ import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.lockerz.meatshop.jpa.JpaContextService;
-import com.lockerz.meatshop.service.address.AddressService;
 import com.lockerz.meatshop.service.address.AddressServiceModule;
 import com.lockerz.meatshop.service.address.dao.AddressDaoModule;
-import com.lockerz.meatshop.service.address.model.Address;
-import com.lockerz.meatshop.service.shop.ShopService;
+import com.lockerz.meatshop.service.rest.JettyServerServiceModule;
 import com.lockerz.meatshop.service.shop.ShopServiceModule;
 import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
-import com.lockerz.meatshop.service.shop.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +20,8 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+
 
 /**
  * @author Brian Gebala
@@ -108,6 +107,7 @@ public class App {
                 new AppModule(properties),
                 new AddressDaoModule(properties),
                 new AddressServiceModule(),
+                new JettyServerServiceModule(),
                 new ShopDaoModule(properties),
                 new ShopServiceModule());
 
@@ -126,33 +126,8 @@ public class App {
 
         Object boundary = new Object();
         JpaContextService jpaContextService = injector.getInstance(JpaContextService.class);
-        //jpaContextService.enterContext(boundary);
 
-        try {
-            ShopService shopService = injector.getInstance(ShopService.class);
-            User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
-            AddressService addressService = injector.getInstance(AddressService.class);
-            Address addr = addressService.newAddress("100 S. King St..", "Seattle");
-
-            int x = 1;
-        }
-        finally {
-            //jpaContextService.exitContext(boundary);
-        }
-
-        //User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
-        //ListenableFuture<Shop> shopLF = shopService.newShopLF("Long Duck Dong Meats");
-
-        /*
-        try {
-            Shop shop = shopLF.get();
-            int x = 1;
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        */
 
         try {
             services.getShutdownLatch().await();

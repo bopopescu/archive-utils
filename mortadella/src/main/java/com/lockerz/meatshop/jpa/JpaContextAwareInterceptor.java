@@ -14,7 +14,7 @@ public class JpaContextAwareInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
         // Ideally the enter/exit boundary would be methodInvocation.getThis(), but
-        // that AOP Alliance object has some bizarre toString() behavior.
+        // that AOP Alliance object has some bizarre toString() behavior (blows the stack).
 
         _jpaContext.enterContext(methodInvocation.getMethod().getDeclaringClass());
 

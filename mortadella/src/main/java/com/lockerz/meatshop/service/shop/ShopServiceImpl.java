@@ -13,6 +13,8 @@ import com.lockerz.meatshop.service.shop.dao.UserDao;
 import com.lockerz.meatshop.jpa.JpaContextAware;
 import com.lockerz.meatshop.service.shop.model.Shop;
 import com.lockerz.meatshop.service.shop.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -25,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 @JpaContextAware
 public class ShopServiceImpl extends AbstractIdleService implements ShopService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ShopServiceImpl.class);
+
     private ListeningExecutorService _executorService;
     private int _executorMaxThreads;
     private int _executorShutdownSeconds;
@@ -58,6 +62,9 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
     public User login(final String email,
                       final String password) {
         User user = _userDao.findUserForLogin(email, password);
+
+        LOGGER.debug("login() successful: email={}", email);
+
         return user;
     }
 
@@ -75,6 +82,8 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
         user.setPassword(password);
 
         _userDao.persistUser(user);
+
+        LOGGER.debug("register() successful: email={}", email);
 
         return user;
     }
