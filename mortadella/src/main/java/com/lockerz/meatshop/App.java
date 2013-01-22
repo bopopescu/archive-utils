@@ -5,18 +5,11 @@ import com.google.common.util.concurrent.Service;
 import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.lockerz.meatshop.jpa.JpaContextService;
-import com.lockerz.meatshop.service.address.AddressService;
 import com.lockerz.meatshop.service.address.AddressServiceModule;
 import com.lockerz.meatshop.service.address.dao.AddressDaoModule;
-import com.lockerz.meatshop.service.address.model.Address;
 import com.lockerz.meatshop.service.rest.JettyServerServiceModule;
-import com.lockerz.meatshop.service.shop.ShopService;
 import com.lockerz.meatshop.service.shop.ShopServiceModule;
 import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
-import com.lockerz.meatshop.service.shop.model.Meat;
-import com.lockerz.meatshop.service.shop.model.Shop;
-import com.lockerz.meatshop.service.shop.model.User;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.util.Options;
 import org.slf4j.Logger;
@@ -28,9 +21,6 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-
-
 
 /**
  * @author Brian Gebala
