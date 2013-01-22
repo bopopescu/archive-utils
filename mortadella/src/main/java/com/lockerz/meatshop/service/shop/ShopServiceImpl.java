@@ -16,6 +16,7 @@ import com.lockerz.meatshop.service.shop.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +102,11 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
                 return newShop(name);
             }
         });
+    }
+
+    @Override
+    public List<Shop> findAllShops() {
+        return _shopDao.findAllShops();
     }
 
     @Override

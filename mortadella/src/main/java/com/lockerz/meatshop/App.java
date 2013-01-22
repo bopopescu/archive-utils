@@ -14,6 +14,8 @@ import com.lockerz.meatshop.service.address.model.Address;
 import com.lockerz.meatshop.service.rest.JettyServerServiceModule;
 import com.lockerz.meatshop.service.shop.ShopServiceModule;
 import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
+import com.lockerz.meatshop.service.shop.model.Meat;
+import com.lockerz.meatshop.service.shop.model.Shop;
 import com.lockerz.meatshop.service.shop.model.User;
 import com.lockerz.meatshop.service.shop.ShopService;
 import org.slf4j.Logger;
@@ -76,10 +78,18 @@ public class App {
 
         Object boundary = new Object();
         JpaContextService jpaContextService = injector.getInstance(JpaContextService.class);
-        //jpaContextService.enterContext(boundary);
+        jpaContextService.enterContext(boundary);
 
         try {
             ShopService shopService = injector.getInstance(ShopService.class);
+
+            for (Shop shop : shopService.findAllShops()) {
+                System.out.println(shop.getName());
+                for (Meat meat : shop.getMeats()) {
+                    System.out.println(" " + meat.getName());
+                }
+            }
+
             User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
             user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
@@ -87,11 +97,11 @@ public class App {
 
             user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
 
-            //AddressService addressService = injector.getInstance(AddressService.class);
-            //Address addr = addressService.newAddress("100 S. King St..", "Seattle");
+            AddressService addressService = injector.getInstance(AddressService.class);
+            Address addr = addressService.newAddress("100 S. King St..", "Seattle");
         }
         finally {
-            //jpaContextService.exitContext(boundary);
+            jpaContextService.exitContext(boundary);
         }
 
         //User user = shopService.register("guacimo@eataly.com", "iLuvMeaT");
