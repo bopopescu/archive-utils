@@ -1,0 +1,28 @@
+package api
+
+import (
+	"com.lockerz/meatshop/pbs"
+	"code.google.com/p/goprotobuf/proto"
+	"time"
+)
+
+
+
+func GetMeats() (chan *pbs.ListMeatsResponse) {
+	c := make(chan *pbs.ListMeatsResponse)
+
+	go func() {		
+		c <- GetMeatsSync()
+	}()
+	
+	return c
+}
+
+func GetMeatsSync() (*pbs.ListMeatsResponse) {
+	time.Sleep(300 * time.Millisecond)
+	return &pbs.ListMeatsResponse{
+	Meats:[]*pbs.Meat{ 
+			&pbs.Meat{Name:proto.String("ham")},
+			&pbs.Meat{Name:proto.String("salami")}},}
+	
+}

@@ -1,0 +1,15 @@
+{{ define `title` }} Login {{ end }}
+{{ define `stylesheets` }}
+	 {{ require_css "/static/css/login.css" }}
+{{ end }}
+{{ define `contents` }}
+	 <form class="form-signin" method="POST" action="{{ url_to `user.login` }}">
+	 			 <h2 class="form-signin-heading">Please sign in</h2>
+				 <input name="Email" type="text" class="input-block-level" placeholder="Email address">
+				 <input name="Password" type="password" class="input-block-level" placeholder="Password">
+         <label class="checkbox">
+           <input type="checkbox" value="remember-me">Remember me
+         </label>
+         <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+   </form>
+{{ end }}				
