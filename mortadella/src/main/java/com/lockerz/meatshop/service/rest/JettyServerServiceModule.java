@@ -11,7 +11,7 @@ public class JettyServerServiceModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        //bind(AdminHandlerProvider.class).asEagerSingleton();
+        bind(AdminHandlerProvider.class).asEagerSingleton();
         bind(Handler.class).annotatedWith(AdminHandler.class).toProvider(AdminHandlerProvider.class);
         bind(RestHandlerProvider.class).asEagerSingleton();
         bind(Handler.class).annotatedWith(RestHandler.class).toProvider(RestHandlerProvider.class);
