@@ -14,7 +14,7 @@ import javax.persistence.Version;
  * @version 1/15/13 1:09 PM
  */
 @Entity
-@Table(name = "user")
+@Table(name = "shop_user")
 public class User {
     @Id
     @Column(name = "id")

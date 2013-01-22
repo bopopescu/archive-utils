@@ -17,6 +17,8 @@ import com.lockerz.meatshop.service.shop.dao.ShopDaoModule;
 import com.lockerz.meatshop.service.shop.model.Meat;
 import com.lockerz.meatshop.service.shop.model.Shop;
 import com.lockerz.meatshop.service.shop.model.User;
+import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.lib.util.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,23 +41,28 @@ public class App {
     public static class Services implements Service.Listener {
         public static class ShutdownThread extends Thread {
             private Services _services;
+
             public ShutdownThread(final Services services) {
                 super("Service Shutdown Thread");
                 _services = services;
             }
+
             @Override
             public void run() {
                 _services.shutdown();
             }
         }
+
         private ExecutorService _executor;
         private CountDownLatch _shutdownLatch;
         private List<Service>_services;
+
         public Services(List<Service> services) {
             _shutdownLatch = new CountDownLatch(services.size());
             _services = services;
             _executor = Executors.newSingleThreadExecutor();
-            for(Service s : _services) {
+
+            for (Service s : _services) {
                 s.addListener(this, _executor);
             }
         }
@@ -73,15 +80,18 @@ public class App {
         public void terminated(Service.State state) {
             _shutdownLatch.countDown();
         }
+
         @Override
         public void failed(Service.State state, Throwable throwable) {
             _shutdownLatch.countDown();
         }
+
         public void start() {
             for(Service s : _services) {
                 s.startAndWait();
             }
         }
+
         public void shutdown() {
             for(Service s : _services) {
                 s.stop();
@@ -95,12 +105,11 @@ public class App {
         public CountDownLatch getShutdownLatch() {
             return _shutdownLatch;
         }
-
-
-
-
     }
+
     public static void main(final String[] args) {
+        PCEnhancer.run(new String[]{}, new Options());
+
         Properties properties = new Properties();
 
         try {
@@ -127,40 +136,10 @@ public class App {
 
             }
         }
+
         Services services = new Services(s);
         services.start();
         Runtime.getRuntime().addShutdownHook(services.shutdownThread());
-
-        Object boundary = new Object();
-        JpaContextService jpaContextService = injector.getInstance(JpaContextService.class);
-
-        jpaContextService.enterContext(boundary);
-
-        try {
-            ShopService shopService = injector.getInstance(ShopService.class);
-
-            for (Shop shop : shopService.findAllShops()) {
-                System.out.println(shop.getName());
-                for (Meat meat : shop.getMeats()) {
-                    System.out.println(" " + meat.getName());
-                }
-            }
-
-            User user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
-            user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
-
-            jpaContextService.flushDataCaches();
-
-            user = shopService.login("guacimo@eataly.com", "iLuvMeaT");
-
-            AddressService addressService = injector.getInstance(AddressService.class);
-            Address addr = addressService.newAddress("100 S. King St..", "Seattle");
-        }
-        finally {
-            jpaContextService.exitContext(boundary);
-        }
-
-
 
         try {
             services.getShutdownLatch().await();
@@ -169,6 +148,5 @@ public class App {
             LOGGER.error("Shutdown was interrupted");
             System.exit(2);
         }
-
     }
 }

@@ -20,11 +20,11 @@ public class AddressDaoModule extends PrivateModule {
     @Override
     protected void configure() {
         Properties jpaProps = new Properties();
-        jpaProps.put("openjpa.ConnectionDriverName", "com.mysql.jdbc.Driver");
+        jpaProps.put("openjpa.ConnectionDriverName", "org.postgresql.Driver");
         jpaProps.put("openjpa.ConnectionURL", _properties.get("address.dao.dbUrl"));
         jpaProps.put("openjpa.ConnectionUserName", _properties.get("address.dao.username"));
         jpaProps.put("openjpa.ConnectionPassword", _properties.get("address.dao.password"));
-        jpaProps.put("openjpa.jdbc.DBDictionary", "mysql");
+        jpaProps.put("openjpa.jdbc.DBDictionary", "postgres");
         jpaProps.put("openjpa.Log", "slf4j");
         jpaProps.put("openjpa.ConnectionFactoryProperties", "PrintParameters=true");
         jpaProps.put("openjpa.ConnectionProperties", _properties.get("address.dao.connectionProps"));
