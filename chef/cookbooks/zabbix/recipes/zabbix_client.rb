@@ -32,8 +32,8 @@ if(node[:platform] == "ubuntu")
   # Create root folders
   root_dirs.each do |dir|
     directory dir do
-      owner "zabbix_agent"
-      group "zabbix_agent"
+      owner "zabbix"
+      group "zabbix"
       mode "755"
       recursive true
     end
@@ -68,8 +68,8 @@ if(node[:platform] == "ubuntu")
 # Zabbix upstart script
   cookbook_file "/etc/init/zabbix-agent.conf" do
      mode "0644"
-     owner "zabbix_agent"
-     group "zabbix_agent"
+     owner "zabbix"
+     group "zabbix"
      source "zabbix/zabbix-agent.conf"
      # notifies :restart, resources(:service => "zabbix-client")
   end
@@ -77,31 +77,31 @@ if(node[:platform] == "ubuntu")
 # Zabbix binaries 
   cookbook_file "/opt/zabbix/sbin/zabbix_agentd" do
      mode "0755"
-     owner "zabbix_agent"
-     group "zabbix_agent"
+     owner "zabbix"
+     group "zabbix"
      source "zabbix/zabbix_agentd"
      # notifies :restart, resources(:service => "zabbix-client")
   end
 
   cookbook_file "/opt/zabbix/bin/zabbix_sender" do
      mode "0755"
-     owner "zabbix_agent"
-     group "zabbix_agent"
+     owner "zabbix"
+     group "zabbix"
      source "zabbix/zabbix_sender"
   end
 
   cookbook_file "/opt/zabbix/bin/zabbix_get" do
      mode "0755"
-     owner "zabbix_agent"
-     group "zabbix_agent"
+     owner "zabbix"
+     group "zabbix"
      source "zabbix/zabbix_get"
   end
 
 # Zabbix config - specifies zabbix server ip 
   cookbook_file "/usr/local/etc/zabbix_agentd.conf" do
      mode "0644"
-     owner "zabbix_agent"
-     group "zabbix_agent"
+     owner "zabbix"
+     group "zabbix"
      source "zabbix/zabbix_agentd.conf"
      # notifies :restart, resources(:service => "zabbix-client")
   end

@@ -27,8 +27,8 @@ default['zabbix']['src_dir'] = "/opt"
 default['zabbix']['log_dir'] = "/var/log/zabbix"
 default['zabbix']['run_dir'] = "/var/run/zabbix"
 
-default['zabbix']['login'] = "zabbix_agent"
-default['zabbix']['group'] = "zabbix_agent"
+default['zabbix']['login'] = "zabbix"
+default['zabbix']['group'] = "zabbix"
 default['zabbix']['uid'] = nil
 default['zabbix']['gid'] = nil
 default['zabbix']['home'] = '/opt/zabbix'
