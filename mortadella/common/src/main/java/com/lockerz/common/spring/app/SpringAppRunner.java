@@ -32,7 +32,6 @@ public class SpringAppRunner {
         long beforeSpring = System.currentTimeMillis();
         final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
 
-        //ctx.registerShutdownHook();
         ctx.setConfigLocations(_contextFiles);
         ctx.refresh();
 
