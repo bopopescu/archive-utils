@@ -9,6 +9,7 @@
   </appender>
 
   <logger name="openjpa.Query" level="TRACE"/>
+  <logger name="openjpa.Runtime" level="INFO"/>
   <logger name="openjpa.jdbc.SQL" level="TRACE"/>
 
   <root level="INFO">
