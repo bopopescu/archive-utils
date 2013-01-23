@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+  <aop:config>
+    <aop:aspect id="service.jpaContextLifecycle" ref="service.jpaContext">
+      <aop:pointcut id="annotatedClass" expression="within(@com.lockerz.common.spring.jpa.JpaContextAware *) and this(boundary)"/>
+      <aop:before method="enterContext" pointcut-ref="annotatedClass" arg-names="boundary"/>
+      <aop:after method="exitContext" pointcut-ref="annotatedClass" arg-names="boundary"/>
+    </aop:aspect>
+  </aop:config>
+
+</beans>

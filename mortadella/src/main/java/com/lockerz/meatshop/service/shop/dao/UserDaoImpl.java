@@ -1,35 +1,30 @@
 package com.lockerz.meatshop.service.shop.dao;
 
 import com.google.common.collect.Iterables;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.lockerz.meatshop.jpa.JpaTransactional;
 import com.lockerz.meatshop.service.shop.model.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
  * @author Brian Gebala
  * @version 1/15/13 1:37 PM
  */
-@Singleton
-@JpaTransactional
+@Transactional("service.shopTransactionManager")
 public class UserDaoImpl implements UserDao {
-    @Inject
-    private Provider<EntityManager> _em;
+    @PersistenceContext(unitName = "meatshop")
+    private EntityManager _em;
 
     @Override
     public User findUserById(final int id) {
-        EntityManager em = _em.get();
-        return em.find(User.class, id);
+        return _em.find(User.class, id);
     }
 
     @Override
     public User findUserByEmail(final String email) {
-        EntityManager em = _em.get();
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u._email = :email", User.class);
+        TypedQuery<User> query = _em.createQuery("SELECT u FROM User u WHERE u._email = :email", User.class);
         query.setParameter("email", email);
         return Iterables.getFirst(query.getResultList(), null);
     }
@@ -37,14 +32,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findUserForLogin(final String email,
                                  final String password) {
-        /*
-        EntityManager em = _em.get();
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u._email = :email AND u._password = :password", User.class);
-        query.setParameter("email", email);
-        query.setParameter("password", password);
-        return Iterables.getFirst(query.getResultList(), null);
-        */
-
         User userByEmail = findUserByEmail(email);
         User userForLogin = null;
 
@@ -58,13 +45,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void persistUser(final User user) {
-        EntityManager em = _em.get();
-        em.persist(user);
+        _em.persist(user);
     }
 
     @Override
     public void removeUser(final User user) {
-        EntityManager em = _em.get();
-        em.remove(user);
+        _em.remove(user);
     }
 }

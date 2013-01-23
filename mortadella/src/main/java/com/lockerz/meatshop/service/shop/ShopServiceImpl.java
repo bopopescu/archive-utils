@@ -1,16 +1,12 @@
 package com.lockerz.meatshop.service.shop;
 
-import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import com.lockerz.common.spring.jpa.JpaContextAware;
 import com.lockerz.meatshop.service.shop.dao.ShopDao;
 import com.lockerz.meatshop.service.shop.dao.UserDao;
-import com.lockerz.meatshop.jpa.JpaContextAware;
 import com.lockerz.meatshop.service.shop.model.Shop;
 import com.lockerz.meatshop.service.shop.model.User;
 import org.slf4j.Logger;
@@ -25,33 +21,30 @@ import java.util.concurrent.TimeUnit;
  * @author Brian Gebala
  * @version 1/16/13 9:34 AM
  */
-@Singleton
 @JpaContextAware
-public class ShopServiceImpl extends AbstractIdleService implements ShopService {
+public class ShopServiceImpl implements ShopService {
     private final static Logger LOGGER = LoggerFactory.getLogger(ShopServiceImpl.class);
 
     private ListeningExecutorService _executorService;
     private int _executorMaxThreads;
     private int _executorShutdownSeconds;
-    private int _maxPrice;
     private ShopDao _shopDao;
     private UserDao _userDao;
 
-    @Inject
-    public ShopServiceImpl(@Named("shop.service.executorMaxThreads") final int executorMaxThreads,
-                           @Named("shop.service.executorShutdownSeconds") final int executorShutdownSeconds,
-                           @Named("shop.service.maxPrice") final int maxPrice,
-                           final ShopDao shopDao,
-                           final UserDao userDao) {
+    public void setExecutorMaxThreads(final int executorMaxThreads) {
         _executorMaxThreads = executorMaxThreads;
-        _executorShutdownSeconds = executorShutdownSeconds;
-        _maxPrice = maxPrice;
-        _shopDao = shopDao;
-        _userDao = userDao;
     }
 
-    public int getMaxPrice() {
-        return _maxPrice;
+    public void setExecutorShutdownSeconds(final int executorShutdownSeconds) {
+        _executorShutdownSeconds = executorShutdownSeconds;
+    }
+
+    public void setShopDao(final ShopDao shopDao) {
+        _shopDao = shopDao;
+    }
+
+    public void setUserDao(final UserDao userDao) {
+        _userDao = userDao;
     }
 
     @Override
@@ -109,16 +102,15 @@ public class ShopServiceImpl extends AbstractIdleService implements ShopService 
         return _shopDao.findAllShops();
     }
 
-    @Override
-    protected void startUp() throws Exception {
+    public void startUp() throws Exception {
         _executorService = MoreExecutors.listeningDecorator(
                 Executors.newFixedThreadPool(_executorMaxThreads,
                         new ThreadFactoryBuilder().setDaemon(false).setNameFormat("ShopService-%s").build()));
     }
 
-    @Override
-    protected void shutDown() throws Exception {
+    public void shutDown() throws Exception {
         _executorService.shutdown();
         _executorService.awaitTermination(_executorShutdownSeconds, TimeUnit.SECONDS);
+        LOGGER.info("shutDown() successful");
     }
 }

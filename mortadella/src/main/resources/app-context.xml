@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+  <bean id="service.nonValidatingPropertyPlaceholderConfigurer"
+        class="com.lockerz.common.spring.config.NonValidatingPropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:app.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <util:map map-class="java.util.HashMap" id="service.jpaProperties">
+    <entry key="openjpa.Log" value="slf4j"/>
+    <entry key="openjpa.ConnectionFactoryProperties" value="printParameters=true"/>
+    <entry key="openjpa.DataCache" value="${openjpa.useDataCache}"/>
+    <entry key="openjpa.QueryCache" value="${openjpa.useQueryCache}"/>
+    <entry key="openjpa.RemoteCommitProvider" value="${openjpa.remoteCommitProvider}"/>
+    <entry key="openjpa.RestoreState" value="true"/>
+    <entry key="openjpa.RetainState" value="true"/>
+    <entry key="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
+    <entry key="openjpa.BrokerImpl" value="EvictFromDataCache=true"/>
+    <entry key="openjpa.jdbc.DBDictionary" value="postgres"/>
+  </util:map>
+
+  <bean id="service.jpaContext" class="com.lockerz.common.spring.jpa.JpaContextImpl" factory-method="getInstance"/>
+
+  <bean id="service.addressDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+        p:driverClassName="org.postgresql.Driver"
+        p:url="${address.db.url}"
+        p:username="${address.db.username}"
+        p:password="${address.db.password}"
+        p:maxActive="${address.db.pool.max-active-connections}"
+        p:maxIdle="${address.db.pool.max-idle-connections}"
+        p:maxWait="${address.db.pool.max-wait-ms}"
+        p:defaultAutoCommit="false"/>
+
+  <bean id="service.shopDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+        p:driverClassName="org.postgresql.Driver"
+        p:url="${shop.db.url}"
+        p:username="${shop.db.username}"
+        p:password="${shop.db.password}"
+        p:maxActive="${shop.db.pool.max-active-connections}"
+        p:maxIdle="${shop.db.pool.max-idle-connections}"
+        p:maxWait="${shop.db.pool.max-wait-ms}"
+        p:defaultAutoCommit="false"/>
+
+  <bean id="service.addressEmf" class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+        p:persistenceUnitName="address"
+        p:eagerConnectionInit="false"
+        p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
+        p:dataSource-ref="service.addressDataSource"
+        p:jpaPropertyMap-ref="service.jpaProperties"/>
+
+  <bean id="service.shopEmf" class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+        p:persistenceUnitName="meatshop"
+        p:eagerConnectionInit="false"
+        p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
+        p:dataSource-ref="service.shopDataSource"
+        p:jpaPropertyMap-ref="service.jpaProperties"/>
+
+  <bean id="service.addressTransactionManager" class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
+        p:entityManagerFactory-ref="service.addressEmf"
+        p:jpaContext-ref="service.jpaContext"/>
+
+  <bean id="service.shopTransactionManager" class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
+        p:entityManagerFactory-ref="service.shopEmf"
+        p:jpaContext-ref="service.jpaContext"/>
+
+  <tx:annotation-driven transaction-manager="service.addressTransactionManager"/>
+
+  <tx:annotation-driven transaction-manager="service.shopTransactionManager"/>
+
+  <bean id="org.springframework.context.annotation.internalPersistenceAnnotationProcessor"
+        class="com.lockerz.common.spring.jpa.JpaContextPersistenceAnnotationBeanPostProcessor"
+        p:jpaContext-ref="service.jpaContext"/>
+
+  <bean id="service.addressDao" class="com.lockerz.meatshop.service.address.dao.AddressDaoImpl"/>
+
+  <bean id="service.shopDao" class="com.lockerz.meatshop.service.shop.dao.ShopDaoImpl"/>
+
+  <bean id="service.userDao" class="com.lockerz.meatshop.service.shop.dao.UserDaoImpl"/>
+
+  <bean id="service.addressService" class="com.lockerz.meatshop.service.address.AddressServiceImpl"
+        destroy-method="shutdown"
+        p:addressDao-ref="service.addressDao"/>
+
+  <bean id="service.shopService" class="com.lockerz.meatshop.service.shop.ShopServiceImpl"
+        init-method="startUp"
+        destroy-method="shutDown"
+        p:executorMaxThreads="${shop.service.executorMaxThreads}"
+        p:executorShutdownSeconds="${shop.service.executorShutdownSeconds}"
+        p:shopDao-ref="service.shopDao"
+        p:userDao-ref="service.userDao"/>
+
+</beans>

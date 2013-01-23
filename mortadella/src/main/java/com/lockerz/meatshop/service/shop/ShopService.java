@@ -11,8 +11,6 @@ import java.util.List;
  * @version 1/16/13 9:34 AM
  */
 public interface ShopService {
-    public int getMaxPrice();
-
     public User findUserByEmail(final String email);
 
     public User login(final String email,
