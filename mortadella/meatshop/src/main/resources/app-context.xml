@@ -4,6 +4,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
@@ -34,9 +35,13 @@
     <entry key="openjpa.jdbc.DBDictionary" value="postgres"/>
   </util:map>
 
-  <bean id="service.jpaContext" class="com.lockerz.common.spring.jpa.JpaContextImpl" factory-method="getInstance"/>
+  <bean id="service.jpaContext"
+        class="com.lockerz.common.spring.jpa.JpaContextImpl"
+        factory-method="getInstance"/>
 
-  <bean id="service.addressDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+  <bean id="service.addressDataSource"
+        class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close"
         p:driverClassName="org.postgresql.Driver"
         p:url="${address.db.url}"
         p:username="${address.db.username}"
@@ -46,7 +51,9 @@
         p:maxWait="${address.db.pool.max-wait-ms}"
         p:defaultAutoCommit="false"/>
 
-  <bean id="service.shopDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+  <bean id="service.shopDataSource"
+        class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close"
         p:driverClassName="org.postgresql.Driver"
         p:url="${shop.db.url}"
         p:username="${shop.db.username}"
@@ -56,25 +63,29 @@
         p:maxWait="${shop.db.pool.max-wait-ms}"
         p:defaultAutoCommit="false"/>
 
-  <bean id="service.addressEmf" class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+  <bean id="service.addressEmf"
+        class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
         p:persistenceUnitName="address"
         p:eagerConnectionInit="false"
         p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
         p:dataSource-ref="service.addressDataSource"
         p:jpaPropertyMap-ref="service.jpaProperties"/>
 
-  <bean id="service.shopEmf" class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+  <bean id="service.shopEmf"
+        class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
         p:persistenceUnitName="meatshop"
         p:eagerConnectionInit="false"
         p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
         p:dataSource-ref="service.shopDataSource"
         p:jpaPropertyMap-ref="service.jpaProperties"/>
 
-  <bean id="service.addressTransactionManager" class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
+  <bean id="service.addressTransactionManager"
+        class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
         p:entityManagerFactory-ref="service.addressEmf"
         p:jpaContext-ref="service.jpaContext"/>
 
-  <bean id="service.shopTransactionManager" class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
+  <bean id="service.shopTransactionManager"
+        class="com.lockerz.common.spring.jpa.JpaContextTransactionManager"
         p:entityManagerFactory-ref="service.shopEmf"
         p:jpaContext-ref="service.jpaContext"/>
 
@@ -86,22 +97,69 @@
         class="com.lockerz.common.spring.jpa.JpaContextPersistenceAnnotationBeanPostProcessor"
         p:jpaContext-ref="service.jpaContext"/>
 
-  <bean id="service.addressDao" class="com.lockerz.meatshop.service.address.dao.AddressDaoImpl"/>
+  <bean id="service.addressDao"
+        class="com.lockerz.meatshop.service.address.dao.AddressDaoImpl"/>
 
-  <bean id="service.shopDao" class="com.lockerz.meatshop.service.shop.dao.ShopDaoImpl"/>
+  <bean id="service.shopDao"
+        class="com.lockerz.meatshop.service.shop.dao.ShopDaoImpl"/>
 
-  <bean id="service.userDao" class="com.lockerz.meatshop.service.shop.dao.UserDaoImpl"/>
+  <bean id="service.userDao"
+        class="com.lockerz.meatshop.service.shop.dao.UserDaoImpl"/>
 
-  <bean id="service.addressService" class="com.lockerz.meatshop.service.address.AddressServiceImpl"
+  <bean id="service.addressService"
+        class="com.lockerz.meatshop.service.address.AddressServiceImpl"
         destroy-method="shutdown"
         p:addressDao-ref="service.addressDao"/>
 
-  <bean id="service.shopService" class="com.lockerz.meatshop.service.shop.ShopServiceImpl"
+  <bean id="service.shopService"
+        class="com.lockerz.meatshop.service.shop.ShopServiceImpl"
         init-method="startUp"
         destroy-method="shutDown"
         p:executorMaxThreads="${shop.service.executorMaxThreads}"
         p:executorShutdownSeconds="${shop.service.executorShutdownSeconds}"
         p:shopDao-ref="service.shopDao"
         p:userDao-ref="service.userDao"/>
+
+  <util:set id="service.loggerMaskedParams">
+    <value>password</value>
+  </util:set>
+
+  <bean id="service.loggerService"
+        class="com.lockerz.common.log.LoggerServiceImpl"
+        p:maskedNames-ref="service.loggerMaskedParams"/>
+
+  <bean id="service.loggingFilter"
+        class="com.lockerz.common.spring.servlet.RequestLoggingFilter"
+        p:logRequest="${servlet.logRequest}"
+        p:logResponse="${servlet.logResponse}"
+        p:loggerService-ref="service.loggerService"/>
+
+  <bean id="service.jetty.accessLog"
+        class="org.eclipse.jetty.server.NCSARequestLog"
+        c:filename="${app.home}/log/${jetty.access.filename}"
+        p:retainDays="${jetty.access.retainDays}"
+        p:append="${jetty.access.append}"
+        p:extended="${jetty.access.extended}"
+        p:logDispatch="${jetty.access.logDispatch}"
+        p:logLatency="${jetty.access.logLatency}"
+        p:logServer="${jetty.access.logServer}"
+        p:logTimeZone="${jetty.access.logTimeZone}" />
+
+  <bean id="service.jettyServer"
+        class="com.lockerz.common.spring.servlet.JettyServerService" init-method="init"
+        p:port="${jetty.port}"
+        p:sslPort="${jetty.sslPort}"
+        p:keyStoreFile="${jetty.keyStoreFile}"
+        p:keyStorePassword="${jetty.keyStorePassword}"
+        p:requestLog-ref="service.jetty.accessLog"/>
+
+  <bean id="service.jettyHandlerFactoryBean"
+        class="com.lockerz.common.spring.servlet.DispatcherServletJettyHandlerFactoryBean"
+        init-method="init"
+        p:useGzipFilter="false"
+        p:location="classpath:web-context.xml"
+        p:requestLoggingFilter-ref="service.loggingFilter"
+        p:servletContextPath="/"
+        p:maxInactiveSessionIntervalSeconds="10"/>
 
 </beans>
