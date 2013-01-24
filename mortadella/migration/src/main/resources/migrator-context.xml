@@ -14,7 +14,7 @@
     <property name="locations">
       <list>
         <value>classpath:app.properties</value>
-        <value>file://${app.home}/etc/app.properties.${app.env}</value>
+        <value>classpath:app.${app.env}.properties</value>
       </list>
     </property>
   </bean>

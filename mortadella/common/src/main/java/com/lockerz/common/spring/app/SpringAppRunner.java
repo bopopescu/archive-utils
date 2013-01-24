@@ -18,6 +18,10 @@ public class SpringAppRunner {
     private CountDownLatch _latch = new CountDownLatch(1);
     private String[] _contextFiles;
 
+    public SpringAppRunner(final String contextFile) {
+        this (new String[] { contextFile} );
+    }
+
     public SpringAppRunner(final String[] contextFiles) {
         _contextFiles = contextFiles;
 

@@ -39,4 +39,9 @@
   <root level="INFO">
     <appender-ref ref="FILE" />
   </root>
+
+  <logger name="STDOUT" level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
 </configuration>

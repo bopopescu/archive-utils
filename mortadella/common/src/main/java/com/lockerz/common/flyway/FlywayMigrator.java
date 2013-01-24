@@ -2,6 +2,7 @@ package com.lockerz.common.flyway;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.base.Strings;
+import com.lockerz.common.spring.app.SpringAppRunner;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -62,11 +63,14 @@ public class FlywayMigrator {
         }
 
         System.setProperty("app.home", appHome);
+        System.setProperty("app.name", "migrator");
+        System.setProperty("logback.configurationFile", "migrator-logback.xml");
 
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("root");
+        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("STDOUT");
         logger.setLevel(Level.toLevel(logbackLevel));
 
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("migrator-context.xml");
+        SpringAppRunner appRunner = new SpringAppRunner("migrator-context.xml");
+        ClassPathXmlApplicationContext context = appRunner.start();
         FlywayMigrationService migrationService = (FlywayMigrationService) context.getBean("migrationService");
 
         try {
