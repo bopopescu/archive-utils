@@ -13,6 +13,7 @@
   <mvc:annotation-driven/>
 
   <bean id="service.shopServiceController"
-        class="com.lockerz.meatshop.service.shop.controller.ShopServiceController"/>
+        class="com.lockerz.meatshop.service.shop.controller.ShopServiceController"
+        p:shopService-ref="service.shopService"/>
 
 </beans>

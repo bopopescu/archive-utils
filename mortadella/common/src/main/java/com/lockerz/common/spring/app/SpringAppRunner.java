@@ -1,5 +1,6 @@
 package com.lockerz.common.spring.app;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -11,12 +12,20 @@ import java.util.concurrent.CountDownLatch;
  * @version 1/22/13 2:28 PM
  */
 public class SpringAppRunner {
-    private static final Logger log = LoggerFactory.getLogger(SpringAppRunner.class);
+    private final static Logger log = LoggerFactory.getLogger(SpringAppRunner.class);
+    private final static String APP_ENV_SYS_PROPERTY = "app.env";
+
     private CountDownLatch _latch = new CountDownLatch(1);
     private String[] _contextFiles;
 
     public SpringAppRunner(final String[] contextFiles) {
         _contextFiles = contextFiles;
+
+        String appEnv = System.getProperty(APP_ENV_SYS_PROPERTY);
+
+        if (Strings.isNullOrEmpty(appEnv)) {
+            System.setProperty(APP_ENV_SYS_PROPERTY, "dev");
+        }
     }
 
     public void waitForShutdown() {
