@@ -59,9 +59,12 @@ if(node[:platform] == "ubuntu")
     end
   end
 
+# Define zabbix upstart service
   service "zabbix-agent" do
       provider Chef::Provider::Service::Upstart
       action [ :enable, :start ]
+      supports :restart => true, :reload => true
+      ignore_failure true
   end
 
 # Zabbix upstart script
@@ -70,16 +73,6 @@ if(node[:platform] == "ubuntu")
      owner "zabbix"
      group "zabbix"
      source "zabbix/zabbix-agent.conf"
-     notifies :restart, resources(:service => "zabbix-agent")
-  end
-
-# Zabbix binaries 
-  cookbook_file "/opt/zabbix/sbin/zabbix_agentd" do
-     mode "0755"
-     owner "zabbix"
-     group "zabbix"
-     source "zabbix/zabbix_agentd"
-     notifies :restart, resources(:service => "zabbix-agent")
   end
 
   cookbook_file "/opt/zabbix/bin/zabbix_sender" do
@@ -102,6 +95,15 @@ if(node[:platform] == "ubuntu")
      owner "zabbix"
      group "zabbix"
      source "zabbix/zabbix_agentd.conf"
+  end
+
+# Zabbix binaries 
+  cookbook_file "/opt/zabbix/sbin/zabbix_agentd" do
+     mode "0755"
+     owner "zabbix"
+     group "zabbix"
+     source "zabbix/zabbix_agentd"
      notifies :restart, resources(:service => "zabbix-agent")
   end
+
 end
