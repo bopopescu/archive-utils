@@ -51,7 +51,6 @@ public class SpringAppRunner {
             @Override
             public void run() {
                 ctx.close();
-                System.out.println("SpringAppRunner stopped.");
                 _latch.countDown();
             }
         });
