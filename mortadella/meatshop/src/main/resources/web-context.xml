@@ -12,6 +12,10 @@
 
   <mvc:annotation-driven/>
 
+  <bean class="com.github.jknack.handlebars.springmvc.HandlebarsViewResolver"
+          p:cache="false"
+          p:prefix="classpath:templates/"/>
+    
   <bean id="service.shopServiceController"
         class="com.lockerz.meatshop.service.shop.controller.ShopServiceController"/>
 
