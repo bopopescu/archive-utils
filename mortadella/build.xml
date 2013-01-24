@@ -1,0 +1,49 @@
+<project name="meatshop-toplevel" default="compile" basedir=".">
+
+  <loadfile property="version" srcFile="${basedir}/.version">
+    <filterchain>
+      <striplinebreaks/>
+    </filterchain>
+  </loadfile>
+
+  <target name="compile">
+    <ant antfile="common/build.xml" target="share" inheritAll="false"/>
+    <ant antfile="migration/build.xml" target="share" inheritAll="false"/>
+    <ant antfile="meatshop/build.xml" target="share" inheritAll="false"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="target"/>
+    <delete dir="artifact"/>
+    <ant antfile="common/build.xml" target="clean" inheritAll="false"/>
+    <ant antfile="migration/build.xml" target="clean" inheritAll="false"/>
+    <ant antfile="meatshop/build.xml" target="clean" inheritAll="false"/>
+  </target>
+
+  <target name="dist" depends="compile">
+    <mkdir dir="target/dist-${version}/bin"/>
+    <mkdir dir="target/dist-${version}/common-lib"/>
+    <mkdir dir="target/dist-${version}/artifact"/>
+
+    <copy todir="target/dist-${version}/bin">
+      <fileset dir="bin"/>
+    </copy>
+
+    <copy todir="target/dist-${version}/common-lib">
+      <fileset dir="common-lib"/>
+    </copy>
+
+    <copy todir="target/dist-${version}/artifact">
+      <fileset dir="artifact"/>
+    </copy>
+
+    <copy todir="target/dist-${version}">
+      <fileset file=".version"/>
+    </copy>
+
+    <chmod perm="755" dir="target/dist-${version}/bin" includes="*"/>
+
+    <tar destfile="target/dist-${version}.tar.gz" basedir="target/dist-${version}" compression="gzip"/>
+  </target>
+
+</project>

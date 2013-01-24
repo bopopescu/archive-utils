@@ -55,12 +55,12 @@
         class="org.apache.commons.dbcp.BasicDataSource"
         destroy-method="close"
         p:driverClassName="org.postgresql.Driver"
-        p:url="${shop.db.url}"
-        p:username="${shop.db.username}"
-        p:password="${shop.db.password}"
-        p:maxActive="${shop.db.pool.max-active-connections}"
-        p:maxIdle="${shop.db.pool.max-idle-connections}"
-        p:maxWait="${shop.db.pool.max-wait-ms}"
+        p:url="${meatshop.db.url}"
+        p:username="${meatshop.db.username}"
+        p:password="${meatshop.db.password}"
+        p:maxActive="${meatshop.db.pool.max-active-connections}"
+        p:maxIdle="${meatshop.db.pool.max-idle-connections}"
+        p:maxWait="${meatshop.db.pool.max-wait-ms}"
         p:defaultAutoCommit="false"/>
 
   <bean id="service.addressEmf"

@@ -1,0 +1,23 @@
+<project name="migration" default="jar">
+
+  <target name="compile">
+    <mkdir dir="target/classes"/>
+    <copy todir="target/classes">
+      <fileset dir="src/main/resources"/>
+    </copy>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar jarfile="target/migration.jar" basedir="target/classes"/>
+  </target>
+
+  <target name="share" depends="jar">
+    <mkdir dir="../artifact"/>
+    <copy file="target/migration.jar" todir="../artifact"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="target"/>
+  </target>
+
+</project>

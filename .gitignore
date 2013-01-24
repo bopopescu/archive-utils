@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *.py[co]
 
 # Packages
@@ -8,7 +7,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -34,4 +32,4 @@ metadata.json
 named.som
 named.rcbi
 named.rti.local
->>>>>>> 6237e82a6859cf8b11d7bb33cdcb80f459130ef4
+

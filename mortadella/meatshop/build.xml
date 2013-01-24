@@ -1,0 +1,49 @@
+<project name="meatshop" default="jar">
+  <property environment="env" />
+
+  <path id="classpath">
+    <fileset dir="../artifact">
+      <include name="common.jar"/>
+    </fileset>
+    <fileset dir="../common-lib">
+      <include name="*.jar"/>
+    </fileset>		
+    <pathelement location="target/classes"/>
+  </path>
+
+  <path id="compile.classpath">
+    <path refid="classpath"/>
+  </path>
+
+  <target name="compile">
+    <mkdir dir="target/classes"/>
+    <copy todir="target/classes">
+      <fileset dir="src/main/resources"/>
+    </copy>
+    <javac
+        srcdir="src/main/java"
+        destdir="target/classes"
+        includeAntRuntime="false"
+        debug="true">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="enhance" depends="compile">
+    <java classpathref="classpath" classname="com.lockerz.meatshop.JpaEnhancer"/>
+  </target>
+
+  <target name="jar" depends="compile, enhance">
+    <jar jarfile="target/meatshop.jar" basedir="target/classes"/>
+  </target>
+
+  <target name="share" depends="jar">
+    <mkdir dir="../artifact"/>
+    <copy file="target/meatshop.jar" todir="../artifact"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="target"/>
+  </target>
+
+</project>
