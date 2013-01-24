@@ -1,5 +1,7 @@
 <configuration>
 
+  <property file="${app.home}/etc/app.properties.local"/>
+
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
@@ -8,11 +10,25 @@
     </encoder>
   </appender>
 
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${app.home}/log/${app.name:-app}.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${app.home}/log/${app.name:-app}.log.%d{yyyy-MM-dd}</fileNamePattern>
+
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
   <logger name="openjpa.Query" level="TRACE"/>
   <logger name="openjpa.Runtime" level="INFO"/>
   <logger name="openjpa.jdbc.SQL" level="TRACE"/>
 
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
   </root>
 </configuration>

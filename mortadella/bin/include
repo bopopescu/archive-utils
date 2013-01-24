@@ -1,8 +1,11 @@
 #!/bin/bash
 
+if [[ ${APP_HOME:-unset} == "unset" ]] ; then
+  export APP_HOME="$HOME/opt/lockerz/meatshop"
+fi
+
 cd $(dirname $0)/..
 BASEDIR=$PWD
 cd - >/dev/null
 
 source $BASEDIR/bin/functions.sh
-

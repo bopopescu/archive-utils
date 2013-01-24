@@ -27,7 +27,7 @@ while getopts "hdp:D:T" option; do
     h ) print-usage;;
     D ) export JAVA_OPTS="$JAVA_OPTS -D$OPTARG";;
     d ) export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5000";;
-    p ) export LOCKERZ_JETTY_PORT=$OPTARG;;
+    p ) export APP_JETTY_PORT=$OPTARG;;
     T ) tee=false;;
     * ) print-usage "Unknown option: $option";;
   esac
@@ -43,7 +43,7 @@ name=$1
 class=$2
 shift 2
 
-pidFile=$LOCKERZ_HOME/pids/$name.pid
+pidFile=$APP_HOME/pids/$name.pid
 
 if test -n "$pidFile"; then
   if test -e $pidFile; then
@@ -53,33 +53,33 @@ if test -n "$pidFile"; then
   fi
 fi
 
-if test -e $LOCKERZ_HOME/.lockerz; then
-  source $LOCKERZ_HOME/.lockerz
+if test -e $APP_HOME/.lockerz; then
+  source $APP_HOME/.lockerz
 fi
 
-if test -e $LOCKERZ_HOME/.$name; then
-  source $LOCKERZ_HOME/.$name
+if test -e $APP_HOME/.$name; then
+  source $APP_HOME/.$name
 fi
 
-LOCKERZ_JAVA_OPTS="$JAVA_OPTS -Dlockerz.home=$LOCKERZ_HOME
--Dcom.sun.management.jmxremote.port=${LOCKERZ_JMX_PORT:-9999} 
--Dcom.sun.management.jmxremote.authenticate=${LOCKERZ_JMX_AUTH:-false} 
--Dcom.sun.management.jmxremote.ssl=${LOCKERZ_JMX_SSL:-false}
+APP_JAVA_OPTS="$JAVA_OPTS -Dapp.home=$APP_HOME
+-Dcom.sun.management.jmxremote.port=${APP_JMX_PORT:-9999} 
+-Dcom.sun.management.jmxremote.authenticate=${APP_JMX_AUTH:-false} 
+-Dcom.sun.management.jmxremote.ssl=${APP_JMX_SSL:-false}
 -Dapp.name=$name"
 
-if test -n "$LOCKERZ_JETTY_PORT"; then
-  LOCKERZ_JAVA_OPTS="$LOCKERZ_JAVA_OPTS -Djetty.port=$LOCKERZ_JETTY_PORT"
+if test -n "$APP_JETTY_PORT"; then
+  APP_JAVA_OPTS="$APP_JAVA_OPTS -Djetty.port=$APP_JETTY_PORT"
 fi
 
 if test "$tee" = "true"; then
   ( java \
-  $LOCKERZ_JAVA_OPTS \
+  $APP_JAVA_OPTS \
   -classpath $BASEDIR/common-lib/\*:$BASEDIR/artifact/\* \
-  $class "$@" 2>&1 & echo $! >&3 ) 3>$pidFile | tee -a $LOCKERZ_HOME/log/$name.out &
+  $class "$@" 2>&1 & echo $! >&3 ) 3>$pidFile | tee -a $APP_HOME/log/$name.out &
 else
   java \
-  $LOCKERZ_JAVA_OPTS \
+  $APP_xJAVA_OPTS \
   -classpath $BASEDIR/common-lib/\*:$BASEDIR/artifact/\* \
-  $class "$@" 2>$LOCKERZ_HOME/log/$name.out >> $LOCKERZ_HOME/log/$name.out &
+  $class "$@" 2>$APP_HOME/log/$name.out >> $APP_HOME/log/$name.out &
   echo $! >$pidFile
 fi
