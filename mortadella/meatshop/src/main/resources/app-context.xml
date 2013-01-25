@@ -162,4 +162,13 @@
         p:servletContextPath="/"
         p:maxInactiveSessionIntervalSeconds="10"/>
 
+  <bean class="com.lockerz.common.clojure.ClojureScriptLoader"
+          init-method="init">
+      <property name="scripts">
+          <list>
+              <value>com/lockerz/nrepl.clj</value>
+          </list>
+      </property>
+  </bean>
+
 </beans>

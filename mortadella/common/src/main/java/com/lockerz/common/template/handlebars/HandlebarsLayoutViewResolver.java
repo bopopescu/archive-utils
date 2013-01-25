@@ -20,14 +20,17 @@ import java.net.URI;
 public class HandlebarsLayoutViewResolver extends AbstractTemplateViewResolver {
 
     private Template _layoutTemplate;
-    private Handlebars _handlebars;
 
+    private Handlebars _handlebars;
     private String _layoutTemplatePath;
     private TemplateData _templateData;
-    private Helpers _helpers;
 
     public HandlebarsLayoutViewResolver() {
         setViewClass(HandlebarsLayoutView.class);
+    }
+
+    public void setHandlebars(final Handlebars handlebars) {
+        _handlebars = handlebars;
     }
 
     public void setLayoutTemplatePath(final String layoutTemplatePath) {
@@ -38,22 +41,10 @@ public class HandlebarsLayoutViewResolver extends AbstractTemplateViewResolver {
         _templateData = templateData;
     }
 
-    public void setHelpers(final Helpers helpers) {
-        _helpers = helpers;
-    }
-
     public void init() throws IOException {
         if (Strings.isNullOrEmpty(getSuffix())) {
             setSuffix(TemplateLoader.DEFAULT_SUFFIX);
         }
-
-        TemplateLoader loader = new SpringTemplateLoader(getApplicationContext());
-        loader.setPrefix(getPrefix());
-        loader.setSuffix(getSuffix());
-
-        _handlebars = new Handlebars(loader);
-        StringHelpers.register(_handlebars);
-        _handlebars.registerHelpers(_helpers);
 
         if (isCache()) {
             _layoutTemplate = _handlebars.compile(URI.create(_layoutTemplatePath));

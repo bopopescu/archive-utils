@@ -45,18 +45,20 @@ public class HandlebarsLayoutView extends AbstractTemplateView {
         String content;
         try {
             content = _template.apply(context);
+
+            Context layoutContext = Context.newBuilder(context, _templateData.getModelForLayout(content))
+                    .resolver(ValueResolver.VALUE_RESOLVERS)
+                    .build();
+            try {
+                _layoutTemplate.apply(layoutContext, response.getWriter());
+            } finally {
+                layoutContext.destroy();
+            }
         } finally {
             context.destroy();
         }
 
-        Context layoutContext = Context.newBuilder(_templateData.getModelForLayout(content))
-                .resolver(ValueResolver.VALUE_RESOLVERS)
-                .build();
-        try {
-            _layoutTemplate.apply(layoutContext, response.getWriter());
-        } finally {
-            layoutContext.destroy();
-        }
+
     }
 
 }

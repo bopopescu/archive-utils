@@ -13,17 +13,8 @@ import java.util.Set;
  */
 public class TemplateData {
 
-    private String _title;
     private Set<String> _css = Sets.newLinkedHashSet();
     private Set<String> _js = Sets.newLinkedHashSet();
-
-    public String getTitle() {
-        return _title;
-    }
-
-    public void setTitle(final String title) {
-        _title = title;
-    }
 
     public Set<String> getCss() {
         return _css;
@@ -36,7 +27,6 @@ public class TemplateData {
     public Map<String, Object> getModelForLayout(final String content) {
         return ImmutableMap.<String, Object>builder()
                 .put("content", content)
-                .put("title", _title)
                 .put("javascripts", _js)
                 .put("stylesheets", _css)
                 .build();
