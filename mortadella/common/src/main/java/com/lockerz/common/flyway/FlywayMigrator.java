@@ -12,7 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class FlywayMigrator {
     private static enum Command {
-        CLEAN, INIT, MIGRATE, STATUS
+        CLEAN, DRY_RUN, INIT, MIGRATE, STATUS
     }
 
     public static void main(final String[] args) {
@@ -22,6 +22,9 @@ public class FlywayMigrator {
         for (String arg : args) {
             if (arg.equals("--status")) {
                 command = Command.STATUS;
+            }
+            else if (arg.equals("--dry-run")) {
+                command = Command.DRY_RUN;
             }
             else if (arg.equals("--init")) {
                 command = Command.INIT;
@@ -40,6 +43,7 @@ public class FlywayMigrator {
                 System.out.println("       <option> : -v        (verbose logging)");
                 System.out.println("      <command> : --clean   (Flyway clean)");
                 System.out.println("                : --init    (Flyway init)");
+                System.out.println("                : --dry-run (Flyway info's pending data)");
                 System.out.println("                : --status  (Flyway status)");
                 System.out.println();
                 System.exit(0);
@@ -77,6 +81,9 @@ public class FlywayMigrator {
             switch (command) {
                 case CLEAN:
                     migrationService.clean();
+                    break;
+                case DRY_RUN:
+                    migrationService.dryRun();
                     break;
                 case INIT:
                     migrationService.init();
