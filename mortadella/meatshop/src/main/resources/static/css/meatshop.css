@@ -1,0 +1,12 @@
+@-webkit-keyframes first
+{
+    from { color: red; }
+    to {color: orange;}
+}
+span.title {
+    -webkit-animation: first linear 1s infinite alternate;
+}
+
+span.title span.subtitle {
+    color: gray;
+}
