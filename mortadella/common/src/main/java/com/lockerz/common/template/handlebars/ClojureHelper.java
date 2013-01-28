@@ -2,12 +2,15 @@ package com.lockerz.common.template.handlebars;
 
 import clojure.lang.IFn;
 import clojure.lang.IteratorSeq;
+import clojure.lang.PersistentHashMap;
+import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by James Baird
@@ -34,6 +37,15 @@ public class ClojureHelper implements Helper<Object> {
             ++index;
         }
 
-        return (CharSequence)_fn.applyTo(IteratorSeq.create(args.iterator()));
+        if (options.hash.size() > 0) {
+            args.add(PersistentHashMap.create(options.hash));
+        }
+
+        CharSequence result = (CharSequence)_fn.applyTo(IteratorSeq.create(args.iterator()));
+        if (!(result instanceof Handlebars.SafeString)) {
+            result = new Handlebars.SafeString(result);
+        }
+
+        return result;
     }
 }

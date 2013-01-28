@@ -25,8 +25,4 @@ public class Helpers {
         return "";
     }
 
-    public CharSequence link_to(final String name, final String url) {
-        return new Handlebars.SafeString(String.format("<a href=\"%s\">%s</a>", url, name));
-    }
-
 }
