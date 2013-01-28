@@ -11,7 +11,7 @@ import org.apache.openjpa.lib.util.Options;
 public class App {
     public static void main(final String[] args) {
         PCEnhancer.run(new String[]{}, new Options());
-        SpringAppRunner appRunner = new SpringAppRunner(new String[] {"classpath:app-context.xml", "classpath:jpa-context.xml"});
+        SpringAppRunner appRunner = new SpringAppRunner(new String[] {"classpath:app-context.xml", "classpath:jpa-context.xml", "classpath:web-context.xml"});
         appRunner.start();
         appRunner.waitForShutdown();
     }

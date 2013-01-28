@@ -3,15 +3,54 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="
-           http://www.springframework.org/schema/beans
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/mvc
-           http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+           http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="service.nonValidatingPropertyPlaceholderConfigurer"
+          class="com.lockerz.common.spring.config.NonValidatingPropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:app.properties</value>
+                <value>classpath:app.${app.env}.properties</value>
+                <value>file://${app.home}/etc/app.local.properties</value>
+            </list>
+        </property>
+    </bean>
 
   <mvc:annotation-driven/>
 
+    <bean class="com.lockerz.common.clojure.ClojureScriptLoader"
+          init-method="init">
+        <property name="scripts">
+            <list>
+                <value>com/lockerz/nrepl.clj</value>
+                <value>com/lockerz/helpers.clj</value>
+            </list>
+        </property>
+    </bean>
+
+  <bean id="handlebars" class="com.lockerz.common.template.handlebars.HandlebarsFactoryBean"
+        p:prefix="${template.prefix}"
+        p:helpers-ref="handlebars.helpers"/>
+
+  <bean id="handlerbars.templateData" class="com.lockerz.common.template.handlebars.TemplateData" scope="request">
+      <aop:scoped-proxy />
+  </bean>
+
+  <bean id="handlebars.helpers" class="com.lockerz.common.template.handlebars.Helpers"
+        p:templateData-ref="handlerbars.templateData" />
+
+  <bean id="handlebars.viewResolver" class="com.lockerz.common.template.handlebars.HandlebarsLayoutViewResolver"
+        init-method="init"
+        p:cache="false"
+        p:prefix="${template.prefix}"
+        p:handlebars-ref="handlebars"
+        p:templateData-ref="handlerbars.templateData"
+        p:layoutTemplatePath="lib/layout"/>
+    
   <bean id="service.shopServiceController"
         class="com.lockerz.meatshop.service.shop.controller.ShopServiceController"
         p:shopService-ref="service.shopService"/>
