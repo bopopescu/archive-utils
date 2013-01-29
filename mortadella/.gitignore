@@ -1,4 +1,8 @@
 rebel.xml
-out/
-.idea/
 *.iml
+.gitignore
+.idea
+/artifact
+/out
+/target
+/*/target
