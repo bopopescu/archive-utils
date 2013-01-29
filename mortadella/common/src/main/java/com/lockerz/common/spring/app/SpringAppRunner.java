@@ -1,6 +1,5 @@
 package com.lockerz.common.spring.app;
 
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -12,8 +11,7 @@ import java.util.concurrent.CountDownLatch;
  * @version 1/22/13 2:28 PM
  */
 public class SpringAppRunner {
-    private final static Logger log = LoggerFactory.getLogger(SpringAppRunner.class);
-    private final static String APP_ENV_SYS_PROPERTY = "app.env";
+    private final static Logger LOGGER = LoggerFactory.getLogger(SpringAppRunner.class);
 
     private CountDownLatch _latch = new CountDownLatch(1);
     private String[] _contextFiles;
@@ -24,12 +22,6 @@ public class SpringAppRunner {
 
     public SpringAppRunner(final String[] contextFiles) {
         _contextFiles = contextFiles;
-
-        String appEnv = System.getProperty(APP_ENV_SYS_PROPERTY);
-
-        if (Strings.isNullOrEmpty(appEnv)) {
-            System.setProperty(APP_ENV_SYS_PROPERTY, "dev");
-        }
     }
 
     public void waitForShutdown() {
@@ -43,6 +35,10 @@ public class SpringAppRunner {
 
     public ClassPathXmlApplicationContext start() {
         long beforeSpring = System.currentTimeMillis();
+
+        LOGGER.info("app.env={}, app.ip={}, app.home={}, app.name={}",
+                new Object[] { SpringAppConfig.getAppEnv(), SpringAppConfig.getAppIp(), SpringAppConfig.getAppHome(), SpringAppConfig.getAppName() });
+
         final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
 
         ctx.setConfigLocations(_contextFiles);
@@ -52,9 +48,9 @@ public class SpringAppRunner {
         ctx.start();
         long afterStart = System.currentTimeMillis();
 
-        log.info("STARTUP TIMING Spring time to refresh: " + (afterRefresh - beforeSpring));
-        log.info("STARTUP TIMING Spring time to start: " + (afterStart - afterRefresh));
-        log.info("STARTUP TIMING Spring total: " + (afterStart - beforeSpring));
+        LOGGER.info("STARTUP TIMING Spring time to refresh: " + (afterRefresh - beforeSpring));
+        LOGGER.info("STARTUP TIMING Spring time to start: " + (afterStart - afterRefresh));
+        LOGGER.info("STARTUP TIMING Spring total: " + (afterStart - beforeSpring));
 
         ThreadGroup tg = new ThreadGroup("SpringAppRunner");
         tg.setDaemon(true);

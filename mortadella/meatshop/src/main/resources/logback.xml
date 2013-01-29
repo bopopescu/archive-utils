@@ -16,7 +16,7 @@
 
   <logger name="ch.qos.logback" level="WARN"/>
   <logger name="openjpa.Query" level="TRACE"/>
-  <logger name="openjpa.Runtime" level="INFO"/>
+  <logger name="openjpa.Runtime" level="TRACE"/>
   <logger name="openjpa.jdbc.SQL" level="TRACE"/>
 
   <root level="INFO">

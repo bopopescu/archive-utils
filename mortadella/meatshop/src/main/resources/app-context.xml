@@ -24,6 +24,22 @@
     </property>
   </bean>
 
+  <bean id="service.jedisClient" class="com.lockerz.common.spring.jedis.JedisClientImpl">
+    <property name="jedisPool">
+      <bean
+        class="com.lockerz.common.spring.jedis.JedisPoolFactory"
+        p:maxActive="${redis.maxActive}"
+        p:host="${redis.hostname}"
+        p:port="${redis.port}"/>
+    </property>
+  </bean>
+
+  <bean id="service.jpaRemoteCacheService"
+        class="com.lockerz.common.spring.jpa.JpaRemoteCacheService"
+        init-method="init"
+        destroy-method="shutdown"
+        p:jedis-ref="service.jedisClient"/>
+
   <util:map map-class="java.util.HashMap" id="service.jpaProperties">
     <entry key="openjpa.Log" value="slf4j"/>
     <entry key="openjpa.ConnectionFactoryProperties" value="printParameters=true"/>
@@ -68,6 +84,7 @@
 
   <bean id="service.addressEmf"
         class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+        p:jpaRemoteCacheService-ref="service.jpaRemoteCacheService"
         p:persistenceUnitName="address"
         p:eagerConnectionInit="${address.db.eagerInit}"
         p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
@@ -76,6 +93,7 @@
 
   <bean id="service.shopEmf"
         class="com.lockerz.common.spring.jpa.SpringEntityManagerFactoryBean"
+        p:jpaRemoteCacheService-ref="service.jpaRemoteCacheService"
         p:persistenceUnitName="meatshop"
         p:eagerConnectionInit="${meatshop.db.eagerInit}"
         p:persistenceXmlLocation="classpath:META-INF/persistence.xml"
