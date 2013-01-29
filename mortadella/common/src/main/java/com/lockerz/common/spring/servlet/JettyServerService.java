@@ -7,7 +7,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +81,10 @@ public class JettyServerService implements ApplicationContextAware, Lifecycle, P
             RequestLogHandler requestLogHandler = new RequestLogHandler();
             requestLogHandler.setRequestLog(_requestLog);
 
-            handlerConnection.setHandlers(new Handler[] {contexts, requestLogHandler});
+            ResourceHandler resourceHandler = new ResourceHandler();
+            resourceHandler.setBaseResource(Resource.newClassPathResource("/"));
+
+            handlerConnection.setHandlers(new Handler[] {resourceHandler, contexts, requestLogHandler});
 
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             MBeanContainer mBeanContainer = new MBeanContainer(mBeanServer);

@@ -1,0 +1,15 @@
+{{ define `javascripts` }}
+{{ require_javascript "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" }}
+{{ end }}
+
+{{ define `stylesheets` }}
+{{ require_css "https://d8o6wu1tc2zf3.cloudfront.net/pegasus/4.5.61/bundles/lockerzglobal/css/0195f2c.css?1.0.0" }}
+{{ end }}
+
+{{ define `title` }} New Meat Motherfucker! {{ end }}
+
+{{ define `contents` }}
+   New meat form!
+   {{ template `_form.tmpl`  }}
+{{ end }}
+
