@@ -41,11 +41,6 @@ public class ClojureHelper implements Helper<Object> {
             args.add(PersistentHashMap.create(options.hash));
         }
 
-        CharSequence result = (CharSequence)_fn.applyTo(IteratorSeq.create(args.iterator()));
-        if (!(result instanceof Handlebars.SafeString)) {
-            result = new Handlebars.SafeString(result);
-        }
-
-        return result;
+        return (CharSequence)_fn.applyTo(IteratorSeq.create(args.iterator()));
     }
 }
