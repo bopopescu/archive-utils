@@ -76,7 +76,7 @@ public class JpaRemoteCacheService {
         LOGGER.info("init() successful");
     }
 
-    public void shutdown() {
+    public synchronized void shutdown() {
         _running = false;
 
         for (Map.Entry<String, TCPRemoteCommitProvider> entry : _commitProviderMap.entrySet()) {
