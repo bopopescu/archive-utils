@@ -41,6 +41,9 @@
       </div>
     </div>
     <div class="container">
+        {{#errors}}
+        <div class="alert">{{errors}}</div>
+        {{/errors}}
         {{{content}}}
     </div>
   </body>

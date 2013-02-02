@@ -35,6 +35,12 @@ public class ShopDaoImpl implements ShopDao {
     }
 
     @Override
+    public void updateShop(final Shop shop, final String name) {
+        shop.setName(name);
+        _em.merge(shop);
+    }
+
+    @Override
     public Meat newMeat(final String name,
                         final int priceDollars,
                         final Shop shop) {

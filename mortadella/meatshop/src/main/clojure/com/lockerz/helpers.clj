@@ -78,3 +78,10 @@
       [:label.checkbox
        (check-box (or attrs {}) name)
        label]]]))
+
+(defhtmlhelper submit-group
+  "A submit button control group for Bootstrap forms."
+  [value & [attrs]]
+  [:div.control-group
+   [:div.controls
+    [:button.btn (assoc attrs :type "submit") value]]])

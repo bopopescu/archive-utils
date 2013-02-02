@@ -102,6 +102,16 @@ public class ShopServiceImpl implements ShopService {
         return _shopDao.findAllShops();
     }
 
+    @Override
+    public Shop findShopById(final int id) {
+        return _shopDao.findShopById(id);
+    }
+
+    @Override
+    public void updateShop(final Shop shop, final String name) {
+        _shopDao.updateShop(shop, name);
+    }
+
     public void startUp() throws Exception {
         _executorService = MoreExecutors.listeningDecorator(
                 Executors.newFixedThreadPool(_executorMaxThreads,

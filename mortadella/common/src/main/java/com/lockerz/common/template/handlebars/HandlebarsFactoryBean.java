@@ -41,6 +41,7 @@ public class HandlebarsFactoryBean implements FactoryBean<Handlebars>, Applicati
 
         Handlebars handlebars = new Handlebars(loader);
         StringHelpers.register(handlebars);
+        handlebars.registerHelper("json", new JsonHelper());
         handlebars.registerHelpers(_helpers);
 
         return handlebars;

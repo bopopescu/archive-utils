@@ -2,12 +2,12 @@ package com.lockerz.meatshop.service.shop.controller;
 
 import com.lockerz.meatshop.service.shop.ShopService;
 import com.lockerz.meatshop.service.shop.form.LoginForm;
+import com.lockerz.meatshop.service.shop.model.Shop;
 import com.lockerz.meatshop.service.shop.model.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -39,13 +39,19 @@ public class ShopServiceController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestBody final LoginForm loginForm,
+    public String login(@ModelAttribute final LoginForm loginForm,
+                        final RedirectAttributes redirect,
                         final HttpSession session)
     {
         User user = _shopService.login(loginForm.getEmail(), loginForm.getPassword());
-        session.setAttribute("uid", user.getId());
 
-        return "redirect:shop/shops";
+        if (user != null) {
+            session.setAttribute("uid", user.getId());
+            return "redirect:shops";
+        } else {
+            redirect.addFlashAttribute("errors", "Bad email or password!");
+            return "redirect:login";
+        }
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -54,17 +60,35 @@ public class ShopServiceController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String register(@RequestBody final LoginForm loginForm,
+    public String register(@ModelAttribute final LoginForm loginForm,
                            final HttpSession session)
     {
         User user = _shopService.register(loginForm.getEmail(), loginForm.getPassword());
         session.setAttribute("uid", user.getId());
 
-        return "redirect:shop/shops";
+        return "redirect:shops";
+    }
+
+    @RequestMapping(value = "/new", method = RequestMethod.POST)
+    public String newShop(@ModelAttribute final Shop shop) {
+        _shopService.newShop(shop.getName());
+
+        return "redirect:shops";
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public @ResponseBody Shop editShop(@PathVariable final int id,
+                                       @RequestBody final Map<String, String> body)
+    {
+        Shop shop = _shopService.findShopById(id);
+        _shopService.updateShop(shop, body.get("name"));
+        return shop;
     }
 
     @RequestMapping(value = "/shops", method = RequestMethod.GET)
     public String shops(final Map<String, Object> model) {
+        model.put("shops", _shopService.findAllShops());
+
         return "shop/shops";
     }
 
