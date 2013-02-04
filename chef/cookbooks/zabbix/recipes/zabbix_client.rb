@@ -62,7 +62,7 @@ if(node[:platform] == "ubuntu")
 # Define zabbix upstart service
   service "zabbix-agent" do
       provider Chef::Provider::Service::Upstart
-      action [ :enable, :start ]
+      # action [ :enable, :start ]
       supports :restart => true, :reload => true
       ignore_failure true
   end
