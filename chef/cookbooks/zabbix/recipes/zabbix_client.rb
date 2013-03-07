@@ -22,7 +22,7 @@ if(node[:platform] == "ubuntu")
 
   # Define zabbix agent folders
   root_dirs = [
-    # node['zabbix']['etc_dir'],
+    node['zabbix']['etc_dir'],
     node['zabbix']['install_dir'],
     "#{node['zabbix']['install_dir']}/bin",
     "#{node['zabbix']['install_dir']}/sbin",
@@ -62,7 +62,7 @@ if(node[:platform] == "ubuntu")
 # Define zabbix upstart service
   service "zabbix-agent" do
       provider Chef::Provider::Service::Upstart
-      action [ :enable, :start ]
+      # action [ :enable, :start ]
       supports :restart => true, :reload => true
       ignore_failure true
   end
