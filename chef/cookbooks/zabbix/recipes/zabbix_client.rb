@@ -22,7 +22,7 @@ if(node[:platform] == "ubuntu")
 
   # Define zabbix agent folders
   root_dirs = [
-    # node['zabbix']['etc_dir'],
+    node['zabbix']['etc_dir'],
     node['zabbix']['install_dir'],
     "#{node['zabbix']['install_dir']}/bin",
     "#{node['zabbix']['install_dir']}/sbin",

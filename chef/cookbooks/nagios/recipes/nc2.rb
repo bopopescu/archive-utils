@@ -63,7 +63,7 @@ if(node[:platform] == "ubuntu")
 	#servers=[]
 	#search(:node, "nagios\\:\\:server") {|n| servers << n["ipaddress"] }
 	# not sure why this doesn't work...
-	servers=['10.193.135.95']
+	servers=['10.192.178.64']
 
 	template "/etc/nagios/nrpe_local.cfg" do
 		mode "0444"
