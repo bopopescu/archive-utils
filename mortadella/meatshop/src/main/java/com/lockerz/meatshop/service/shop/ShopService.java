@@ -24,4 +24,8 @@ public interface ShopService {
     public ListenableFuture<Shop> newShopLF(final String name);
 
     public List<Shop> findAllShops();
+
+    void updateShop(Shop shop, String name);
+
+    Shop findShopById(int id);
 }

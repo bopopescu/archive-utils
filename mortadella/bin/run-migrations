@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ ${APP_HOME:-unset} == "unset" ]] ; then
+  export APP_HOME="$HOME/opt/lockerz/meatshop"
+fi
+
+CLASSPATH=`echo common-lib/*.jar | tr ' ' ':'`:`echo artifact/*.jar | tr ' ' ':'`:migration
+
+java -classpath $CLASSPATH com.lockerz.common.flyway.FlywayMigrator "$@"

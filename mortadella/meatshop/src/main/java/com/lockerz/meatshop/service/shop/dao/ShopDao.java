@@ -21,4 +21,6 @@ public interface ShopDao {
                         final Shop shop);
 
     public Shop newShop(final String name);
+
+    void updateShop(Shop shop, String name);
 }

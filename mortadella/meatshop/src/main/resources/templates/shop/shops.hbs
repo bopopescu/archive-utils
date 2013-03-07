@@ -1,0 +1,51 @@
+<div ng-app="mekka" ng-controller="ShopCtr">
+    <table class="table">
+        <tr>
+            <th>Shop Name</th>
+        </tr>
+        <tr ng-repeat="shop in shops">
+            <td ng-controller="EditShopCtr">
+                <div ng-hide="editing" ng-click="startEditing()">[[shop.name]]</div>
+                <div ng-show="editing">
+                    <input type="text" id="shop-edit-[[shop.id]]" ng-model="dirtyName" placeholder="[[shop.name]]">
+                    <button class="btn" ng-click="commitEditing()">Done</button>
+                    <button class="btn" ng-click="cancelEditing()">Cancel</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <form class="form-horizontal" method="POST" action="new">
+        {{text-group "name" "Shop Name"}}
+        {{submit-group "New Shop"}}
+    </form>
+</div>
+
+{{ require_javascript "/static/js/app.js" }}
+{{ require_javascript "/static/js/angular-resource.js" }}
+<script type="text/javascript">
+function ShopCtr($scope) {
+    $scope.shops = {{json shops "name" "id"}};
+};
+
+function EditShopCtr($scope, Shop) {
+    $scope.editing = false;
+
+    $scope.startEditing = function() {
+        $scope.editing = true;
+        setTimeout(function() {
+            document.getElementById("shop-edit-" + $scope.shop.id).focus();
+        }, 5);
+    };
+
+    $scope.commitEditing = function() {
+        $scope.shop.name = $scope.dirtyName;
+        $scope.editing = false;
+        Shop.save($scope.shop);
+    }
+
+    $scope.cancelEditing = function() {
+        $scope.editing = false;
+    };
+};
+</script>

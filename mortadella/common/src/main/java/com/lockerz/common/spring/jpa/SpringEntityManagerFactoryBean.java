@@ -2,7 +2,11 @@ package com.lockerz.common.spring.jpa;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.event.TCPRemoteCommitProvider;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.slf4j.Logger;
@@ -17,6 +21,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,6 +42,7 @@ public class SpringEntityManagerFactoryBean
     // Variables - Private
     //-------------------------------------------------------------
 
+    private JpaRemoteCacheService _jpaRemoteCacheService;
     private boolean _eagerConnectionInit = true;
     private volatile boolean _running = false;
 
@@ -49,11 +55,14 @@ public class SpringEntityManagerFactoryBean
         _eagerConnectionInit = eagerConnectionInit;
     }
 
+    public void setJpaRemoteCacheService(final JpaRemoteCacheService jpaRemoteCacheService) {
+        _jpaRemoteCacheService = jpaRemoteCacheService;
+    }
+
 
     //-------------------------------------------------------------
     // Implementation - Lifecycle
     //-------------------------------------------------------------
-
 
     @Override
     public int getPhase() {
@@ -83,6 +92,13 @@ public class SpringEntityManagerFactoryBean
     @Override
     protected void postProcessEntityManagerFactory(final EntityManagerFactory emf,
                                                    final PersistenceUnitInfo pui) {
+        OpenJPAEntityManagerFactorySPI openJpaEmf = (OpenJPAEntityManagerFactorySPI)emf;
+        Object remoteCommitProvider = openJpaEmf.getConfiguration().getRemoteCommitEventManager().getRemoteCommitProvider();
+
+        if (_jpaRemoteCacheService != null && remoteCommitProvider instanceof TCPRemoteCommitProvider) {
+            _jpaRemoteCacheService.register(pui.getPersistenceUnitName(), (TCPRemoteCommitProvider)remoteCommitProvider);
+        }
+
         initAndTestDbConnections(emf, pui);
         loadPersistentClassMetaData(emf);
     }

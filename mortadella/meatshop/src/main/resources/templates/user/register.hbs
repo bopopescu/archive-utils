@@ -1,0 +1,9 @@
+{{#partial "title"}} Register {{/partial}}
+{{ require_css "/static/css/login.css" }}
+	 <form class="form-horizontal" method="POST" action="/shop/register">
+	 			 <h2 class="form-signin-heading"></h2>
+                 {{text-group "email" "Email Address"}}
+                 {{password-group "password" "Password"}}
+                 {{checkbox-group "remember-me" "Remember Me"}}
+         <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+   </form>

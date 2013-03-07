@@ -11,9 +11,14 @@ import java.util.concurrent.CountDownLatch;
  * @version 1/22/13 2:28 PM
  */
 public class SpringAppRunner {
-    private static final Logger log = LoggerFactory.getLogger(SpringAppRunner.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SpringAppRunner.class);
+
     private CountDownLatch _latch = new CountDownLatch(1);
     private String[] _contextFiles;
+
+    public SpringAppRunner(final String contextFile) {
+        this (new String[] { contextFile} );
+    }
 
     public SpringAppRunner(final String[] contextFiles) {
         _contextFiles = contextFiles;
@@ -30,6 +35,10 @@ public class SpringAppRunner {
 
     public ClassPathXmlApplicationContext start() {
         long beforeSpring = System.currentTimeMillis();
+
+        LOGGER.info("app.env={}, app.ip={}, app.home={}, app.name={}",
+                new Object[] { SpringAppConfig.getAppEnv(), SpringAppConfig.getAppIp(), SpringAppConfig.getAppHome(), SpringAppConfig.getAppName() });
+
         final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
 
         ctx.setConfigLocations(_contextFiles);
@@ -39,9 +48,9 @@ public class SpringAppRunner {
         ctx.start();
         long afterStart = System.currentTimeMillis();
 
-        log.info("STARTUP TIMING Spring time to refresh: " + (afterRefresh - beforeSpring));
-        log.info("STARTUP TIMING Spring time to start: " + (afterStart - afterRefresh));
-        log.info("STARTUP TIMING Spring total: " + (afterStart - beforeSpring));
+        LOGGER.info("STARTUP TIMING Spring time to refresh: " + (afterRefresh - beforeSpring));
+        LOGGER.info("STARTUP TIMING Spring time to start: " + (afterStart - afterRefresh));
+        LOGGER.info("STARTUP TIMING Spring total: " + (afterStart - beforeSpring));
 
         ThreadGroup tg = new ThreadGroup("SpringAppRunner");
         tg.setDaemon(true);
@@ -51,7 +60,6 @@ public class SpringAppRunner {
             @Override
             public void run() {
                 ctx.close();
-                System.out.println("SpringAppRunner stopped.");
                 _latch.countDown();
             }
         });
