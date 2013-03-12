@@ -1,0 +1,666 @@
+#!/usr/bin/perl
+	
+use strict;
+#use warnings;
+use Redis;
+use JSON::XS; 
+use Time::Local;
+use Data::Dumper;
+use IO::Socket::INET;
+use Getopt::Long;
+use CGI;
+use DBI;
+
+
+############################################################################################
+# INIT
+
+	#my $INTERVAL = 3600;  ## QQQQ adjust
+	my $INTERVAL = 3600;  ## QQQQ adjust
+	my $DEBUG = 1;
+	my $TEST = 1;
+	my $redisKey="jetty.app-1";   #.apachelog.stats
+	my $parseLog="";
+	my $mapDB="";
+
+	
+	my $result = GetOptions (
+		'debug|d=s' => \$DEBUG,
+		'interval|i=s' => \$INTERVAL,
+		'parselog|p=s' => \$parseLog,
+		'map|m=s' => \$mapDB,
+	);
+	if (!$result) { Usage (); }
+
+	Debug ("command options: [d=$DEBUG, interval=$INTERVAL, log=$parseLog, mapdb=$mapDB]");
+
+	my $redis = Redis->new (server => "localhost:6379"); #UTF8 || ", encoding=>undef)"
+
+	my @e = (0,0,0,0,0,0);
+	my %hth = ();
+	my %hthAvg = ();
+	my $hthRef = \%hth;
+
+
+	my $fh;
+	if ($parseLog) {
+		Debug ("Parsing log file $parseLog ....");
+		if ($parseLog =~ /\.gz$/) {
+			open($fh, "gunzip -c $parseLog|") or die $!;
+		}
+		else {
+			open($fh, '<', $parseLog) or die $!;
+		}
+
+		parseAccessLog ();
+
+	} elsif ($mapDB) {
+		Debug ("Building heat map against DB=$mapDB ....");
+		buildHeatMap ();
+	} else {
+		Usage();
+	}
+
+
+	close($fh);
+	die "Why here?";
+
+	
+
+############################################################################################
+# AccessLogParser
+
+
+sub parseAccessLog {
+
+	#---- INIT ----
+
+	my $months = {Jan=>0,Feb=>1,Mar=>2,Apr=>3,May=>4,Jun=>5,Jul=>6,Aug=>7,Sep=>8,Oct=>9,Nov=>10,Dec=>11};
+	Debug ("Month-Hash:  \n", Dumper($months));
+	my ($line, $ip, $time, $req, $method, $urlBase, $htresp, $bytes, $ref, $agent, $dispatch, $latency);
+	my ($pageType, $htrcfd);
+	my ($day, $month, $year, $hours, $min, $sec);
+	my $jsonText;
+	#my ($numLines=0, $elapsed=0, $initial=0, $logLine=0, $eoff=0);
+	my ($elapsed, $initial, $numLines);
+	my $logLine = 0;
+	my $eoff = 0;
+
+
+	#---- LOOP ----
+	while (1) {
+
+	# Reset variables
+	$elapsed=0;
+	$initial = 0;
+	$numLines=0;
+	%hth = ( 
+		Admin => [@e], 
+		Custom => [@e], 
+		DP_Blog => [@e],
+		DP_Brand => [@e],
+		DP_Store => [@e],
+		Feed_All => [@e],
+		Feed_Blog => [@e], 
+		Feed_Brand => [@e], 
+		Feed_Store => [@e], 
+		General => [@e],
+		Onboard => [@e], 
+		Search => [@e], 
+
+		Static => [@e],
+		_Other => [@e] 
+	);
+
+
+	Debug ("HTTP HASH of Arrays: \n", Dumper(%hth));
+
+	while ($elapsed < $INTERVAL) {
+
+		++$logLine;
+		
+		Debug ("Elapsed=[$elapsed], initial=[$initial]");
+
+		if (!($line = <$fh>)) { 
+			$eoff = 1; 
+			last; 
+		}
+		chomp $line;
+
+		if ($line !~ /^\S+\s+.*\[/) {
+			Debug (0, "ERROR line=[$line]");
+			#sleep 1;
+			next;
+		}	
+	
+		Debug ("Processing line=[$line]");
+
+		($ip, $time, $req, $htresp, $bytes, $ref, $agent, $dispatch, $latency) = $line =~ 
+                   /^(\S+)\s+.*\[(\S+)\s+\S+\]\s+"(.*)"\s+(\S+)\s+(\S+)\s+"(\S+)"\s+"(.*)"\s+(\d+)\s+(\d+)/;
+
+		$req =~ s/%//g;   # strip encoded chars - didn't use "uri_unescape()" for search/debugging
+		if (!(($method, $urlBase) = $req =~ /(\S+)\s+(\S{1,40})\S*\s+\S+/)) {   # don't need full URL- truncated at 40 chars
+			Debug (3, "Heartbeat? req=[$req]");
+			next;
+		}
+
+		$urlBase =~ s/%//g;
+		Debug (5, "\t\tNextline=[$line]
+			IP=[$ip]
+			time=[$time]
+			method=[$method]
+			urlBase=[$urlBase]
+			HT_resp=[$htresp]
+			bytes=[$bytes]
+			Referrer=[$ref]
+			UserAgent=[$agent]
+			dispatch=[$dispatch]
+			latency=[$latency]");
+		
+
+		($day, $month, $year, $hours, $min, $sec, undef) = split /[:\/]/, $time;
+		$time = timelocal($sec,$min,$hours,$day,$months->{$month},$year);
+
+		if ($initial == 0) {
+			$initial = $time; 
+		}
+
+		$elapsed = $time - $initial;
+	
+		if ( $method !~ /GET/ ) {   # spacing shows some play with groupings- this will change 
+			$pageType = "_Other";
+			Debug (4, "method: [urlBase=$urlBase, htresp=$htresp, logLine=$logLine]");
+
+		} else {
+			$pageType = &urlTypeMatch ($urlBase);
+		}			
+
+
+		Debug ("TYPE=$pageType [method=$method, urlBase=$urlBase, htresp=$htresp, logLine=$logLine]");
+
+		$htrcfd = $htresp;   
+		$htrcfd =~ s/(\d)\d\d/$1/;  # "HT return code first digit"
+		$hth{$pageType}[$htrcfd]++;
+		if  ($htrcfd == 2) {   # For successful 2xx returns, add response times up (average comes below)
+			$hth{$pageType}[0] += $latency;
+		}
+
+		Debug ("[htresp=$htresp, htrcfd=$htrcfd, url=$pageType, hth{pageType}[htrcfd]=$hth{$pageType}[$htrcfd].\n"); 
+		$numLines++;
+
+	}
+
+	# only get here if elapsed >= $INTERVAL or EOF
+
+	Debug ("HTTP hash: \n", Dumper(%hth));
+	for $pageType (sort keys %hth) {
+		if ($hth{$pageType}[0]) { 
+			# posn[0] hold load times; average them by dividing by page counts:  
+			$hth{$pageType}[0] = int ($hth{$pageType}[0] / $hth{$pageType}[2]  + 0.5);
+		} 
+	}
+
+
+	$jsonText = encode_json $hthRef;
+
+	Debug ("REDIS ENQUEUE [$jsonText]");
+	$redis->rpush ($redisKey, $jsonText) || Debug ("ERROR: enqueue failed\n");
+
+
+	if ($TEST) {
+		printTxtChart();
+	}
+
+
+	# Scrub this print/exit code in prod-  temporary artifice for static logfile testing
+	if ($TEST > 0) { 
+		if ($eoff) { die "EOF!"; }
+		printf "\n   Sleep ... \n\n";
+		sleep 1;
+	} else {   # production
+		sleep 60;
+	}
+
+
+
+	}
+
+}
+
+
+############################################################################################
+# Map Builder
+
+
+
+sub buildHeatMap {
+
+	my $jsonText="";
+
+	while (1) {
+	
+		$jsonText = $redis->lpop ($redisKey) || Debug ("ERROR: lpop failed");
+		Debug ("Redis lpop: [$jsonText]");
+		if ($jsonText eq "") {
+			Debug ("Queue $redisKey empty.  Waiting data ...");
+			sleep 10;
+			next;
+		}
+		$hthRef  = decode_json $jsonText || Debug (0, "ERROR: decode failed\n");
+                %hth = %$hthRef;
+		#dbSaveAndGet();
+		printTxtChart(); 
+		printHTML();
+		#sleep 60;  # QQQ - need real interval here
+		sleep 1;  # QQQ - need real interval here
+	}
+}
+
+
+
+
+
+
+############################################################################################
+# Debug()
+
+sub Debug {
+	my $cdbl = 9;
+	if ($_[0] =~ /^\d$/) {    # Support both Debug (N, "Blah..") and Debug ("Blah")
+		$cdbl = shift;
+	}
+	if ($DEBUG >= $cdbl) { 
+		print "DEBUG: [@_]\n"; 
+	}
+
+}
+
+
+
+
+
+############################################################################################
+# urlTypeMatch()
+
+sub urlTypeMatch {
+
+	my $pageType;
+	my $urlBase = shift;
+	if ( $urlBase =~ m[^/(admin)] ) {
+		$pageType = "Admin";
+
+	} elsif ( $urlBase =~ m[^/(customize|QQQblah)] ) {
+		$pageType = "Custom";
+
+	} elsif ( $urlBase =~ m[^/(blog/look)] ) {
+		$pageType = "DP_Blog";
+	} elsif ( $urlBase =~ m[^/(brand/look)] ) {
+		$pageType = "DP_Brand";
+	} elsif ( $urlBase =~ m[^/(stores/look)] ) {
+		$pageType = "DP_Store";
+
+	} elsif ( $urlBase =~ m[^/(feed/all|QQQ)] ) {
+		$pageType = "Feed_All";
+	} elsif ( $urlBase =~ m[^/(feed/blogs|blog/feed|blog/\d)] ) {
+		$pageType = "Feed_Blog";
+	} elsif ( $urlBase =~ m[^/(feed/brand|brand/\d)] ) {
+		$pageType = "Feed_Brand";
+	} elsif ( $urlBase =~ m[^/(feed/stores|stores/\d)] ) {
+		$pageType = "Feed_Store";
+
+	} elsif ( $urlBase =~ m[^/(onboard)] ) {
+		$pageType = "Onboard";
+
+	} elsif ( $urlBase =~ m[^/search] ) {
+		$pageType = "Search";     # Search
+
+	} elsif ( $urlBase =~ m[^/(css|js|favicon|html|img)] ) {
+		$pageType = "Static";
+
+	} else {
+		$pageType = "_Other";
+		Debug (1, "OTHER:  [Urlbase=$urlBase]");
+	}
+	return $pageType;
+
+}
+
+
+
+
+
+
+
+
+############################################################################################
+# dbSaveandGet()
+
+sub dbSaveAndGet {
+
+	my $dbh = DBI->connect("DBI:Pg:dbname=perf;host=localhost", "postgres", "mekkamekka");
+	my $table = "jps";
+	my $insStr = "INSERT INTO $table VALUES (";
+	my $val;
+
+	for my $pageType (sort keys %hth) {
+		#$insStr = $insStr." '{";
+		$insStr .= " '{";
+		foreach my $i (0,1,2,3,4,5) { # RC digit starters- i.e. <d>xx (with 0==>page load times)
+			$val=$hth{$pageType}[$i];
+			#$insStr = $insStr."$val, ";
+			$insStr .= "$val, ";
+		}
+		#$insStr = $insStr."}',";
+		$insStr .= "}',";
+	}
+	$insStr =~ s/'$/)/;
+	
+	
+	Debug (0, "SQL: [$insStr]");
+	my $rows = $dbh->do($insStr);
+	#Debug (0, "Rows affected: [$rows]");
+
+	#my %hth_max =;
+	#my %hth_min;
+	%hthAvg = ( 
+		#FILLER  => [LTime, N/A,  Hits,  3XX,  4XX, 5XX],
+		#Commerce => [  600,   0,   100,    6,   14,   0],
+		#Core =>     [  540,   0,  3000,  540,   30,   0], 
+		#Logins =>   [   30,   0,   400,   10,    5,   0], 
+		#Misc =>     [  130,   0,  5000,  500,   20,   0], 
+		#Other =>    [  350,   0,   500, 4500,   63,   0], 
+		#Photos =>   [  950,   0,   250,25000,  130,   0],
+		#Videos =>   [  170,   0,   800, 1500,  180,  30],
+	);
+
+}
+
+
+
+
+
+
+
+############################################################################################
+# getStyle()
+
+sub getStyle {
+
+	my $style = <<"EOF";
+	body {
+		font-family: verdana, arial, sans-serif;
+		background-color: white;
+		padding-left: 8%;
+	}
+	H1 {
+		#color: darkgreen;
+		color: darkblue;
+		border-bottom: 2pt solid;
+	}
+	H2 {
+		color: blue;
+		border-bottom: 1pt solid;
+	}
+	H4 {
+		color: darkblue;
+	}
+	p {
+		font-variant: small-caps;
+		font-weight: bold;
+	}
+	table {
+		border: darkblue 1pt solid;
+		
+	}
+	th, td {
+		border: blue 1pt dashed;
+		width: 125;
+	}
+	strong_positive {
+		color: white;
+		background-color: green;
+		font-weight: bold;
+	}
+	mild_positive {
+		#color: lightgreen;
+		color: green;
+		font-style: italic;
+		font-weight: bold;
+	}
+	mild_alert {
+		color: orange;
+		font-style: italic;
+		font-weight: bold;
+	}
+	strong_alert {
+		color: white;
+		background-color: red;
+		font-weight: bold;
+	}
+EOF
+	
+	return $style;
+}
+
+
+
+############################################################################################
+# getCell()
+
+sub getCell {
+
+	my $val = shift;
+	my $avg = shift;
+	my $reverse = shift;
+	my $bigf = 0.7;
+	my $lilf = 0.25;
+	my $cell;
+
+	if ($reverse) {    ## Keep this ordering ... it matters!
+
+		if ($val < ($avg * (1 - $bigf))) {
+			$cell = "<strong_positive>".$val."</strong_positive>";
+		} elsif ($val < ($avg * (1 - $lilf))) {
+			$cell = "<mild_positive>".$val."</mild_positive>";
+		} elsif ($val > ($avg * (1 + $bigf))) {
+			$cell = "<strong_alert>".$val."</strong_alert>";
+		} elsif ($val > ($avg * (1 + $lilf))) {
+			$cell = "<mild_alert>".$val."</mild_alert>";
+		} else {
+			$cell = $val;
+		}
+
+
+	} else {  ## Keep this ordering ... it matters!
+
+		if ($val > ($avg * (1 + $bigf))) {
+			$cell = "<strong_positive>".$val."</strong_positive>";
+		} elsif ($val > ($avg * (1 + $lilf))) {
+			$cell = "<mild_positive>".$val."</mild_positive>";
+		} elsif ($val < ($avg * (1 - $bigf))) {
+			$cell = "<strong_alert>".$val."</strong_alert>";
+		} elsif ($val < ($avg * (1 - $lilf))) {
+			$cell = "<mild_alert>".$val."</mild_alert>";
+		} else {
+			$cell = $val;
+		}
+	}
+
+}
+
+
+############################################################################################
+# printHTML()
+
+sub printHTML {
+	#open (HTFILE, '> /opt/heatmap/heatmap.html') || die "cannot open heatmap.html";
+	open (HTFILE, '> /home/ubuntu/checkout/mekka/platz/src/main/resources/static/admin/html/perf/heatmap.html') || die "cannot open heatmap.html";
+
+	my $q = new CGI;
+
+	my $style = getStyle();
+
+
+	my @times = ("<strong>Latency(ms)</strong>");
+	my @headings = ("<strong>Result</strong>");
+	my @hits = ("<strong>PageHits</strong>");
+	my @redirects = ("<strong>Redirect</strong>");
+	my @clientFail = ("<strong>Browser Err</strong>");
+	my @serverFail = ("<strong>Server Fail</strong>");
+
+	my $val;
+	my $valAvg;
+	my $pageType;
+	my $cell;
+
+	#print HTFILE $q->header;
+	print HTFILE $q->start_html (
+		-title => 'Ador Heatmap',
+		-author => 'q@lockerz.com',
+		-meta => { keywords => 'perl cgi heatmap test' },
+		-style => {-code => $style},
+	#	-style => {'src' => '/styles/sample.css'},
+	);
+
+
+	print HTFILE $q->h1 ("Ador Heatmap");
+	#print HTFILE $q->p ("First shot!");
+
+	foreach my $i (0,1,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
+		
+		for $pageType (sort keys %hth) {
+			
+			$val = $hth{$pageType}[$i];
+			$valAvg = $hthAvg{$pageType}[$i];
+			#$cell = getCell ($val, $valAvg, 0);
+
+			if ($i == 1) {
+				push (@headings, sprintf("%12s", $pageType));
+			} elsif ($i == 0) {
+				push (@times, getCell ($val, $valAvg, 1));
+			} elsif ($i == 2) {
+				push (@hits, getCell ($val, $valAvg, 0));
+			} elsif ($i == 3) {
+				push (@redirects, getCell ($val, $valAvg, 0));
+			} elsif ($i == 4) {
+				push (@clientFail, getCell ($val, $valAvg, 1));
+			} elsif ($i == 5) {
+				push (@serverFail, getCell ($val, $valAvg, 1));
+			} else {
+				Debug (0, "Why fell through? QQQ");
+			}
+		}
+
+	}
+	
+
+	print HTFILE $q->table(
+		{-border => 1, -cellpadding => 4},
+		$q->Tr([
+			$q->th (\@headings), 
+			$q->td (\@times),
+			$q->td (\@hits),
+			$q->td (\@redirects),
+			$q->td (\@clientFail),
+			$q->td (\@serverFail),
+		])
+	);
+
+
+	print HTFILE "<br><br>";
+	print HTFILE $q->h4 ("Map Annotation");
+	print HTFILE $q->ul ( $q->li([
+		"<strong_positive>Strong Positive</strong_positive>", 
+		"<mild_positive>Mild Positive</mild_positive>",
+		"Normal",
+		"<mild_alert>Mild Alert</mild_alert>",
+		"<strong_alert>Strong Alert</strong_alert>"
+	]));
+
+	print HTFILE "<br><br>";
+	print HTFILE $q->h4 ("To-Dos");
+	print HTFILE $q->ul ( $q->li([
+		'Ador- jetty logs',
+		'dynamic page refresh', 
+		'Database save',
+		'Max/Min/Avg',
+		'Holt-Winters',
+		'Multiple app logs- indiv or aggreg display',
+		'Mekka/Uber logs?', 
+	]));
+
+	print HTFILE $q->end_html;
+	close (HTFILE);
+}
+
+
+
+
+
+
+
+############################################################################################
+# printTxtChart()
+
+sub printTxtChart {
+
+	my $i;
+	my $val;
+	my $pageType;
+	my $htrcc="";  #HT return code category
+
+	printf "%12s", "RESULTS";
+	for $pageType (sort keys %hth) {
+		printf "%11s", $pageType;
+	}
+	printf "\n";
+
+	#Debug (0,"HTTP HASH of Arrays: \n", Dumper(%hth));
+
+	foreach $i (0,2,3,4,5) { # RC digit starters- i.e. <d>xx (with 0==>page load times)
+		my $htr = "$i"."xx";
+		if ($i == 0) {
+			$htr = "Time";
+		}
+		printf "%12s", $htr;
+
+		for $pageType (sort keys %hth) {
+			$val=$hth{$pageType}[$i];
+			if ($val) {
+				if ($i == 0) {
+					printf "%9dms", $hth{$pageType}[$i];
+				} else {
+					printf "%11d", $hth{$pageType}[$i];
+				}
+			} else {
+				printf "%11s", "";
+			}
+		}
+		printf "\n";
+		
+	}
+}
+
+
+
+
+############################################################################################
+# Usage()
+
+sub Usage {
+
+	my $usage = q{
+
+              Usage: adorhmb [-i] [-d <debug>] -p <parse-file> 
+
+              Usage: adorhmb [-d <debug>] -m <map-db> 
+
+                    options:
+                        --debug, -d <level>      # 0 = none, 9 = max detail
+                        --interval, -i <n>       # measurement interval in seconds
+
+	};
+
+	die $usage;
+}
+
