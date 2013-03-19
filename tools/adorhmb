@@ -1,69 +1,73 @@
 #!/usr/bin/perl
 	
 use strict;
-#use warnings;
-use Redis;
-use JSON::XS; 
+use warnings;
+#use Redis;
+#use JSON::XS; 
 use Time::Local;
 use Data::Dumper;
-use IO::Socket::INET;
 use Getopt::Long;
 use CGI;
 use DBI;
 
 
 ############################################################################################
-# INIT
+# Initialize Globals & call Main
+#   
 
-	#my $INTERVAL = 3600;  ## QQQQ adjust
-	my $INTERVAL = 3600;  ## QQQQ adjust
+	my $INTERVAL = 300;  ## QQQQ adjust
 	my $DEBUG = 1;
+	my $ALOGF;
 	my $TEST = 1;
-	my $redisKey="jetty.app-1";   #.apachelog.stats
-	my $parseLog="";
-	my $mapDB="";
-
 	
+	#my $redisKey="jetty.app-1";   #.apachelog.stats
+	#my $redis = Redis->new (server => "localhost:6379"); #UTF8 || ", encoding=>undef)"
+	my %hth = ();
+	#my $hthRef = \%hth;
+	my %hthBench = ();
+	my %hthSum = ();
+
+	my $inception;
+	my $totalParses;
+
+	main();
+
+
+
+############################################################################################
+# main - GetOptions, call primary subs() 
+#   
+sub main {
+
+	my $parseLog;
 	my $result = GetOptions (
 		'debug|d=s' => \$DEBUG,
 		'interval|i=s' => \$INTERVAL,
-		'parselog|p=s' => \$parseLog,
-		'map|m=s' => \$mapDB,
+		'parse|p=s' => \$parseLog
 	);
 	if (!$result) { Usage (); }
 
-	Debug ("command options: [d=$DEBUG, interval=$INTERVAL, log=$parseLog, mapdb=$mapDB]");
+	Debug ("command options: [d=$DEBUG, interval=$INTERVAL, log=$parseLog.");
 
-	my $redis = Redis->new (server => "localhost:6379"); #UTF8 || ", encoding=>undef)"
-
-	my @e = (0,0,0,0,0,0);
-	my %hth = ();
-	my %hthAvg = ();
-	my $hthRef = \%hth;
-
-
-	my $fh;
 	if ($parseLog) {
 		Debug ("Parsing log file $parseLog ....");
 		if ($parseLog =~ /\.gz$/) {
-			open($fh, "gunzip -c $parseLog|") or die $!;
+			open($ALOGF, "gunzip -c $parseLog|") or die $!;
 		}
 		else {
-			open($fh, '<', $parseLog) or die $!;
+			open($ALOGF, '<', $parseLog) or die $!;
 		}
 
 		parseAccessLog ();
 
-	} elsif ($mapDB) {
-		Debug ("Building heat map against DB=$mapDB ....");
-		buildHeatMap ();
 	} else {
 		Usage();
 	}
 
 
-	close($fh);
+	close($ALOGF);
 	die "Why here?";
+}
 
 	
 
@@ -87,31 +91,16 @@ sub parseAccessLog {
 	my $eoff = 0;
 
 
+
 	#---- LOOP ----
+
 	while (1) {
 
 	# Reset variables
 	$elapsed=0;
 	$initial = 0;
 	$numLines=0;
-	%hth = ( 
-		Admin => [@e], 
-		Custom => [@e], 
-		DP_Blog => [@e],
-		DP_Brand => [@e],
-		DP_Store => [@e],
-		Feed_All => [@e],
-		Feed_Blog => [@e], 
-		Feed_Brand => [@e], 
-		Feed_Store => [@e], 
-		General => [@e],
-		Onboard => [@e], 
-		Search => [@e], 
-
-		Static => [@e],
-		_Other => [@e] 
-	);
-
+	initHashes();
 
 	Debug ("HTTP HASH of Arrays: \n", Dumper(%hth));
 
@@ -121,7 +110,7 @@ sub parseAccessLog {
 		
 		Debug ("Elapsed=[$elapsed], initial=[$initial]");
 
-		if (!($line = <$fh>)) { 
+		if (!($line = <$ALOGF>)) { 
 			$eoff = 1; 
 			last; 
 		}
@@ -181,7 +170,7 @@ sub parseAccessLog {
 		$htrcfd = $htresp;   
 		$htrcfd =~ s/(\d)\d\d/$1/;  # "HT return code first digit"
 		$hth{$pageType}[$htrcfd]++;
-		if  ($htrcfd == 2) {   # For successful 2xx returns, add response times up (average comes below)
+		if  ($htrcfd == 2) {   # On successful 2xx returns, add response times (average below)
 			$hth{$pageType}[0] += $latency;
 		}
 
@@ -192,35 +181,33 @@ sub parseAccessLog {
 
 	# only get here if elapsed >= $INTERVAL or EOF
 
-	Debug ("HTTP hash: \n", Dumper(%hth));
+	$hth{'Admin'}[1] = $time; # convenient place to store 'lastentry' 
+	$hth{'_Other'}[1] = $INTERVAL;  # convenient place to store 'interval'
 	for $pageType (sort keys %hth) {
 		if ($hth{$pageType}[0]) { 
 			# posn[0] hold load times; average them by dividing by page counts:  
 			$hth{$pageType}[0] = int ($hth{$pageType}[0] / $hth{$pageType}[2]  + 0.5);
-		} 
+		}
 	}
+	Debug ("HTTP hash: \n", Dumper(%hth));
+
+	#$jsonText = encode_json $hthRef;
+	#Debug ("REDIS ENQUEUE [$jsonText]");
+	#$redis->rpush ($redisKey, $jsonText) || Debug ("ERROR: enqueue failed\n");
 
 
-	$jsonText = encode_json $hthRef;
-
-	Debug ("REDIS ENQUEUE [$jsonText]");
-	$redis->rpush ($redisKey, $jsonText) || Debug ("ERROR: enqueue failed\n");
-
-
-	if ($TEST) {
-		printTxtChart();
-	}
-
-
-	# Scrub this print/exit code in prod-  temporary artifice for static logfile testing
-	if ($TEST > 0) { 
+	savePG();
+	printHTML();
+	if ($TEST) { 
+		printTxtChart(); 
 		if ($eoff) { die "EOF!"; }
-		printf "\n   Sleep ... \n\n";
-		sleep 1;
-	} else {   # production
-		sleep 60;
-	}
+	} 
 
+	# production, reached EOF, so 
+	Debug (1, "...  Sleep ...\n"); 
+	#sleep $INTERVAL;
+	#sleep 20;
+	sleep 1;
 
 
 	}
@@ -233,28 +220,23 @@ sub parseAccessLog {
 
 
 
-sub buildHeatMap {
-
-	my $jsonText="";
-
-	while (1) {
-	
-		$jsonText = $redis->lpop ($redisKey) || Debug ("ERROR: lpop failed");
-		Debug ("Redis lpop: [$jsonText]");
-		if ($jsonText eq "") {
-			Debug ("Queue $redisKey empty.  Waiting data ...");
-			sleep 10;
-			next;
-		}
-		$hthRef  = decode_json $jsonText || Debug (0, "ERROR: decode failed\n");
-                %hth = %$hthRef;
-		#dbSaveAndGet();
-		printTxtChart(); 
-		printHTML();
-		#sleep 60;  # QQQ - need real interval here
-		sleep 1;  # QQQ - need real interval here
-	}
-}
+#sub buildHeatMap {
+#
+#	my $jsonText="";
+#	while (1) {
+#	
+#		$jsonText = $redis->lpop ($redisKey) || Debug ("ERROR: lpop failed");
+#		Debug ("Redis lpop: [$jsonText]");
+#		if ($jsonText eq "") {
+#			Debug ("Queue $redisKey empty.  Waiting data ...");
+#			sleep 10;
+#			next;
+#		}
+#		$hthRef  = decode_json $jsonText || Debug (0, "ERROR: decode failed\n");
+#                %hth = %$hthRef;
+#		sleep 5;  # QQQ - need real interval here
+#	}
+#}
 
 
 
@@ -284,43 +266,38 @@ sub Debug {
 
 sub urlTypeMatch {
 
-	my $pageType;
+	my $pageType="";
 	my $urlBase = shift;
-	if ( $urlBase =~ m[^/(admin)] ) {
-		$pageType = "Admin";
 
-	} elsif ( $urlBase =~ m[^/(customize|QQQblah)] ) {
-		$pageType = "Custom";
+	my %logRegex = (
+		'admin/login' => 'Junk',  # this is the base URL for heartbeat check 
+		'admin' => 'Admin',
+		'customize|user' => 'Custom',
+		'blog/look' => 'DP_Blog',
+		'brand/look' => 'DP_Brand',
+		'stores/look' => 'DP_Store',
+		'feed/all|QQQ' => 'Feed_All',
+		'feed/blogs|blog/feed|blog\d' => 'Feed_Blog',
+		'feed/brand|brand/\d' => 'Feed_Brand',
+		'feed/stores|stores/\d' => 'Feed_Store',
+		'mekka|QQQ' => "General",
+		'onboard' => 'Onboard',
+		'search' => 'Search',
+		'css|js|favicon|html|img' => 'Static'
+	);
 
-	} elsif ( $urlBase =~ m[^/(blog/look)] ) {
-		$pageType = "DP_Blog";
-	} elsif ( $urlBase =~ m[^/(brand/look)] ) {
-		$pageType = "DP_Brand";
-	} elsif ( $urlBase =~ m[^/(stores/look)] ) {
-		$pageType = "DP_Store";
 
-	} elsif ( $urlBase =~ m[^/(feed/all|QQQ)] ) {
-		$pageType = "Feed_All";
-	} elsif ( $urlBase =~ m[^/(feed/blogs|blog/feed|blog/\d)] ) {
-		$pageType = "Feed_Blog";
-	} elsif ( $urlBase =~ m[^/(feed/brand|brand/\d)] ) {
-		$pageType = "Feed_Brand";
-	} elsif ( $urlBase =~ m[^/(feed/stores|stores/\d)] ) {
-		$pageType = "Feed_Store";
-
-	} elsif ( $urlBase =~ m[^/(onboard)] ) {
-		$pageType = "Onboard";
-
-	} elsif ( $urlBase =~ m[^/search] ) {
-		$pageType = "Search";     # Search
-
-	} elsif ( $urlBase =~ m[^/(css|js|favicon|html|img)] ) {
-		$pageType = "Static";
-
-	} else {
+	for my $regex (keys %logRegex) {  # remove sort to preserve order (e.g. 'Junk' gets butchered by 'admin')
+		if ($urlBase =~ m[^/($regex)]) {
+			$pageType =  $logRegex{$regex};
+			last;
+		}
+	}
+	if (! $pageType) { 
 		$pageType = "_Other";
 		Debug (1, "OTHER:  [Urlbase=$urlBase]");
 	}
+
 	return $pageType;
 
 }
@@ -333,45 +310,148 @@ sub urlTypeMatch {
 
 
 ############################################################################################
-# dbSaveandGet()
+# savePG ()     # double-entendre on "PG" = save in Postgres db, and save Page to db
 
-sub dbSaveAndGet {
+sub savePG {
 
-	my $dbh = DBI->connect("DBI:Pg:dbname=perf;host=localhost", "postgres", "mekkamekka");
+	my ($i, $columns, $values, $cols_vals, $pageType);
+	my ($dbInsert, $dbUpdate, $dbSelect, $rows);
+	my $host = "localhost";
+	my $opw = "mekkamekka";
+	my $dbh = DBI->connect("DBI:Pg:dbname=perf;host=$host", "postgres", $opw, {RaiseError => 1})
+		|| die "$DBI::errstr";
+	my $sth;
 	my $table = "jps";
-	my $insStr = "INSERT INTO $table VALUES (";
-	my $val;
+	my $rowSummaries = 1;  # keep summaries of all page hits, errors, in row 1
+	my $rowAverages = 2;   # keep averages of all page hits, errors, in row 2
 
-	for my $pageType (sort keys %hth) {
-		#$insStr = $insStr." '{";
-		$insStr .= " '{";
-		foreach my $i (0,1,2,3,4,5) { # RC digit starters- i.e. <d>xx (with 0==>page load times)
-			$val=$hth{$pageType}[$i];
-			#$insStr = $insStr."$val, ";
-			$insStr .= "$val, ";
-		}
-		#$insStr = $insStr."}',";
-		$insStr .= "}',";
+
+	# INSERT new row for lastest aggregated return codes and function calls (in %hth hash)
+	my $interval = $hth{'_Other'}[1];
+	my $lastentry = $hth{'Admin'}[1];
+	$hth{'Admin'}[1] = 0;  # back to "unused" state for [1] array element
+	$hth{'_Other'}[1] = 0;  # back to "unused" state for [1] array element
+
+	$columns = "\ninterval,\nlastentry,\n";
+	$values = "\n$interval,\nto_timestamp($lastentry),\n";
+	for $pageType (sort keys %hth) {
+		$columns .= "$pageType,\n";
+		$values .= "'{".join (",", @{$hth{$pageType}})."}', \n";
 	}
-	$insStr =~ s/'$/)/;
+	$columns =~ s/,\s*$//;
+	$values =~ s/,\s*$//;
 	
-	
-	Debug (0, "SQL: [$insStr]");
-	my $rows = $dbh->do($insStr);
-	#Debug (0, "Rows affected: [$rows]");
+	$dbInsert = "INSERT INTO $table ($columns) VALUES ($values)";
+	Debug (1, "SQL: \n$dbInsert.");
+	$rows = $dbh->do($dbInsert);
+	Debug (1, "Rows affected: [$rows]");
 
-	#my %hth_max =;
-	#my %hth_min;
-	%hthAvg = ( 
-		#FILLER  => [LTime, N/A,  Hits,  3XX,  4XX, 5XX],
-		#Commerce => [  600,   0,   100,    6,   14,   0],
-		#Core =>     [  540,   0,  3000,  540,   30,   0], 
-		#Logins =>   [   30,   0,   400,   10,    5,   0], 
-		#Misc =>     [  130,   0,  5000,  500,   20,   0], 
-		#Other =>    [  350,   0,   500, 4500,   63,   0], 
-		#Photos =>   [  950,   0,   250,25000,  130,   0],
-		#Videos =>   [  170,   0,   800, 1500,  180,  30],
+
+
+	# SELECT row $rowSummaries into %hthSum 
+	#$dbSelect = "SELECT interval, lastentry, Admin FROM $table WHERE id=$rowSummaries";
+	$dbSelect = "SELECT
+		interval,
+		lastentry,
+		Admin,
+		Custom,
+		DP_Blog,
+		DP_Brand,
+		DP_Store,
+		Feed_All,
+		Feed_Blog,
+		Feed_Brand,
+		Feed_Store,
+		General,
+		Onboard,
+		Search,
+		Static,
+		_Other
+		FROM $table
+		WHERE id = $rowSummaries";
+
+	Debug (1, "SQL: PREPARE: $dbSelect.");
+	$sth = $dbh->prepare($dbSelect);
+	Debug (1, "Result: [$sth]");
+	$sth->execute();
+	my $ref = $sth->fetchrow_hashref();   
+	# NOTE:  must use lowercase for actual fetched column descriptors!
+	%hthSum = (   
+		Admin => $ref->{'admin'},
+		Custom => $ref->{'custom'},
+		DP_Blog => $ref->{'dp_blog'},
+		DP_Brand => $ref->{'dp_brand'},
+		DP_Store => $ref->{'dp_store'},
+		Feed_All => $ref->{'feed_all'},
+		Feed_Blog => $ref->{'feed_blog'}, 
+		Feed_Brand => $ref->{'feed_brand'}, 
+		Feed_Store => $ref->{'feed_store'}, 
+		General => $ref->{'general'},
+		Onboard => $ref->{'onboard'}, 
+		Search => $ref->{'search'}, 
+		Static => $ref->{'static'},
+		_Other => $ref->{'_other'} 
 	);
+	$inception=$ref->{'lastentry'};  
+	$totalParses=$ref->{'interval'}; # convenient place to store Total count of parsed result sets (needed for Bench calcs)
+	Debug (1, "Result: ref=$ref. inception=$inception, totalParses=$totalParses, Admin=@{$hthSum{'Admin'}}.");
+	$totalParses += 1;
+
+
+	# ADD current counts to summary counts
+	for $i (0,2,3,4,5) { 
+		for $pageType (sort keys %hthSum) {
+			$hthSum{$pageType}[$i] += $hth{$pageType}[$i];
+		}
+	}
+	# UPDATE summary row 1 with new summaries
+	$cols_vals = "interval = $totalParses,\n";
+	for $pageType (sort keys %hthSum) { ## QQQ hthSum
+		$cols_vals .= "$pageType = ARRAY[".join (",", @{$hthSum{$pageType}})."], \n"; ## QQQ hthSum
+	}
+	$cols_vals =~ s/,\s*$//;
+	$dbUpdate = "UPDATE $table SET $cols_vals WHERE id=$rowSummaries";
+	Debug (1, "SQL: \n$dbUpdate.");
+	$rows = $dbh->do($dbUpdate);
+	Debug (1, "Rows affected: [$rows]");
+
+	for my $pT (sort keys %hthBench) {
+		# Additive latencies don't make sense, even for summary table, so divide by hits.
+		$hthBench{$pT}[0] = int ( ($hthSum{$pT}[0]/(1+$hthSum{$pT}[2])) + .5);
+		$hthBench{$pT}[2] = int ( ($hthSum{$pT}[2] / $totalParses) + .5);
+		$hthBench{$pT}[3] = int ( ($hthSum{$pT}[3] / $totalParses) + .5);
+		$hthBench{$pT}[4] = int ( ($hthSum{$pT}[4] / $totalParses) + .5);
+		$hthBench{$pT}[5] = int ( ($hthSum{$pT}[5] / $totalParses) + .5);
+	}
+
+
+#		$hthSum{$page
+#		my $hits = $hthSum{$pageType}[2];
+#		if (!$hits) { $hits=1; }
+#		$hthSum{$pageType}[0] = int ($latencies / $hits);
+#			}
+#				$
+#				$hthSum{$pageType}[$i] = int ($latencies / $hits);
+#				
+#				push (@times, $val); 
+#			} elsif ($i == 2) {
+#				push (@hits, $val);
+#			} elsif ($i == 3) {
+#				push (@redirects, $val);
+#			} elsif ($i == 4) {
+#				push (@clientFail, $val);
+#			} elsif ($i == 5) {
+#				push (@serverFail, $val);
+#			} else {
+#				Debug (0, "Why fall through? QQQ");
+#			}
+#		}
+
+
+
+	$dbh->disconnect();
+
+
 
 }
 
@@ -448,17 +528,22 @@ EOF
 # getCell()
 
 sub getCell {
+	die "call:  getCell (<val>, <avg>, <rev>, <mult>)" if @_ != 4;
+	# QQQ this routine breaks with "use warnings;" due to unit'd vars?
+	my ($val, $avg, $reverse, $mult) = @_;
 
-	my $val = shift;
-	my $avg = shift;
-	my $reverse = shift;
+	$val *= $mult;  # Translate actual page hits & errors into hourly figures
+
 	my $bigf = 0.7;
 	my $lilf = 0.25;
+
 	my $cell;
 
 	if ($reverse) {    ## Keep this ordering ... it matters!
 
-		if ($val < ($avg * (1 - $bigf))) {
+		if ($val == 0) {
+			$cell = 0;
+		} elsif ($val < ($avg * (1 - $bigf))) {
 			$cell = "<strong_positive>".$val."</strong_positive>";
 		} elsif ($val < ($avg * (1 - $lilf))) {
 			$cell = "<mild_positive>".$val."</mild_positive>";
@@ -473,7 +558,9 @@ sub getCell {
 
 	} else {  ## Keep this ordering ... it matters!
 
-		if ($val > ($avg * (1 + $bigf))) {
+		if ($val == 0) {
+			$cell = 0;
+		} elsif ($val > ($avg * (1 + $bigf))) {
 			$cell = "<strong_positive>".$val."</strong_positive>";
 		} elsif ($val > ($avg * (1 + $lilf))) {
 			$cell = "<mild_positive>".$val."</mild_positive>";
@@ -493,28 +580,31 @@ sub getCell {
 # printHTML()
 
 sub printHTML {
-	#open (HTFILE, '> /opt/heatmap/heatmap.html') || die "cannot open heatmap.html";
-	open (HTFILE, '> /home/ubuntu/checkout/mekka/platz/src/main/resources/static/admin/html/perf/heatmap.html') || die "cannot open heatmap.html";
 
-	my $q = new CGI;
+	open (HTFILE, '> /var/www/zabbix/heatmap.html') || die "cannot open heatmap.html";
+	#open (HTFILE, '> /home/ubuntu/checkout/mekka/platz/src/main/resources/static/admin/html/perf/heatmap.html') || die "cannot open heatmap.html";
 
+	#my $q = new CGI;
 	my $style = getStyle();
 
 
 	my @times = ("<strong>Latency(ms)</strong>");
-	my @headings = ("<strong>Result</strong>");
+	my @headings = ("<strong>Result($INTERVAL.s)</strong>");
 	my @hits = ("<strong>PageHits</strong>");
 	my @redirects = ("<strong>Redirect</strong>");
 	my @clientFail = ("<strong>Browser Err</strong>");
 	my @serverFail = ("<strong>Server Fail</strong>");
 
 	my $val;
-	my $valAvg;
+	my $valBench;
 	my $pageType;
 	my $cell;
+	my $i;
 
-	#print HTFILE $q->header;
-	print HTFILE $q->start_html (
+	my $multFactor = 1; #later- int(3600/$INTERVAL), but keep simple now
+
+	#print HTFILE CGI->header;
+	print HTFILE CGI->start_html (
 		-title => 'Ador Heatmap',
 		-author => 'q@lockerz.com',
 		-meta => { keywords => 'perl cgi heatmap test' },
@@ -522,54 +612,130 @@ sub printHTML {
 	#	-style => {'src' => '/styles/sample.css'},
 	);
 
+	#print HTFILE CGI->p ("First shot!");
 
-	print HTFILE $q->h1 ("Ador Heatmap");
-	#print HTFILE $q->p ("First shot!");
-
-	foreach my $i (0,1,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
-		
+	print HTFILE CGI->h1 ("Ador Heatmap");
+	for $i (0,1,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
 		for $pageType (sort keys %hth) {
-			
 			$val = $hth{$pageType}[$i];
-			$valAvg = $hthAvg{$pageType}[$i];
-			#$cell = getCell ($val, $valAvg, 0);
-
-			if ($i == 1) {
+			$valBench = $hthBench{$pageType}[$i];
+			if ($i == 0) {
+				push (@times, getCell ($val, $valBench, 1, 1));
+			} elsif ($i == 1) {
 				push (@headings, sprintf("%12s", $pageType));
-			} elsif ($i == 0) {
-				push (@times, getCell ($val, $valAvg, 1));
 			} elsif ($i == 2) {
-				push (@hits, getCell ($val, $valAvg, 0));
+				push (@hits, getCell ($val, $valBench, 0, $multFactor));
 			} elsif ($i == 3) {
-				push (@redirects, getCell ($val, $valAvg, 0));
+				push (@redirects, getCell ($val, $valBench, 0, $multFactor));
 			} elsif ($i == 4) {
-				push (@clientFail, getCell ($val, $valAvg, 1));
+				push (@clientFail, getCell ($val, $valBench, 1, $multFactor));
 			} elsif ($i == 5) {
-				push (@serverFail, getCell ($val, $valAvg, 1));
+				push (@serverFail, getCell ($val, $valBench, 1, $multFactor));
 			} else {
-				Debug (0, "Why fell through? QQQ");
+				Debug (0, "Why fall through? QQQ");
 			}
 		}
-
 	}
-	
-
-	print HTFILE $q->table(
+	print HTFILE CGI->table(
 		{-border => 1, -cellpadding => 4},
-		$q->Tr([
-			$q->th (\@headings), 
-			$q->td (\@times),
-			$q->td (\@hits),
-			$q->td (\@redirects),
-			$q->td (\@clientFail),
-			$q->td (\@serverFail),
+		CGI->Tr([
+			CGI->th (\@headings), 
+			CGI->td (\@times),
+			CGI->td (\@hits),
+			CGI->td (\@redirects),
+			CGI->td (\@clientFail),
+			CGI->td (\@serverFail),
 		])
 	);
 
 
+	@times = ("<strong>Latency(ms)</strong>");
+	@hits = ("<strong>PageHits</strong>");
+	@redirects = ("<strong>Redirect</strong>");
+	@clientFail = ("<strong>Browser Err</strong>");
+	@serverFail = ("<strong>Server Fail</strong>");
+
+	
 	print HTFILE "<br><br>";
-	print HTFILE $q->h4 ("Map Annotation");
-	print HTFILE $q->ul ( $q->li([
+	print HTFILE CGI->h3 ("Totals since $inception.");
+	for $i (0,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
+		for $pageType (sort keys %hth) {
+			$val = $hthSum{$pageType}[$i];
+			if ($i == 0) {
+				#push (@times, $val/$hthSum{$pageType}[2]); 
+				push (@times, $val);
+			} elsif ($i == 2) {
+				push (@hits, $val);
+			} elsif ($i == 3) {
+				push (@redirects, $val);
+			} elsif ($i == 4) {
+				push (@clientFail, $val);
+			} elsif ($i == 5) {
+				push (@serverFail, $val);
+			} else {
+				Debug (0, "Why fall through? QQQ");
+			}
+		}
+	}
+			#CGI->td (\@times),   #additive latencies don't make sense (under "Totals since $inception")
+	print HTFILE CGI->table(
+		{-border => 1, -cellpadding => 4},
+		CGI->Tr([
+			CGI->th (\@headings), 
+			CGI->td (\@hits),
+			CGI->td (\@redirects),
+			CGI->td (\@clientFail),
+			CGI->td (\@serverFail),
+		])
+	);
+
+if ($TEST) { # QQQ
+	@times = ("<strong>Latency(ms)</strong>");
+	@hits = ("<strong>PageHits</strong>");
+	@redirects = ("<strong>Redirect</strong>");
+	@clientFail = ("<strong>Browser Err</strong>");
+	@serverFail = ("<strong>Server Fail</strong>");
+
+	print HTFILE "<br><br>";
+	print HTFILE CGI->h3 ("Benchmark [$totalParses]");
+	for $i (0,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
+		for $pageType (sort keys %hth) {
+			$val = $hthBench{$pageType}[$i];
+			if ($i == 0) {
+				push (@times, $val); 
+			} elsif ($i == 2) {
+				push (@hits, $val);
+			} elsif ($i == 3) {
+				push (@redirects, $val);
+			} elsif ($i == 4) {
+				push (@clientFail, $val);
+			} elsif ($i == 5) {
+				push (@serverFail, $val);
+			} else {
+				Debug (0, "Why fall through? QQQ");
+			}
+		}
+	}
+	print HTFILE CGI->table(
+		{-border => 1, -cellpadding => 4},
+		CGI->Tr([
+			CGI->th (\@headings), 
+			CGI->td (\@times),
+			CGI->td (\@hits),
+			CGI->td (\@redirects),
+			CGI->td (\@clientFail),
+			CGI->td (\@serverFail),
+		])
+	);
+}
+
+
+
+	print HTFILE "<br><br>";
+	print HTFILE CGI->h4 ("Map Annotation");
+	print HTFILE CGI->ul ( CGI->li([
+		"Hits, errors, times all over last $INTERVAL seconds",
+		"Color indicators:",
 		"<strong_positive>Strong Positive</strong_positive>", 
 		"<mild_positive>Mild Positive</mild_positive>",
 		"Normal",
@@ -578,18 +744,20 @@ sub printHTML {
 	]));
 
 	print HTFILE "<br><br>";
-	print HTFILE $q->h4 ("To-Dos");
-	print HTFILE $q->ul ( $q->li([
-		'Ador- jetty logs',
+	print HTFILE CGI->h4 ("To-Dos");
+	print HTFILE CGI->ul ( CGI->li([
 		'dynamic page refresh', 
-		'Database save',
-		'Max/Min/Avg',
 		'Holt-Winters',
 		'Multiple app logs- indiv or aggreg display',
 		'Mekka/Uber logs?', 
 	]));
+		#  DONE!
+		#'Ador- jetty logs',
+		#'Database save',
+		#'Max/Min/Avg',
 
-	print HTFILE $q->end_html;
+
+	print HTFILE CGI->end_html;
 	close (HTFILE);
 }
 
@@ -642,6 +810,65 @@ sub printTxtChart {
 }
 
 
+############################################################################################
+# initHashes()
+
+sub initHashes()  {
+	my @e = (0,0,0,0,0,0);
+	%hth = ( 
+		Admin => [@e], 
+		Custom => [@e], 
+		DP_Blog => [@e],
+		DP_Brand => [@e],
+		DP_Store => [@e],
+		Feed_All => [@e],
+		Feed_Blog => [@e], 
+		Feed_Brand => [@e], 
+		Feed_Store => [@e], 
+		General => [@e],
+		Onboard => [@e], 
+		Search => [@e], 
+		Static => [@e],
+		_Other => [@e] 
+	);
+
+	%hthSum = ( 
+		Admin => [@e], 
+		Custom => [@e], 
+		DP_Blog => [@e],
+		DP_Brand => [@e],
+		DP_Store => [@e],
+		Feed_All => [@e],
+		Feed_Blog => [@e], 
+		Feed_Brand => [@e], 
+		Feed_Store => [@e], 
+		General => [@e],
+		Onboard => [@e], 
+		Search => [@e], 
+		Static => [@e],
+		_Other => [@e] 
+	);
+
+	%hthBench = ( 
+		#FILLER =>     [ <ms>, NA, Hits, 3XX, 4XX, 5XX],
+		Admin =>       [  100,  0,    2,   0,   0,   0],
+		Custom =>      [  100,  0,    2,   0,   0,   0],
+		DP_Blog =>     [  100,  0,    2,   0,   0,   0],
+		DP_Brand =>    [  100,  0,    2,   0,   0,   0],
+		DP_Store =>    [  100,  0,    2,   0,   0,   0],
+		Feed_All =>    [  100,  0,    2,   0,   0,   0],
+		Feed_Blog =>   [  100,  0,    2,   0,   0,   0],
+		Feed_Brand =>  [  100,  0,    2,   0,   0,   0],
+		Feed_Store =>  [  100,  0,    2,   0,   0,   0],
+		General =>     [  100,  0,    2,   0,   0,   0],
+		Onboard =>     [  100,  0,    2,   0,   0,   0],
+		Search =>      [  100,  0,    2,   0,   0,   0],
+		Static =>      [  100,  0,    2,   0,   0,   0],
+		_Other =>      [  100,  0,    2,   0,   0,   0],
+	);
+
+
+}
 
 
 ############################################################################################
