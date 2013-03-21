@@ -15,7 +15,7 @@ use DBI;
 # Initialize Globals & call Main
 #   
 
-	my $INTERVAL = 300;  ## QQQQ adjust
+	my $INTERVAL = 300;
 	my $DEBUG = 1;
 	my $ALOGF;
 	my $TEST = 1;
@@ -230,15 +230,11 @@ sub parseAccessLog {
 	printHTML();
 	if ($TEST) { 
 		printTxtChart(); 
-		#if ($eoff) { die "EOF!"; }   #QQQ add back in
 	} 
 
-	# production, reached EOF, so 
-	Debug (1, "...  Sleep ...\n"); 
-	if ($eoff) {
+	if ($eoff) { 
+		Debug (1, "...  Sleep ...\n"); 
 		sleep $INTERVAL;
-	} else {
-		sleep 1;
 	}
 
 
@@ -266,7 +262,7 @@ sub parseAccessLog {
 #		}
 #		$hthRef  = decode_json $jsonText || Debug (0, "ERROR: decode failed\n");
 #                %hth = %$hthRef;
-#		sleep 5;  # QQQ - need real interval here
+#		sleep 5;  
 #	}
 #}
 
@@ -308,11 +304,11 @@ sub urlTypeMatch {
 		'blog/look' => 'DP_Blog',
 		'brand/look' => 'DP_Brand',
 		'stores/look' => 'DP_Store',
-		'feed/all|QQQ' => 'Feed_All',
+		'feed/all' => 'Feed_All',
 		'feed/blogs|blog/feed|blog\d' => 'Feed_Blog',
 		'feed/brand|brand/\d' => 'Feed_Brand',
 		'feed/stores|stores/\d' => 'Feed_Store',
-		'mekka|QQQ' => "General",
+		'mekka' => "General",
 		'onboard' => 'Onboard',
 		'search' => 'Search',
 		'css|js|favicon|html|img' => 'Static'
@@ -436,8 +432,8 @@ sub savePG {
 	}
 	# UPDATE summary row 1 with new summaries
 	$cols_vals = "interval = $totalParses,\n";
-	for $pageType (sort keys %hthSum) { ## QQQ hthSum
-		$cols_vals .= "$pageType = ARRAY[".join (",", @{$hthSum{$pageType}})."], \n"; ## QQQ hthSum
+	for $pageType (sort keys %hthSum) { 
+		$cols_vals .= "$pageType = ARRAY[".join (",", @{$hthSum{$pageType}})."], \n"; 
 	}
 	$cols_vals =~ s/,\s*$//;
 	$dbUpdate = "UPDATE $table SET $cols_vals WHERE id=$rowSummaries";
@@ -533,12 +529,10 @@ EOF
 
 sub getCell {
 	die "call:  getCell (<val>, <avg>, <rev>, <mult>)" if @_ != 4;
-	# QQQ this routine breaks with "use warnings;" due to unit'd vars?
 	my ($val, $avg, $reverse, $mult) = @_;
 
 	$val *= $mult;  # Translate actual page hits & errors into hourly figures
 
-	# QQQ need better scheme (low pagehits, high numbers vs. low, ...)
 	my $bigf = 4;
 	my $lilf = 1.5;
 
@@ -619,7 +613,7 @@ sub printHTML {
 
 
 
-	print HTFILE '<meta http-equiv="refresh" content="30">';
+	print HTFILE '<meta http-equiv="refresh" content="60">';
 
 	print HTFILE CGI->h1 ("Ador Heatmap");
 	for $i (0,1,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
@@ -639,7 +633,7 @@ sub printHTML {
 			} elsif ($i == 5) {
 				push (@serverFail, getCell ($val, $valBench, 1, $multFactor));
 			} else {
-				Debug (0, "Why fall through? QQQ");
+				Debug (0, "variable i=[$i] not understood.");
 			}
 		}
 	}
@@ -694,7 +688,7 @@ sub printHTML {
 			} elsif ($i == 5) {
 				push (@serverFail, $val);
 			} else {
-				Debug (0, "Why fall through? QQQ");
+				Debug (0, "variable i=[$i] not understood.");
 			}
 		}
 	}
@@ -710,7 +704,6 @@ sub printHTML {
 		])
 	);
 
-if ($TEST) { # QQQ
 	@times = ("<strong>Latency(ms)</strong>");
 	@hits = ("<strong>PageHits</strong>");
 	@redirects = ("<strong>Redirect</strong>");
@@ -733,7 +726,7 @@ if ($TEST) { # QQQ
 			} elsif ($i == 5) {
 				push (@serverFail, $val);
 			} else {
-				Debug (0, "Why fall through? QQQ");
+				Debug (0, "variable i=[$i] not understood.");
 			}
 		}
 	}
@@ -748,7 +741,6 @@ if ($TEST) { # QQQ
 			CGI->td (\@serverFail),
 		])
 	);
-}
 
 
 
