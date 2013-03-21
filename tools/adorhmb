@@ -19,18 +19,23 @@ use DBI;
 	my $DEBUG = 1;
 	my $ALOGF;
 	my $TEST = 1;
+	my $parseLog = "";
 	
 	#my $redisKey="jetty.app-1";   #.apachelog.stats
 	#my $redis = Redis->new (server => "localhost:6379"); #UTF8 || ", encoding=>undef)"
 	my %hth = ();
-	#my $hthRef = \%hth;
 	my %hthBench = ();
 	my %hthSum = ();
 
 	my $inception;
 	my $totalParses;
 
+	$SIG{'HUP'} = 'restartHUP';
+	
+
 	main();
+
+
 
 
 
@@ -38,15 +43,17 @@ use DBI;
 # main - GetOptions, call primary subs() 
 #   
 sub main {
+	
 
-	my $parseLog;
+	my $skip=0;
+
 	my $result = GetOptions (
 		'debug|d=s' => \$DEBUG,
 		'interval|i=s' => \$INTERVAL,
+		'skip|s' => \$skip,
 		'parse|p=s' => \$parseLog
 	);
 	if (!$result) { Usage (); }
-
 	Debug ("command options: [d=$DEBUG, interval=$INTERVAL, log=$parseLog.");
 
 	if ($parseLog) {
@@ -58,6 +65,10 @@ sub main {
 			open($ALOGF, '<', $parseLog) or die $!;
 		}
 
+		if ($skip) {
+			seek ($ALOGF, 0, 2);
+			sleep 30;
+		}
 		parseAccessLog ();
 
 	} else {
@@ -71,8 +82,28 @@ sub main {
 
 	
 
+
+
+
 ############################################################################################
-# AccessLogParser
+# restartHUP - actions to perform when cron or user HUPs this program
+#   
+sub restartHUP {
+	my ($signal) = @_;
+	Debug ("Caught Interrupt: $signal.");
+
+	close($ALOGF);
+	open($ALOGF, '<', $parseLog) or die $!;
+	parseAccessLog();
+
+}
+
+
+
+
+
+############################################################################################
+# parseAccessLog
 
 
 sub parseAccessLog {
@@ -118,7 +149,6 @@ sub parseAccessLog {
 
 		if ($line !~ /^\S+\s+.*\[/) {
 			Debug (0, "ERROR line=[$line]");
-			#sleep 1;
 			next;
 		}	
 	
@@ -200,25 +230,27 @@ sub parseAccessLog {
 	printHTML();
 	if ($TEST) { 
 		printTxtChart(); 
-		if ($eoff) { die "EOF!"; }
+		#if ($eoff) { die "EOF!"; }   #QQQ add back in
 	} 
 
 	# production, reached EOF, so 
 	Debug (1, "...  Sleep ...\n"); 
-	#sleep $INTERVAL;
-	#sleep 20;
-	sleep 1;
+	if ($eoff) {
+		sleep $INTERVAL;
+	} else {
+		sleep 1;
+	}
 
 
 	}
-
 }
 
 
+
+
+
 ############################################################################################
-# Map Builder
-
-
+# buildHeatMap
 
 #sub buildHeatMap {
 #
@@ -269,9 +301,9 @@ sub urlTypeMatch {
 	my $pageType="";
 	my $urlBase = shift;
 
-	my %logRegex = (
-		'admin/login' => 'Junk',  # this is the base URL for heartbeat check 
-		'admin' => 'Admin',
+		#'admin/login' => 'Junk',  # this is the base URL for heartbeat check 
+	my %jLogRegex = (
+		'admin/(?!login)' => 'Admin',
 		'customize|user' => 'Custom',
 		'blog/look' => 'DP_Blog',
 		'brand/look' => 'DP_Brand',
@@ -287,9 +319,9 @@ sub urlTypeMatch {
 	);
 
 
-	for my $regex (keys %logRegex) {  # remove sort to preserve order (e.g. 'Junk' gets butchered by 'admin')
+	for my $regex (keys %jLogRegex) {  # remove sort to preserve order (e.g. 'Junk' gets butchered by 'admin')
 		if ($urlBase =~ m[^/($regex)]) {
-			$pageType =  $logRegex{$regex};
+			$pageType =  $jLogRegex{$regex};
 			last;
 		}
 	}
@@ -307,8 +339,6 @@ sub urlTypeMatch {
 
 
 
-
-
 ############################################################################################
 # savePG ()     # double-entendre on "PG" = save in Postgres db, and save Page to db
 
@@ -316,7 +346,7 @@ sub savePG {
 
 	my ($i, $columns, $values, $cols_vals, $pageType);
 	my ($dbInsert, $dbUpdate, $dbSelect, $rows);
-	my $host = "localhost";
+	my $host = "localhost"; # QQQ -should be "chiburi"
 	my $opw = "mekkamekka";
 	my $dbh = DBI->connect("DBI:Pg:dbname=perf;host=$host", "postgres", $opw, {RaiseError => 1})
 		|| die "$DBI::errstr";
@@ -425,33 +455,7 @@ sub savePG {
 	}
 
 
-#		$hthSum{$page
-#		my $hits = $hthSum{$pageType}[2];
-#		if (!$hits) { $hits=1; }
-#		$hthSum{$pageType}[0] = int ($latencies / $hits);
-#			}
-#				$
-#				$hthSum{$pageType}[$i] = int ($latencies / $hits);
-#				
-#				push (@times, $val); 
-#			} elsif ($i == 2) {
-#				push (@hits, $val);
-#			} elsif ($i == 3) {
-#				push (@redirects, $val);
-#			} elsif ($i == 4) {
-#				push (@clientFail, $val);
-#			} elsif ($i == 5) {
-#				push (@serverFail, $val);
-#			} else {
-#				Debug (0, "Why fall through? QQQ");
-#			}
-#		}
-
-
-
 	$dbh->disconnect();
-
-
 
 }
 
@@ -534,8 +538,9 @@ sub getCell {
 
 	$val *= $mult;  # Translate actual page hits & errors into hourly figures
 
-	my $bigf = 0.7;
-	my $lilf = 0.25;
+	# QQQ need better scheme (low pagehits, high numbers vs. low, ...)
+	my $bigf = 4;
+	my $lilf = 1.5;
 
 	my $cell;
 
@@ -543,13 +548,13 @@ sub getCell {
 
 		if ($val == 0) {
 			$cell = 0;
-		} elsif ($val < ($avg * (1 - $bigf))) {
+		} elsif ($val < ($avg / $bigf)) {
 			$cell = "<strong_positive>".$val."</strong_positive>";
-		} elsif ($val < ($avg * (1 - $lilf))) {
+		} elsif ($val < ($avg / $lilf)) {
 			$cell = "<mild_positive>".$val."</mild_positive>";
-		} elsif ($val > ($avg * (1 + $bigf))) {
+		} elsif ($val > ($avg * $bigf)) {
 			$cell = "<strong_alert>".$val."</strong_alert>";
-		} elsif ($val > ($avg * (1 + $lilf))) {
+		} elsif ($val > ($avg * $lilf)) {
 			$cell = "<mild_alert>".$val."</mild_alert>";
 		} else {
 			$cell = $val;
@@ -560,13 +565,13 @@ sub getCell {
 
 		if ($val == 0) {
 			$cell = 0;
-		} elsif ($val > ($avg * (1 + $bigf))) {
+		} elsif ($val > ($avg * $bigf)) {
 			$cell = "<strong_positive>".$val."</strong_positive>";
-		} elsif ($val > ($avg * (1 + $lilf))) {
+		} elsif ($val > ($avg * $lilf)) {
 			$cell = "<mild_positive>".$val."</mild_positive>";
-		} elsif ($val < ($avg * (1 - $bigf))) {
+		} elsif ($val < ($avg / $bigf)) {
 			$cell = "<strong_alert>".$val."</strong_alert>";
-		} elsif ($val < ($avg * (1 - $lilf))) {
+		} elsif ($val < ($avg / $lilf)) {
 			$cell = "<mild_alert>".$val."</mild_alert>";
 		} else {
 			$cell = $val;
@@ -589,7 +594,7 @@ sub printHTML {
 
 
 	my @times = ("<strong>Latency(ms)</strong>");
-	my @headings = ("<strong>Result($INTERVAL.s)</strong>");
+	my @headings = ("<strong>Result(aggreg)</strong>");
 	my @hits = ("<strong>PageHits</strong>");
 	my @redirects = ("<strong>Redirect</strong>");
 	my @clientFail = ("<strong>Browser Err</strong>");
@@ -612,7 +617,9 @@ sub printHTML {
 	#	-style => {'src' => '/styles/sample.css'},
 	);
 
-	#print HTFILE CGI->p ("First shot!");
+
+
+	print HTFILE '<meta http-equiv="refresh" content="30">';
 
 	print HTFILE CGI->h1 ("Ador Heatmap");
 	for $i (0,1,2,3,4,5) { # return codes: <I>xx .  note 0=times for 2xx's, and 1=headings
@@ -647,6 +654,20 @@ sub printHTML {
 			CGI->td (\@serverFail),
 		])
 	);
+
+
+	print HTFILE "<br><br>";
+	print HTFILE CGI->h4 ("Map Annotation");
+	print HTFILE CGI->ul ( CGI->li([
+		"Hits, errors, times all over last $INTERVAL seconds",
+		"Color indicators:",
+		"<strong_positive>Strong Positive</strong_positive>", 
+		"<mild_positive>Mild Positive</mild_positive>",
+		"Normal",
+		"<mild_alert>Mild Alert</mild_alert>",
+		"<strong_alert>Strong Alert</strong_alert>"
+	]));
+
 
 
 	@times = ("<strong>Latency(ms)</strong>");
@@ -732,22 +753,11 @@ if ($TEST) { # QQQ
 
 
 	print HTFILE "<br><br>";
-	print HTFILE CGI->h4 ("Map Annotation");
-	print HTFILE CGI->ul ( CGI->li([
-		"Hits, errors, times all over last $INTERVAL seconds",
-		"Color indicators:",
-		"<strong_positive>Strong Positive</strong_positive>", 
-		"<mild_positive>Mild Positive</mild_positive>",
-		"Normal",
-		"<mild_alert>Mild Alert</mild_alert>",
-		"<strong_alert>Strong Alert</strong_alert>"
-	]));
-
-	print HTFILE "<br><br>";
 	print HTFILE CGI->h4 ("To-Dos");
 	print HTFILE CGI->ul ( CGI->li([
-		'dynamic page refresh', 
-		'Holt-Winters',
+		'daemonize & HUP/logfile re-kick',
+		'dynamic refresh', 
+		'Holt-Winters?',
 		'Multiple app logs- indiv or aggreg display',
 		'Mekka/Uber logs?', 
 	]));
@@ -869,6 +879,10 @@ sub initHashes()  {
 
 
 }
+
+
+
+
 
 
 ############################################################################################
