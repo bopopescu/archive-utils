@@ -1,4 +1,4 @@
-lockerz-utils
+Utils
 =============
 
 Home for various utility tools for deployment / QA etc
